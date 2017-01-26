@@ -4,11 +4,13 @@
  */
 
 class ArrowPath extends mag.Node {
-    constructor(points=[], stroke={color:'black', lineWidth:1}, arrowWidth=8) {
+    constructor(points=[], stroke={color:'black', lineWidth:1}, arrowWidth=8,drawArrow=true) {
         super(0, 0);
         this.stroke = stroke;
         this.points = points;
         this.arrowWidth = arrowWidth;
+        this.drawArrowHead = drawArrow;
+        this.percentDrawn = 1;
     }
 
     get absolutePos() {
@@ -71,6 +73,21 @@ class ArrowPath extends mag.Node {
 
         return this.lastPoint;
     }
+    indexOfPointNearest(elapsed) {
+        if (elapsed < 0) return this.pointAtIndex(0);
+        else if (elapsed > 1) return this.lastPoint;
+
+        let totalLen = this.pathLength;
+        let fraction = 0;
+        for (let i = 1; i < this.points.length; i++) {
+            let len = distBetweenPos(this.points[i-1], this.points[i]);
+            if (elapsed < fraction + len / totalLen)
+                return i-1;
+            fraction += len / totalLen;
+        }
+
+        return this.points.length-1;
+    }
 
     draw(ctx, offset) {
         this.drawInternal(ctx, this.absolutePos);
@@ -93,24 +110,37 @@ class ArrowPath extends mag.Node {
         let startpt = this.points[0];
         ctx.beginPath();
         ctx.moveTo(startpt.x, startpt.y);
-        this.points.slice(1).forEach((pt) => {
-            let p = pt;
-            ctx.lineTo(p.x, p.y);
-        });
+
+        if (this.percentDrawn > 0.999) {
+            this.points.slice(1).forEach((pt) => {
+                let p = pt;
+                ctx.lineTo(p.x, p.y);
+            });
+        } else {
+            let idx = this.indexOfPointNearest(this.percentDrawn);
+            if (idx > 1) {
+                this.points.slice(1, idx).forEach((pt) => {
+                    let p = pt;
+                    ctx.lineTo(p.x, p.y);
+                });
+            }
+        }
         if (this.stroke) ctx.stroke();
 
         // Draw arrowhead.
-        let lastseg = reversePos( rescalePos( this.lastSegment, this.arrowWidth ) ); // Vector pointing from final point to 2nd-to-last point.
-        let leftpt = addPos( rotateBy(lastseg, Math.PI / 4.0), lastpt );
-        let rightpt = addPos( rotateBy(lastseg, -Math.PI / 4.0), lastpt );
-        ctx.fillStyle = this.stroke ? this.stroke.color : null;
-        setStrokeStyle(ctx, null);
-        ctx.beginPath();
-        ctx.moveTo(  lastpt.x,  lastpt.y  );
-        ctx.lineTo(  leftpt.x,  leftpt.y  );
-        ctx.lineTo( rightpt.x, rightpt.y  );
-        ctx.closePath();
-        ctx.fill();
+        if (this.drawArrowHead) {
+            let lastseg = reversePos( rescalePos( this.lastSegment, this.arrowWidth ) ); // Vector pointing from final point to 2nd-to-last point.
+            let leftpt = addPos( rotateBy(lastseg, Math.PI / 4.0), lastpt );
+            let rightpt = addPos( rotateBy(lastseg, -Math.PI / 4.0), lastpt );
+            ctx.fillStyle = this.stroke ? this.stroke.color : null;
+            setStrokeStyle(ctx, null);
+            ctx.beginPath();
+            ctx.moveTo(  lastpt.x,  lastpt.y  );
+            ctx.lineTo(  leftpt.x,  leftpt.y  );
+            ctx.lineTo( rightpt.x, rightpt.y  );
+            ctx.closePath();
+            ctx.fill();
+        }
 
         ctx.restore();
     }

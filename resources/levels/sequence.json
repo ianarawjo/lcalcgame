@@ -1,0 +1,172 @@
+{
+    "chapterName":"Chapter 0",
+    "description":"Sequencing",
+    "levels": [
+        {
+            "description": "Sequence operator",
+            "board": "(sequence /(assign /($x) _) /(assign /($y) /($x))) ($y)",
+            "goal": "(diamond)",
+            "toolbox": "(star) (diamond) (triangle)"
+        },
+        {
+            "description": "Bigger sequence",
+            "board": "(sequence /(assign /($x) /(triangle)) /(assign /($y) _) /(assign /($z) /(== /($x) /($y)))) ($z)",
+            "goal": "(false)",
+            "toolbox": "(star) (triangle)"
+        },
+        {
+            "description": "Bigger sequence",
+            "board": "(sequence /(assign /($x) _) /(assign /($y) _) /(assign /($z) /(== /($x) /($y)))) ($z)",
+            "goal": "(true)",
+            "toolbox": "(star) (star) (triangle) (triangle)"
+        },
+        {
+            "description": "Fill in the blank",
+            "board": "(sequence /(assign /($z) _) _ /(assign /($y) /($x)))",
+            "goal": "(star)",
+            "toolbox": "(star) (assign _ _) ($x) ($y) ($z)"
+        },
+        {
+            "description": "Swap the variables",
+            "board": "(sequence /(assign /($z) /($x)) _ _ /(assign /$z /(diamond)))",
+            "goal": "(star)",
+            "toolbox": "($y) (assign /($x) /$y) /(assign /($y) /$z)",
+            "globals": {
+                "x": "(star)",
+                "y": "(triangle)"
+            }
+        },
+        {
+            "description": "Unlock the conditional",
+            "board": "(sequence /(assign /($y) _) /(assign /($c) /(== /($y) /(diamond))) /(assign /($y) /(if /$c /$x))) ($y)",
+            "goal": "(star)",
+            "toolbox": "(triangle) (diamond)",
+            "globals": {
+                "x": "(star)"
+            }
+        },
+        {
+            "description": "Introduce numbers",
+            "board": "(+ /1 /2)",
+            "goal": "(3)"
+        },
+        {
+            "description": "Introduce zero",
+            "board": "(+ /1 _)",
+            "toolbox": "(0)",
+            "goal": "(1)"
+        },
+        {
+            "description": "Variable in reduction",
+            "board": "(+ /($y) _)",
+            "goal": "(4)",
+            "toolbox": "(1) (2)",
+            "globals": {
+                "y": "(2)"
+            }
+        },
+        {
+            "description": "Assignment with addition",
+            "board": "(assign /$x /(+ _ /4))",
+            "goal": "(6)",
+            "toolbox": "($x) ($y)",
+            "globals": {
+                "x": "(1)",
+                "y": "(2)"
+            }
+        },
+        {
+            "description": "Order matters",
+            "board": "($x) ($x) (assign /$x /(+ /$x /1)) (assign /$x /4)",
+            "goal": "(3) (4)",
+            "globals": {
+                "x": "(2)"
+            }
+        },
+        {
+            "description": "Order matters",
+            "board": "(sequence _ /(assign /$y /$x) _) (assign /$x /(+ /$x /1)) (assign /$x /4)",
+            "goal": "(3) (4)",
+            "toolbox": "($x) ($y)",
+            "globals": {
+                "x": "(2)"
+            }
+        },
+        {
+            "description": "Increment things",
+            "board": "(sequence _ _)",
+            "goal": "(3)",
+            "toolbox": "($x) (assign /$x /(+ /$x /1)) (assign /$x /(+ /$x /1))",
+            "globals": {
+                "x": "(1)"
+            }
+        },
+        {
+            "description": "Increment things with repeat",
+            "board": "(repeat /(2) /(assign /$x /(+ /$x /1)))",
+            "goal": "(3)",
+            "toolbox": "($x)",
+            "globals": {
+                "x": "(1)"
+            }
+        },
+        {
+            "description": "Increment things with repeat",
+            "board": "(repeat _ /(assign /$x /(+ /$x /1)))",
+            "goal": "(6)",
+            "toolbox": "($x) (0) (1) (2) (3) (4) (5)",
+            "globals": {
+                "x": "(1)"
+            }
+        },
+        {
+            "description": "Repeating things 0 times does nothing",
+            "board": "(sequence /(repeat _ /(assign /$x /(+ /$x /1))) /(assign /$y /(== /$x /1)))",
+            "goal": "(true)",
+            "toolbox": "($y) (0) (1) (2) (3) (4) (5)",
+            "globals": {
+                "x": "(1)"
+            }
+        },
+        {
+            "description": "You can repeat a variable number of times",
+            "board": "(repeat _ _)",
+            "toolbox": "(0) (1) (2) (assign /$x /(+ /$x /1)) ($x) ($x)",
+            "goal": "(6)",
+            "globals": {
+                "x": "(3)"
+            }
+        },
+        {
+            "description": "Use sequence in repeat",
+            "board": "(repeat /(2) /(sequence _ _)) (assign /$y /(+ /$y _)) (assign /$x /(+ /$x _))",
+            "goal": "(4) (6)",
+            "toolbox": "($x) ($x) ($y) (1) (2)",
+            "globals": {
+                "x": "(1)",
+                "y": "(2)"
+            }
+        },
+        {
+            "description": "Use sequence in repeat with dependencies",
+            "board": "(repeat /(3) /(sequence _ _)) (assign /$y /(+ /$y /$x)) (assign /$x /(+ /$x _))",
+            "goal": "(true) (true)",
+            "toolbox": "(== /$x /3) (== /$y _) (1) (4) (5) (6)",
+            "globals": {
+                "x": "(0)",
+                "y": "(0)"
+            }
+        },
+        {
+            "description": "Use sequence in repeat with dependencies",
+            "board": "(repeat /(3) /(sequence _ _)) (assign /$x /(+ /$x _)) (assign /$z /(== /$x /4))",
+            "goal": "(true)",
+            "toolbox": "(2) (3) (4) ($y) ($z)",
+            "globals": {
+                "x": "(1)",
+                "y": "(1)",
+                "z": "(false)"
+            }
+        }
+    ]
+}

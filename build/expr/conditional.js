@@ -11,7 +11,6 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 // An if statement.
-
 var IfStatement = function (_Expression) {
     _inherits(IfStatement, _Expression);
 
@@ -22,14 +21,12 @@ var IfStatement = function (_Expression) {
         var else_text = new TextExpr(': null');
         question_mark.color = else_text.color = 'black';
 
-
         // OLD -- if ... then ...
         /*var if_text = new TextExpr('if');
         var then_text = new TextExpr('then');
         if_text.color = 'black';
         then_text.color = 'black';
         super([if_text, cond, then_text, branch]);*/
-
         var _this = _possibleConstructorReturn(this, (IfStatement.__proto__ || Object.getPrototypeOf(IfStatement)).call(this, [cond, question_mark, branch, else_text]));
 
         _this.color = 'LightBlue';
@@ -66,42 +63,82 @@ var IfStatement = function (_Expression) {
             Animate.wait(150).after(onComplete);
         }
     }, {
+        key: 'canReduce',
+        value: function canReduce() {
+            return this.cond && (this.cond.canReduce() || this.cond.isValue()) && this.branch && (this.branch.canReduce() || this.branch.isValue());
+        }
+    }, {
         key: 'performReduction',
         value: function performReduction() {
             var _this2 = this;
 
-            var reduction = this.reduce();
-            if (reduction != this) {
-                (function () {
+            var animated = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
 
-                    var stage = _this2.stage;
-                    var afterEffects = function afterEffects() {
-                        _this2.ignoreEvents = false;
-                        var rtn = _get(IfStatement.prototype.__proto__ || Object.getPrototypeOf(IfStatement.prototype), 'performReduction', _this2).call(_this2);
-                        stage.update();
-                        stage.draw();
-                        return rtn;
-                    };
-
-                    if (reduction === null) _this2.playJimmyAnimation(afterEffects);else if (reduction instanceof FadedNullExpr) {
-                        (function () {
-                            var red = afterEffects();
-                            red.ignoreEvents = true; // don't let them move a null.
-                            Resource.play('pop');
-                            Animate.blink(red, 1000, [1, 1, 1], 0.4).after(function () {
-                                red.poof();
-                            });
-                            //this.playJimmyAnimation(afterEffects);
-                        })();
-                    } else _this2.playUnlockAnimation(afterEffects);
-
-                    _this2.ignoreEvents = true;
-                    //var shatter = new ShatterExpressionEffect(this);
-                    //shatter.run(stage, (() => {
-                    //    super.performReduction();
-                    //}).bind(this));
-                })();
+            if (this.cond && this.cond.canReduce()) {
+                return this.performSubReduction(this.cond, animated).then(function () {
+                    return _this2.performReduction();
+                });
+            } else if (this.cond && !this.cond.isValue() && !this.cond.canReduce()) {
+                // Try and play any animation anyways
+                this.cond.performReduction();
+                return null;
             }
+
+            if (this.branch && this.branch.canReduce()) {
+                return this.performSubReduction(this.branch, animated).then(function () {
+                    return _this2.performReduction();
+                });
+            }
+
+            if (this.branch && !this.branch.isValue()) {
+                this.branch.performReduction();
+                return Promise.reject("IfExpr: branch is not a value and not reducible");
+            }
+
+            return new Promise(function (resolve, reject) {
+                var reduction = _this2.reduce();
+                if (reduction != _this2) {
+                    (function () {
+
+                        var stage = _this2.stage;
+                        var afterEffects = function afterEffects() {
+                            _this2.ignoreEvents = false;
+                            var rtn = _get(IfStatement.prototype.__proto__ || Object.getPrototypeOf(IfStatement.prototype), 'performReduction', _this2).call(_this2);
+                            stage.update();
+                            stage.draw();
+                            if (rtn === null) {
+                                rtn = new FadedNullExpr();
+                            }
+                            resolve(rtn);
+                            return rtn;
+                        };
+
+                        if (reduction === null) {
+                            _this2.playJimmyAnimation(afterEffects);
+                        } else if (reduction instanceof FadedNullExpr) {
+                            (function () {
+                                var red = afterEffects();
+                                red.ignoreEvents = true; // don't let them move a null.
+                                Resource.play('pop');
+                                Animate.blink(red, 1000, [1, 1, 1], 0.4).after(function () {
+                                    red.poof();
+                                });
+                                //this.playJimmyAnimation(afterEffects);
+                            })();
+                        } else {
+                            _this2.playUnlockAnimation(afterEffects);
+                        }
+
+                        _this2.ignoreEvents = true;
+                        //var shatter = new ShatterExpressionEffect(this);
+                        //shatter.run(stage, (() => {
+                        //    super.performReduction();
+                        //}).bind(this));
+                    })();
+                } else {
+                    reject();
+                }
+            });
         }
     }, {
         key: 'value',

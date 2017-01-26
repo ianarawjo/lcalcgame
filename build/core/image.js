@@ -1,5 +1,7 @@
 'use strict';
 
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -15,6 +17,18 @@ var mag = function (_) {
         function ImageRect(x, y, w, h, resource_key) {
             _classCallCheck(this, ImageRect);
 
+            // Just passing resource_key as first argument
+            // should set w, h to the image's pixel width and height.
+            if (arguments.length === 1 && typeof x === 'string') {
+                var img = Resource.getImage(x);
+                if (!img) x = y = w = h = 0;else {
+                    resource_key = x;
+                    x = 0;y = 0;
+                    w = img.naturalWidth;
+                    h = img.naturalHeight;
+                }
+            }
+
             var _this = _possibleConstructorReturn(this, (ImageRect.__proto__ || Object.getPrototypeOf(ImageRect)).call(this, x, y, w, h));
 
             _this.image = resource_key;
@@ -25,7 +39,12 @@ var mag = function (_) {
         _createClass(ImageRect, [{
             key: 'drawInternal',
             value: function drawInternal(ctx, pos, boundingSize) {
-                if (!ctx || !this.image) {
+                if (!this.image) {
+                    //console.error('@ ImageRect: Cannot draw image ', this.image, ' in context ', ctx);
+                    ctx.fillStyle = 'pink';
+                    ctx.fillRect(pos.x, pos.y, boundingSize.w, boundingSize.h);
+                    return;
+                } else if (!ctx) {
                     console.error('@ ImageRect: Cannot draw image ', this.image, ' in context ', ctx);
                     return;
                 }
@@ -49,8 +68,68 @@ var mag = function (_) {
         return ImageRect;
     }(_.Rect);
 
-    var PatternRect = function (_ImageRect) {
-        _inherits(PatternRect, _ImageRect);
+    var RotatableImageRect = function (_ImageRect) {
+        _inherits(RotatableImageRect, _ImageRect);
+
+        function RotatableImageRect(x, y, w, h, resource_key) {
+            _classCallCheck(this, RotatableImageRect);
+
+            if (typeof x === 'string') {
+                ;
+
+                var _this2 = _possibleConstructorReturn(this, (RotatableImageRect.__proto__ || Object.getPrototypeOf(RotatableImageRect)).call(this, x));
+            } else {
+                ;
+
+                var _this2 = _possibleConstructorReturn(this, (RotatableImageRect.__proto__ || Object.getPrototypeOf(RotatableImageRect)).call(this, x, y, w, h, resource_key));
+            }_this2.rotation = 0;
+            return _possibleConstructorReturn(_this2);
+        }
+
+        _createClass(RotatableImageRect, [{
+            key: 'draw',
+            value: function draw(ctx) {
+                var _this3 = this;
+
+                if (!ctx) return;
+                ctx.save();
+                if (this.opacity !== undefined && this.opacity < 1.0) {
+                    ctx.globalAlpha = this.opacity;
+                }
+                var boundingSize = this.absoluteSize;
+                var upperLeftPos = this.upperLeftPos(this.absolutePos, boundingSize);
+
+                ctx.translate(upperLeftPos.x + this._offset.x, upperLeftPos.y + this._offset.y);
+                ctx.rotate(this.rotation);
+
+                if (this._color || this.stroke) this.drawInternal(ctx, zeroPos(), boundingSize);
+
+                this.children.forEach(function (child) {
+                    var realpos = child.pos;
+                    var scale = _this3.absoluteScale;
+                    child.parent = _this3;
+                    child.pos = { x: (-upperLeftPos.x - _this3._offset.x) / scale.x + realpos.x, y: (-upperLeftPos.y - _this3._offset.y) / scale.y + realpos.y };
+                    child.draw(ctx);
+                    child.pos = realpos;
+                });
+
+                if (this._color || this.stroke) this.drawInternalAfterChildren(ctx, upperLeftPos, boundingSize);
+
+                ctx.restore();
+            }
+        }, {
+            key: 'drawInternalAfterChildren',
+            value: function drawInternalAfterChildren(ctx, pos, boundingSize) {
+                _get(RotatableImageRect.prototype.__proto__ || Object.getPrototypeOf(RotatableImageRect.prototype), 'drawInternalAfterChildren', this).call(this, ctx, pos, boundingSize);
+                ctx.restore();
+            }
+        }]);
+
+        return RotatableImageRect;
+    }(ImageRect);
+
+    var PatternRect = function (_ImageRect2) {
+        _inherits(PatternRect, _ImageRect2);
 
         function PatternRect() {
             _classCallCheck(this, PatternRect);
@@ -73,20 +152,26 @@ var mag = function (_) {
         return PatternRect;
     }(ImageRect);
 
-    var Button = function (_ImageRect2) {
-        _inherits(Button, _ImageRect2);
+    var Button = function (_ImageRect3) {
+        _inherits(Button, _ImageRect3);
 
         function Button(x, y, w, h, resource_map, onclick) {
             _classCallCheck(this, Button);
 
-            var _this3 = _possibleConstructorReturn(this, (Button.__proto__ || Object.getPrototypeOf(Button)).call(this, x, y, w, h, resource_map.default));
-            // where resource_map properties are:
+            if (arguments.length === 2) {
+                var _this5 = _possibleConstructorReturn(this, (Button.__proto__ || Object.getPrototypeOf(Button)).call(this, x.default));
+
+                resource_map = x;
+                onclick = y;
+            } else {
+                ;
+
+                var _this5 = _possibleConstructorReturn(this, (Button.__proto__ || Object.getPrototypeOf(Button)).call(this, x, y, w, h, resource_map.default));
+            } // where resource_map properties are:
             //  { default, hover (optional), down (opt.) }
-
-
-            _this3.images = resource_map;
-            _this3.clickFunc = onclick;
-            return _this3;
+            _this5.images = resource_map;
+            _this5.clickFunc = onclick;
+            return _possibleConstructorReturn(_this5);
         }
 
         _createClass(Button, [{
@@ -116,6 +201,7 @@ var mag = function (_) {
     }(ImageRect);
 
     _.ImageRect = ImageRect;
+    _.RotatableImageRect = RotatableImageRect;
     _.PatternRect = PatternRect;
     _.Button = Button;
     return _;

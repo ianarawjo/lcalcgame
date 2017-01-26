@@ -20,6 +20,7 @@ var ArrowPath = function (_mag$Node) {
         var points = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
         var stroke = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : { color: 'black', lineWidth: 1 };
         var arrowWidth = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 8;
+        var drawArrow = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
 
         _classCallCheck(this, ArrowPath);
 
@@ -28,6 +29,8 @@ var ArrowPath = function (_mag$Node) {
         _this.stroke = stroke;
         _this.points = points;
         _this.arrowWidth = arrowWidth;
+        _this.drawArrowHead = drawArrow;
+        _this.percentDrawn = 1;
         return _this;
     }
 
@@ -67,6 +70,21 @@ var ArrowPath = function (_mag$Node) {
             return this.lastPoint;
         }
     }, {
+        key: 'indexOfPointNearest',
+        value: function indexOfPointNearest(elapsed) {
+            if (elapsed < 0) return this.pointAtIndex(0);else if (elapsed > 1) return this.lastPoint;
+
+            var totalLen = this.pathLength;
+            var fraction = 0;
+            for (var i = 1; i < this.points.length; i++) {
+                var len = distBetweenPos(this.points[i - 1], this.points[i]);
+                if (elapsed < fraction + len / totalLen) return i - 1;
+                fraction += len / totalLen;
+            }
+
+            return this.points.length - 1;
+        }
+    }, {
         key: 'draw',
         value: function draw(ctx, offset) {
             this.drawInternal(ctx, this.absolutePos);
@@ -92,24 +110,37 @@ var ArrowPath = function (_mag$Node) {
             var startpt = this.points[0];
             ctx.beginPath();
             ctx.moveTo(startpt.x, startpt.y);
-            this.points.slice(1).forEach(function (pt) {
-                var p = pt;
-                ctx.lineTo(p.x, p.y);
-            });
+
+            if (this.percentDrawn > 0.999) {
+                this.points.slice(1).forEach(function (pt) {
+                    var p = pt;
+                    ctx.lineTo(p.x, p.y);
+                });
+            } else {
+                var idx = this.indexOfPointNearest(this.percentDrawn);
+                if (idx > 1) {
+                    this.points.slice(1, idx).forEach(function (pt) {
+                        var p = pt;
+                        ctx.lineTo(p.x, p.y);
+                    });
+                }
+            }
             if (this.stroke) ctx.stroke();
 
             // Draw arrowhead.
-            var lastseg = reversePos(rescalePos(this.lastSegment, this.arrowWidth)); // Vector pointing from final point to 2nd-to-last point.
-            var leftpt = addPos(rotateBy(lastseg, Math.PI / 4.0), lastpt);
-            var rightpt = addPos(rotateBy(lastseg, -Math.PI / 4.0), lastpt);
-            ctx.fillStyle = this.stroke ? this.stroke.color : null;
-            setStrokeStyle(ctx, null);
-            ctx.beginPath();
-            ctx.moveTo(lastpt.x, lastpt.y);
-            ctx.lineTo(leftpt.x, leftpt.y);
-            ctx.lineTo(rightpt.x, rightpt.y);
-            ctx.closePath();
-            ctx.fill();
+            if (this.drawArrowHead) {
+                var lastseg = reversePos(rescalePos(this.lastSegment, this.arrowWidth)); // Vector pointing from final point to 2nd-to-last point.
+                var leftpt = addPos(rotateBy(lastseg, Math.PI / 4.0), lastpt);
+                var rightpt = addPos(rotateBy(lastseg, -Math.PI / 4.0), lastpt);
+                ctx.fillStyle = this.stroke ? this.stroke.color : null;
+                setStrokeStyle(ctx, null);
+                ctx.beginPath();
+                ctx.moveTo(lastpt.x, lastpt.y);
+                ctx.lineTo(leftpt.x, leftpt.y);
+                ctx.lineTo(rightpt.x, rightpt.y);
+                ctx.closePath();
+                ctx.fill();
+            }
 
             ctx.restore();
         }

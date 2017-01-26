@@ -80,10 +80,15 @@ var BagExpr = function (_CollectionExpr) {
             this.graphicNode.shadowOffset = this.shadowOffset;
         }
     }, {
-        key: 'addItem',
-
+        key: 'isValue',
+        value: function isValue() {
+            return true;
+        }
 
         // Adds an item to the bag.
+
+    }, {
+        key: 'addItem',
         value: function addItem(item) {
 
             if (item.toolbox) {
@@ -524,13 +529,11 @@ var BracketArrayExpr = function (_BagExpr) {
     }, {
         key: 'ondropenter',
         value: function ondropenter(node, pos) {
-
             this.onmouseenter(pos);
         }
     }, {
         key: 'ondropexit',
         value: function ondropexit(node, pos) {
-
             this.onmouseleave(pos);
         }
     }, {
@@ -559,6 +562,10 @@ var BracketArrayExpr = function (_BagExpr) {
             var n = node.clone();
             var before_str = this.toString();
             this.addItem(n);
+
+            if (n instanceof VarExpr) {
+                n.performReduction();
+            }
 
             Logger.log('bag-add', { 'before': before_str, 'after': this.toString(), 'item': n.toString() });
 

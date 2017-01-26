@@ -9,6 +9,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 // The panel at the bottom of the screen.
+
 var Toolbox = function (_mag$ImageRect) {
     _inherits(Toolbox, _mag$ImageRect);
 
@@ -42,6 +43,11 @@ var Toolbox = function (_mag$ImageRect) {
             //    toolbox.removeExpression(e); // remove this expression from the toolbox
             //};
 
+            // Disable the onclick handler so that you can't reduce things
+            // in the toolbox
+            e._origonmouseclick = e.onmouseclick;
+            e.onmouseclick = function () {};
+
             // Animate new expression to toolbox position.
             this.setLayout(animated);
         }
@@ -58,6 +64,8 @@ var Toolbox = function (_mag$ImageRect) {
                 this.items.splice(idx, 1);
                 this.setLayout(animated); // rearrange remaining items
                 e.scale = { x: 1, y: 1 };
+                // Restore the onclick handler
+                e.onmouseclick = e._origonmouseclick;
             }
         }
 

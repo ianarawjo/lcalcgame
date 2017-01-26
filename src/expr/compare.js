@@ -29,7 +29,9 @@ class CompareExpr extends Expression {
     get rightExpr() { return this.holes[2]; }
     onmouseclick(pos) {
         console.log('Expressions are equal: ', this.compare());
-        this.performReduction();
+        if (!this._animating) {
+            this.performReduction();
+        }
     }
     reduce() {
         var cmp = this.compare();
@@ -37,18 +39,50 @@ class CompareExpr extends Expression {
         else if (cmp === false) return new (ExprManager.getClass('false'))();
         else                    return this;
     }
+
+    canReduce() {
+        return this.leftExpr && this.rightExpr &&
+            (this.leftExpr.canReduce() || this.leftExpr.isValue()) &&
+            (this.rightExpr.canReduce() || this.rightExpr.isValue());
+    }
+
     performReduction(animated=true) {
+        if (this.leftExpr && this.rightExpr && this.leftExpr instanceof VarExpr && !this._animating) {
+            let before = this.leftExpr;
+            this._animating = true;
+            return this.performSubReduction(this.leftExpr, true).then(() => {
+                this._animating = false;
+                if (this.leftExpr != before) {
+                    return this.performReduction();
+                }
+            });
+        }
+
+        if (this.leftExpr && this.rightExpr && this.rightExpr instanceof VarExpr && !this._animating) {
+            this._animating = true;
+            let before = this.rightExpr;
+            return this.performSubReduction(this.rightExpr, true).then(() => {
+                this._animating = false;
+                if (this.rightExpr != before) {
+                    return this.performReduction();
+                }
+            });
+        }
+
         if (this.reduce() != this) {
             if (animated) {
-                var shatter = new ShatterExpressionEffect(this);
-                shatter.run(stage, (() => {
-                    this.ignoreEvents = false;
-                    super.performReduction();
-                }).bind(this));
-                this.ignoreEvents = true;
+                return new Promise((resolve, _reject) => {
+                    var shatter = new ShatterExpressionEffect(this);
+                    shatter.run(stage, (() => {
+                        this.ignoreEvents = false;
+                        resolve(super.performReduction());
+                    }).bind(this));
+                    this.ignoreEvents = true;
+                });
             }
             else super.performReduction();
         }
+        return null;
     }
     compare() {
         if (this.funcName === '==') {

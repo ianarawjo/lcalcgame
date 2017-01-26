@@ -4,7 +4,10 @@
 
 
 // Wrapper class to make arbitrary nodes into draggable expressions.
-class ValueExpr extends Expression { }
+class ValueExpr extends Expression {
+    canReduce() { return false; }
+    isValue() { return true; }
+}
 class GraphicValueExpr extends ValueExpr {
     constructor(graphic_node) {
         super([graphic_node]);
@@ -136,6 +139,11 @@ class MirrorExpr extends ImageExpr {
         this.innerExpr = null;
         this._broken = false;
     }
+    get size() {
+        let sz = super.size;
+        sz.h = 54;
+        return sz;
+    }
     set exprInMirror(e) {
         this.innerExpr = e;
 
@@ -181,6 +189,8 @@ class FadedValueExpr extends Expression {
     get graphicNode() { return this.holes[0]; }
     reduceCompletely() { return this; }
     reduce() { return this; }
+    canReduce() { return false; }
+    isValue() { return true; }
     toString() {
         return this.primitiveName;
     }
@@ -196,5 +206,38 @@ class FadedTriangleExpr extends FadedValueExpr {
     constructor() { super('tri'); }
 }
 class FadedCircleExpr extends FadedValueExpr {
+    constructor() { super('dot'); }
+}
+
+class StringValueExpr extends Expression {
+    constructor(name) {
+        let text = new TextExpr('"' + name + '"');
+        super([text]);
+        this.primitiveName = name;
+        text.color = "OrangeRed";
+        this.color = "gold";
+        this.primitiveName = name;
+    }
+
+    get graphicNode() { return this.holes[0]; }
+    reduceCompletely() { return this; }
+    reduce() { return this; }
+    canReduce() { return false; }
+    isValue() { return true; }
+    toString() {
+        return this.primitiveName;
+    }
+    value() { return this.primitiveName; }
+}
+class StringStarExpr extends StringValueExpr {
+    constructor() { super('star'); }
+}
+class StringRectExpr extends StringValueExpr {
+    constructor() { super('rect'); }
+}
+class StringTriangleExpr extends StringValueExpr {
+    constructor() { super('tri'); }
+}
+class StringCircleExpr extends StringValueExpr {
     constructor() { super('dot'); }
 }

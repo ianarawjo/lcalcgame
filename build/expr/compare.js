@@ -1,5 +1,7 @@
 'use strict';
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -12,8 +14,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 //
 
-// A boolean compare function like ==, !=, >, >=, <=, <.
 
+// A boolean compare function like ==, !=, >, >=, <=, <.
 var CompareExpr = function (_Expression) {
     _inherits(CompareExpr, _Expression);
 
@@ -50,7 +52,9 @@ var CompareExpr = function (_Expression) {
         key: 'onmouseclick',
         value: function onmouseclick(pos) {
             console.log('Expressions are equal: ', this.compare());
-            this.performReduction();
+            if (!this._animating) {
+                this.performReduction();
+            }
         }
     }, {
         key: 'reduce',
@@ -59,22 +63,64 @@ var CompareExpr = function (_Expression) {
             if (cmp === true) return new (ExprManager.getClass('true'))();else if (cmp === false) return new (ExprManager.getClass('false'))();else return this;
         }
     }, {
+        key: 'canReduce',
+        value: function canReduce() {
+            return this.leftExpr && this.rightExpr && (this.leftExpr.canReduce() || this.leftExpr.isValue()) && (this.rightExpr.canReduce() || this.rightExpr.isValue());
+        }
+    }, {
         key: 'performReduction',
         value: function performReduction() {
             var _this2 = this;
 
             var animated = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
 
+            if (this.leftExpr && this.rightExpr && this.leftExpr instanceof VarExpr && !this._animating) {
+                var _ret = function () {
+                    var before = _this2.leftExpr;
+                    _this2._animating = true;
+                    return {
+                        v: _this2.performSubReduction(_this2.leftExpr, true).then(function () {
+                            _this2._animating = false;
+                            if (_this2.leftExpr != before) {
+                                return _this2.performReduction();
+                            }
+                        })
+                    };
+                }();
+
+                if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
+            }
+
+            if (this.leftExpr && this.rightExpr && this.rightExpr instanceof VarExpr && !this._animating) {
+                var _ret2 = function () {
+                    _this2._animating = true;
+                    var before = _this2.rightExpr;
+                    return {
+                        v: _this2.performSubReduction(_this2.rightExpr, true).then(function () {
+                            _this2._animating = false;
+                            if (_this2.rightExpr != before) {
+                                return _this2.performReduction();
+                            }
+                        })
+                    };
+                }();
+
+                if ((typeof _ret2 === 'undefined' ? 'undefined' : _typeof(_ret2)) === "object") return _ret2.v;
+            }
+
             if (this.reduce() != this) {
                 if (animated) {
-                    var shatter = new ShatterExpressionEffect(this);
-                    shatter.run(stage, function () {
-                        _this2.ignoreEvents = false;
-                        _get(CompareExpr.prototype.__proto__ || Object.getPrototypeOf(CompareExpr.prototype), 'performReduction', _this2).call(_this2);
-                    }.bind(this));
-                    this.ignoreEvents = true;
+                    return new Promise(function (resolve, _reject) {
+                        var shatter = new ShatterExpressionEffect(_this2);
+                        shatter.run(stage, function () {
+                            _this2.ignoreEvents = false;
+                            resolve(_get(CompareExpr.prototype.__proto__ || Object.getPrototypeOf(CompareExpr.prototype), 'performReduction', _this2).call(_this2));
+                        }.bind(_this2));
+                        _this2.ignoreEvents = true;
+                    });
                 } else _get(CompareExpr.prototype.__proto__ || Object.getPrototypeOf(CompareExpr.prototype), 'performReduction', this).call(this);
             }
+            return null;
         }
     }, {
         key: 'compare',

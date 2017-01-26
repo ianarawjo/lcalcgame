@@ -8,6 +8,7 @@ var canvas;
 
 var level_idx = getCookie('level_idx') || 0;
 if (level_idx !== 0) level_idx = parseInt(level_idx);
+var cur_menu = null;
 
 function init() {
 
@@ -24,6 +25,7 @@ function init() {
     //     }
     // });
 
+    Resource.setCurrentLoadSequence('init');
     LOAD_REDUCT_RESOURCES(Resource);
 
     if (!__SHOW_DEV_INFO)
@@ -45,19 +47,30 @@ function init() {
         }
     }
 
-    // Start a new log session (creating userID as necessary),
-    // and then begin the game.
-    Logger.startSession().then(function (userinfo) {
+    // Wait until page is loaded, then...
+    Pace.on('done', () => {
 
-        if (userinfo.cond) {
-            __COND = userinfo.cond;
+        // Wait until all resources are loaded...
+        // * This callback must be set only after all load() method calls... *
+        Resource.afterLoadSequence('init', () => {
 
-            if (userinfo.cond === 'B')
-                ExprManager.setDefaultFadeLevel(100);
-        }
+            // Start a new log session (creating userID as necessary),
+            // and then begin the game.
+            Logger.startSession().then(function (userinfo) {
 
-        return loadChapterSelect();
-    }).then(initBoard);
+                if (userinfo.cond) {
+                    __COND = userinfo.cond;
+
+                    if (userinfo.cond === 'B')
+                        ExprManager.setDefaultFadeLevel(100);
+                }
+
+                return loadChapterSelect();
+            }).then(initMainMenu);
+
+        });
+
+    });
 }
 
 function loadCustomLevel(lvl_desc, goal_desc) {
@@ -87,12 +100,82 @@ function clearStage() {
     }
 }
 
-function initBoard() {
+function redraw(stage) {
+    if (stage) {
+        stage.update();
+        stage.draw();
+        stage.draw();
+    }
+}
+
+// function initChapterMenu(chapterName) {
+//     canvas = document.getElementById('canvas');
+//     stage = Resource.startChapter(chapterName, canvas);
+//     cur_chapter = chapterName;
+//     redraw(stage);
+// }
+
+function initLevel(levelSelected, levelSelectedIdx) {
+    if (stage instanceof ChapterSelectMenu) {
+        cur_menu = stage;
+        cur_menu.invalidate();
+    }
+    level_idx = levelSelectedIdx;
+    stage = Resource.buildLevel(levelSelected, canvas);
+    redraw(stage);
+}
+
+function returnToMenu() {
+    if (cur_menu) {
+        prepareCanvas();
+        cur_menu.validate();
+        console.log(cur_menu);
+        cur_menu.updateLevelSpots();
+        stage = cur_menu;
+        redraw(stage);
+    } else {
+        initMainMenu();
+    }
+}
+
+function initChapterSelectMenu(flyToChapIdx) {
+    canvas = document.getElementById('canvas');
+    if (canvas.getContext) {
+        clearStage();
+        prepareCanvas();
+        stage = new ChapterSelectMenu(canvas, initLevel, flyToChapIdx);
+        redraw(stage);
+    }
+}
+
+function initMainMenu() {
 
     canvas = document.getElementById('canvas');
 
     if (canvas.getContext) {
 
+        prepareCanvas();
+        $(canvas).css('background-color','#EEE');
+
+        //stage = new MainMenu(canvas, initChapterSelectMenu);
+
+        // stage = new MainMenu(canvas, () => {
+        //
+        //     //Clicks 'play' button. Transition to chapter select screen.
+             stage = new ChapterSelectMenu(canvas, initLevel);
+             redraw(stage);
+        //
+        // });
+        //}, () => {
+            // Clicked 'settings' button. Transition to settings screen.
+        //});
+        redraw(stage);
+    }
+}
+
+function prepareCanvas() {
+    canvas = document.getElementById('canvas');
+    if (canvas.getContext) {
         clearStage();
 
         if (__IS_MOBILE) {
@@ -114,13 +197,30 @@ function initBoard() {
         hideEndGame();
         updateProgressBar();
 
-        // New: saves progress upon reload.
-        setCookie('level_idx', level_idx);
-
         GLOBAL_DEFAULT_CTX = canvas.getContext('2d');
         GLOBAL_DEFAULT_SCREENSIZE = canvas.getBoundingClientRect();
+    }
+}
+
+function saveProgress() {
+    var cookie = getCookie('level_idx');
+    if (cookie.length === 0 || level_idx > parseInt(cookie)) {
+        setCookie('level_idx', level_idx);
+    }
+}
+
+function initBoard() {
+
+    canvas = document.getElementById('canvas');
+
+    if (canvas.getContext) {
+
+        clearStage();
+        prepareCanvas();
+
+        // New: saves progress upon reload.
+        saveProgress();
         $('#lvl_num_visible').text((level_idx+1) + '');
-        //document.getElementById('lvl_desc').innerHTML = Resource.level[level_idx].description || '(No description.)';
 
         stage = Resource.buildLevel(Resource.level[level_idx], canvas);
 
@@ -228,7 +328,8 @@ function toggleLogging() {
 }
 
 function updateProgressBar() {
-    setProgressBar('progressBar', 'progressBarContainer', level_idx / (Resource.level.length - 1));
+    if ($('#progressBar').length > 0)
+        setProgressBar('progressBar', 'progressBarContainer', level_idx / (Resource.level.length - 1));
 }
 function prev() {
     if (!Logger.sessionBegan()) return;
@@ -245,7 +346,21 @@ function next() {
     }
     else {
         level_idx++;
-        initBoard();
+
+        Resource.getChapters().then((chapters) => {
+            for (let i = 0; i < chapters.length; i++) {
+                if (chapters[i].startIdx === level_idx) {
+                    // Fly to the next planet,
+                    // instead of going to the next level.
+                    level_idx--;
+                    initChapterSelectMenu(i);
+                    return;
+                }
+            }
+
+            // Otherwise...
+            initBoard();
+        });
     }
 }
 function undo() {

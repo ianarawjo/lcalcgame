@@ -1,8 +1,3 @@
-
-
-
-
-
 // Node disappears and is replaced by a firework-like particle explosion.
 class SplosionEffect {
     static run(node) {
@@ -58,6 +53,7 @@ class SplosionEffect {
         });
     }
 }
+
 class SparkleTrigger {
     static run(node, onTrigger) {
 
@@ -92,9 +88,15 @@ class SparkleTrigger {
 
             let ghostySparkle = () => {
                 if (triggered) return;
+
+                size = node.absoluteSize;
+                if (size.w === 0) size = { w:50, h:50 };
+                
                 let vec = { x:(Math.random() - 0.5) * size.w * 1.2,
                             y:(Math.random() - 0.5) * size.h * 1.2 - part.size.h / 2.0 };
-                part.pos = addPos(center, vec);
+
+                //part.pos = addPos(center, vec);
+                part.pos = addPos(node.centerPos(), vec);
                 part.color = "#0F0";
                 part.shadowOffset = 0;
                 part.opacity = 1.0;

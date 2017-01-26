@@ -21,6 +21,64 @@ var mag = (function(_) {
         var imageRsc = {};
         var animPresets = {};
 
+        // Call this before running and load[...]() methods,
+        // and call afterDoneLoading to trigger an event
+        // when all assets in the sequence are loaded.
+        var loadSequences = {};
+        var currentLoadSequence = null;
+        var setCurrentLoadSequence = (seqName) => {
+            if (!seqName) {
+                console.error('Resource: Please specify a name for the load sequence.');
+                return;
+            }
+            else if (seqName in loadSequences) {
+                console.warn('Resource: Load sequence already named.');
+                return;
+            }
+            loadSequences[seqName] = {
+                'setOnload': (rsc, type) => {
+                    loadSequences[seqName].length++;
+                    let cb = function() {
+                        let seq = loadSequences[seqName];
+                        seq.loadCount++;
+                        if (seq.queryFinished)
+                            seq.queryFinished();
+                    };
+                    if (type === 'audio') {
+                        rsc.addEventListener('loadeddata', cb, false);
+                    } else if (type === 'image') {
+                        rsc.onload = cb;
+                    }
+                },
+                'loadCount':0,
+                'queryFinished':null, // set in afterDoneLoading
+                'length':0
+            };
+            currentLoadSequence = seqName;
+        };
+        var afterLoadSequence = (seqName, onComplete) => {
+            if (!seqName) {
+                console.error('Resource: Please specify a name for the load sequence.');
+                return;
+            }
+            else if (!onComplete) {
+                console.error('Resource: Please specify a callback function for the load sequence.');
+                return;
+            }
+            else if (!(seqName in loadSequences)) {
+                console.error('Resource: Load sequence named "' + seqName + '" is not an active sequence.');
+                return;
+            }
+            loadSequences[seqName].queryFinished = () => {
+                let seq = loadSequences[seqName];
+                // Check if all resources are loaded...
+                if (seq.loadCount >= seq.length)
+                    onComplete();
+            };
+            loadSequences[seqName].queryFinished(); // check immediately, in case all resources are already loaded...
+            currentLoadSequence = null;
+        };
+
         var loadAudio = (alias, filename) => {
             if (!audioEngineLoaded) {
                 if (lowLag) {
@@ -37,6 +95,9 @@ var mag = (function(_) {
             }
 
             var audio = new Audio(__AUDIO_PATH + filename);
+            if (currentLoadSequence) {
+                loadSequences[currentLoadSequence].setOnload(audio, 'audio');
+            }
             audioRsc[alias] = audio;
 
             // Cross-browser low-latency audio.
@@ -44,6 +105,9 @@ var mag = (function(_) {
         };
         var loadImage = (alias, filename) => {
             var img = new Image();
+            if (currentLoadSequence) {
+                loadSequences[currentLoadSequence].setOnload(img, 'image');
+            }
             img.src = __GRAPHICS_PATH + filename;
             img.alt = alias;
             imageRsc[alias] = img;
@@ -60,11 +124,17 @@ var mag = (function(_) {
                 animPresets[imageSeqAlias] = _.Animation.forImageSequence(imageSeqAlias, range, duration);
             } catch (e) {
                 console.log(e);
-                //
             }
         };
 
+        let muted = false;
+        if (getCookie("muted") === "true") {
+            muted = true;
+        }
+
         return { // TODO: Add more resource types.
+            setCurrentLoadSequence:setCurrentLoadSequence,
+            afterLoadSequence:afterLoadSequence,
             loadImage:loadImage,
             loadImageSequence:loadImageSequence,
             loadAnimation:loadAnimation,
@@ -76,6 +146,7 @@ var mag = (function(_) {
             getAudio:(name) => audioRsc[name],
             getAnimation:(name) => animPresets[name].clone(),
             play:(alias, volume) => {
+                if (muted) return;
                 if (audioEngine === 'html5') {
                     if(volume) audioRsc[alias].volume = volume;
                     else audioRsc[alias].volume = 1.0;
@@ -83,7 +154,16 @@ var mag = (function(_) {
                 } else {
                     lowLag.play(alias);
                 }
-            }
+            },
+            mute: () => {
+                muted = true;
+                setCookie("muted", "true", 1000);
+            },
+            unmute: () => {
+                muted = false;
+                setCookie("muted", "false", 1000);
+            },
+            isMuted: () => { return muted; },
         };
     })();
 

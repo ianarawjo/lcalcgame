@@ -37,6 +37,11 @@ var BooleanPrimitive = function (_Expression) {
             return this;
         }
     }, {
+        key: 'isValue',
+        value: function isValue() {
+            return true;
+        }
+    }, {
         key: 'drawInternal',
         value: function drawInternal(ctx, pos, boundingSize) {
             ctx.fillStyle = 'black';

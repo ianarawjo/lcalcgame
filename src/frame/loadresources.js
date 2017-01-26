@@ -9,11 +9,13 @@ function LOAD_REDUCT_RESOURCES(Resource) {
 
     var levels = [];
     var chapters = [];
-    var markChapter = (alias, desc, prev_levels) => {
-        chapters.push({ name:alias, description:desc, startIdx:prev_levels.length });
+    var markChapter = (json, prev_levels) => {
+        var d = { name:json.chapterName, description:json.description, startIdx:prev_levels.length };
+        if (json.resources) d.resources = json.resources;
+        chapters.push(d);
     };
     var pushChapter = (json) => {
-        markChapter(json.chapterName, json.description, levels);
+        markChapter(json, levels);
         json.levels.forEach((lvl) => {
             levels.push(lvl);
         });
@@ -38,7 +40,10 @@ function LOAD_REDUCT_RESOURCES(Resource) {
 
     // Add resources here:
     loadAudio('pop', 'pop.wav');
-    loadAudio('poof', 'poof.wav');
+    loadAudio('poof', '208111__planman__poof-of-smoke.wav');
+    loadAudio('fly-to', '60012__qubodup__swing-25.wav');
+    loadAudio('fall-to', '202753__sheepfilms__slide-whistle-1.wav');
+    loadAudio('come-out', '202753__sheepfilms__slide-whistle-2.wav');
     loadAudio('bag-spill', 'spill.wav');
     loadAudio('bag-addItem', 'putaway.wav');
     loadAudio('heatup', 'heatup.wav');
@@ -53,6 +58,12 @@ function LOAD_REDUCT_RESOURCES(Resource) {
     loadAudio('matching-goal', 'matching-the-goal2.wav');
     loadAudio('mutate', 'deflate.wav');
     loadAudio('game-complete', 'game-complete.wav');
+    loadAudio('chest-open', '202092__spookymodem__chest-opening.wav');
+    loadAudio('fatbtn-click', 'fatbtn_click.wav');
+    loadAudio('fatbtn-beep', 'fatbtn_space.wav');
+    loadAudio('fatbtn-beep2', 'fatbtn_space2.wav');
+    loadAudio('goback', 'ui_back.wav');
+    loadAudio('zoomin', 'zoom_planet.wav');
 
     loadImage('bag-background', 'bg-stars.png');
     loadImage('lambda-hole', 'lambda-hole.png');
@@ -93,7 +104,7 @@ function LOAD_REDUCT_RESOURCES(Resource) {
     loadImage('chest-metal-lid-open', 'chest-metal-lid-open.png');
     loadImage('chest-metal-lid-closed', 'chest-metal-lid-closed.png');
 
-    // UI Images.
+    // UI.
     loadImage('btn-next-default', 'next-button.png');
     loadImage('btn-next-hover', 'next-button-hover.png');
     loadImage('btn-next-down', 'next-button-down.png');
@@ -103,6 +114,12 @@ function LOAD_REDUCT_RESOURCES(Resource) {
     loadImage('btn-reset-default', 'reset-button.png');
     loadImage('btn-reset-hover', 'reset-button-hover.png');
     loadImage('btn-reset-down', 'reset-button-down.png');
+    loadImage('btn-mute-default', 'mute-button.png');
+    loadImage('btn-mute-hover', 'mute-button-hover.png');
+    loadImage('btn-mute-down', 'mute-button-down.png');
+    loadImage('btn-unmute-default', 'unmute-button.png');
+    loadImage('btn-unmute-hover', 'unmute-button-hover.png');
+    loadImage('btn-unmute-down', 'unmute-button-down.png');
     loadImage('toolbox-bg', 'toolbox-tiled-bg.png');
     loadImage('victory', 'you-win.png');
 
@@ -124,6 +141,32 @@ function LOAD_REDUCT_RESOURCES(Resource) {
     loadImage('lambda-hole-xside-closed', 'lambda-hole-xside-closed.png');
     loadImage('lambda-pipe-xside-closed', 'lambda-pipe-xside-closed.png');
 
+    // Main menu
+    loadImage('mainmenu-starboy', 'starboy/starboy.png');
+    loadImage('mainmenu-starboy-glow', 'starboy/starboy-glowing.png');
+
+    loadImage('planet-variablana', 'starboy/planet_variablana.png');
+    loadImage('planet-variablana-locked', 'starboy/planet_variablana-locked.png');
+    loadImage('planet-binder', 'starboy/planet_binder.png');
+    loadImage('planet-binder-locked', 'starboy/planet_binder-locked.png');
+    loadImage('planet-mapa', 'starboy/planet_mapa.png');
+    loadImage('planet-mapa-locked', 'starboy/planet_mapa-locked.png');
+    loadImage('planet-bagbag', 'starboy/planet_bagbag.png');
+    loadImage('planet-conditionabo', 'starboy/planet_conditionabo.png');
+    loadImage('planet-boolili', 'starboy/planet_boolili.png');
+    loadImage('planet-functiana', 'starboy/planet_functiana.png');
+    loadImage('planet-functiana-locked', 'starboy/planet_functiana-locked.png');
+    loadImage('planet-glow', 'starboy/planet-glow.png');
+    loadImage('planet-bagbag-locked', 'starboy/planet_bagbag-locked.png');
+    loadImage('planet-conditionabo-locked', 'starboy/planet_conditionabo-locked.png');
+    loadImage('planet-boolili-locked', 'starboy/planet_boolili-locked.png');
+    loadAudio('levelspot-activate', 'popin.wav');
+
+    loadImage('ship-small', 'starboy/ship-small.png');
+    loadImage('ship-crashed', 'starboy/ship-crashed1.png');
+    loadImageSequence('mainmenu-star', 'starboy/stars/star.png', [1, 14]);
+    loadAudio('mainmenu-enter', 'sci-fi-engine-startup.wav');
+
     // Loads poof0.png, poof1.png, ..., poof4.png (as poof0, poof1, ..., poof4, respectively).
     loadImageSequence('poof', 'poof.png', [0, 4]);
 
@@ -131,9 +174,24 @@ function LOAD_REDUCT_RESOURCES(Resource) {
     loadAnimation('poof', [0, 4], 120); // Cloud 'poof' animation for destructor piece.
 
     // Add levels here: (for now)
-    // * The '/' character makes the following expression ignore mouse events (can't be drag n dropped). *
-    var chapter_load_prom = loadChaptersFromFiles( ['assign', 'intro', 'booleans', 'conditionals', 'bindings', 'bags', 'combination', 'map'] ); //,     'posttest_v1', 'experimental'] );
+    var chapter_load_prom = loadChaptersFromFiles( ['intro', 'booleans', 'conditionals', 'bindings', 'bags', 'combination', 'map', 'assign', 'sequence'] );
 
+    Resource.startChapter = (chapterName, canvas) => {
+        for (let i = 0; i < chapters.length; i++) {
+            if (chapters[i].name === chapterName)
+                return Resource.buildLevel(levels[chapters[i].startIdx], canvas);
+        }
+        return null;
+    };
+    Resource.levelsForChapter = (chapterName) => {
+        for (let i = 0; i < chapters.length; i++) {
+            if (chapters[i].name === chapterName) {
+                if (i + 1 < chapters.length) return [levels.slice(chapters[i].startIdx, chapters[i+1].startIdx), chapters[i].startIdx];
+                else                         return [levels.slice(chapters[i].startIdx), chapters[i].startIdx];
+            }
+        }
+        return [];
+    };
     Resource.buildLevel = (level_desc, canvas) => {
         ExprManager.clearFadeLevels();
         if ('fade' in level_desc) {
@@ -164,6 +222,7 @@ function LOAD_REDUCT_RESOURCES(Resource) {
             }
 
             unfaded.invalidate();
+            faded.validate();
 
             for (let border of fadedBorders) {
 
@@ -185,8 +244,10 @@ function LOAD_REDUCT_RESOURCES(Resource) {
                         root = root.children[0];
                     }
 
-                    if (unfaded_root.fadingOut)
+                    if (unfaded_root.fadingOut) {
+                    //    console.log('sdasdads');
                         continue;
+                    }
 
                     unfaded_root.fadingOut = true;
                     unfaded_root.opacity = 1.0;
@@ -195,22 +256,31 @@ function LOAD_REDUCT_RESOURCES(Resource) {
                     faded.add(unfaded_root);
                     root.opacity = 0;
 
-                    SparkleTrigger.run(unfaded_root, () => {
+                    if (ExprManager.isExcludedFromFadingAnimation(unfaded_root)) {
+                        faded.remove(unfaded_root);
+                        root.opacity = 1;
+                        continue;
+                    }
 
-                        Logger.log('faded-expr', { 'expr':unfaded_root.toString(), 'state':faded.toString() } );
-                        Resource.play('mutate');
+                    Animate.wait(500).after(() => {
+                        SparkleTrigger.run(unfaded_root, () => {
 
-                        Animate.tween(root, { 'opacity':1.0 }, 2000).after(() => {
-                            root.ignoreEvents = false;
-                        });
-                        Animate.tween(unfaded_root, { 'opacity':0.0 }, 1000).after(() => {
-                            faded.remove(unfaded_root);
+                            Logger.log('faded-expr', { 'expr':unfaded_root.toString(), 'state':faded.toString() } );
+                            Resource.play('mutate');
+
+                            Animate.tween(root, { 'opacity':1.0 }, 2000).after(() => {
+                                root.ignoreEvents = false;
+                            });
+                            Animate.tween(unfaded_root, { 'opacity':0.0 }, 1000).after(() => {
+                                faded.remove(unfaded_root);
+                            });
                         });
                     });
 
                     // Cross-fade old expression to new.
                     root.ignoreEvents = true;
                     unfaded_root.ignoreEvents = true;
+
                     /*Animate.tween(root, { 'opacity':1.0 }, 3000).after(() => {
                         root.ignoreEvents = false;
                     });
@@ -238,7 +308,7 @@ function LOAD_REDUCT_RESOURCES(Resource) {
             resolve(chapters.slice());
         });
     };
-    Resource.getChapter =(name) => {
+    Resource.getChapter = (name) => {
         for (let c of chapters) {
             if (c.name === name) return c;
         }

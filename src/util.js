@@ -57,6 +57,11 @@ var __IS_MOBILE = /Mobi/.test(navigator.userAgent);
         q.y = top_boundary;
      return q;
  }
+ function randomPointInRect(rect) {
+     return { x:rect.x+rect.w*Math.random(),
+              y:rect.y+rect.h*Math.random() };
+ }
+
  function zeroPos() { return {x:0, y:0}; }
  function middleOf(p, q) {
      return { x:(p.x + q.x) / 2.0, y:(p.y + q.y) / 2.0 };
@@ -76,6 +81,9 @@ var __IS_MOBILE = /Mobi/.test(navigator.userAgent);
  }
  function lengthOfPos(p) {
      return Math.sqrt(Math.pow(p.x, 2) + Math.pow(p.y, 2));
+ }
+ function dotProduct(p, q) {
+     return p.x*q.x + p.y*q.y;
  }
  function normalize(p) {
      let len = distBetweenPos(p, {x:0, y:0});
@@ -106,6 +114,9 @@ var __IS_MOBILE = /Mobi/.test(navigator.userAgent);
      else {
          ctx.lineWidth = stroke.lineWidth;
          ctx.strokeStyle = stroke.color;
+         if (stroke.lineDash)
+             ctx.setLineDash(stroke.lineDash);
+         else ctx.setLineDash([]);
      }
  }
  function strokeWithOpacity(ctx, opacity) {
@@ -119,6 +130,12 @@ var __IS_MOBILE = /Mobi/.test(navigator.userAgent);
  }
  function colorFrom255(val, colorWeights=[1,1,1]) {
      return 'rgb(' + Math.round(val*colorWeights[0]) + ',' + Math.round(val*colorWeights[1]) + ',' + Math.round(val*colorWeights[2]) + ')';
+ }
+ function colorTween(val, colorStartWeights=[0,0,0], colorEndWeights=[1,1,1]) {
+     val = val * 255;
+     return 'rgb(' + Math.round(val * colorEndWeights[0] + (255 - val) * colorStartWeights[0]) + ',' +
+                     Math.round(val * colorEndWeights[1] + (255 - val) * colorStartWeights[1]) + ',' +
+                     Math.round(val * colorEndWeights[2] + (255 - val) * colorStartWeights[2]) + ')';
  }
  function computeVariance(arr) {
      if (arr.length <= 1) return 0;
@@ -566,4 +583,39 @@ function drawBag(ctx, x, y, w, h, bagRadius, fill, stroke) {
     if (fill) {
         ctx.fill();
     }
+}
+
+function reduceExprs(exprList, delay=300) {
+    let exprs = exprList.slice();
+    exprs.forEach((expr) => expr.lock());
+    let reduced = [];
+    return new Promise((resolve, reject) => {
+        let nextStep = () => {
+            if (exprs.length === 0) {
+                resolve(reduced);
+            }
+            else {
+                let expr = exprs.shift();
+                let result = expr.performReduction();
+                let delay = (newExpr) => {
+                    reduced.push(newExpr);
+                    if (newExpr instanceof Expression) newExpr.lock();
+                    window.setTimeout(() => {
+                        nextStep();
+                    }, delay);
+                };
+                if (result instanceof Promise) {
+                    result.then(delay, () => {
+                        // Uh-oh, an error happened
+                        reject();
+                    });
+                }
+                else {
+                    delay(result || expr);
+                }
+            }
+        };
+
+        nextStep();
+    });
 }

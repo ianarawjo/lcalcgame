@@ -1,13 +1,3 @@
-
-
-
-
-
-
-
-
-
-
 class CollectionExpr extends GraphicValueExpr { }
 class BagExpr extends CollectionExpr {
     constructor(x, y, w, h, holding=[]) {
@@ -54,6 +44,8 @@ class BagExpr extends CollectionExpr {
         this.graphicNode.shadowOffset = this.shadowOffset;
     }
     get delegateToInner() { return true; }
+
+    isValue() { return true; }
 
     // Adds an item to the bag.
     addItem(item) {
@@ -395,12 +387,10 @@ class BracketArrayExpr extends BagExpr {
     }
 
     ondropenter(node, pos) {
-
         this.onmouseenter(pos);
 
     }
     ondropexit(node, pos) {
-
         this.onmouseleave(pos);
 
     }
@@ -428,6 +418,10 @@ class BracketArrayExpr extends BagExpr {
         let n = node.clone();
         let before_str = this.toString();
         this.addItem(n);
+
+        if (n instanceof VarExpr) {
+            n.performReduction();
+        }
 
         Logger.log('bag-add', {'before':before_str, 'after':this.toString(), 'item':n.toString()});
 

@@ -1,0 +1,43 @@
+{
+    "chapterName":"Chapter 0",
+    "description":"Lambda Puzzles",
+    "levels": [
+        {
+            "description": "Lambda variables shadow external ones",
+            "board": "(λx /$x) ($x)",
+            "goal": "(star) (triangle)",
+            "toolbox": "(diamond) (star) (triangle)",
+            "globals": {
+                "x": "(star)"
+            }
+        },
+        {
+            "description": "Build a lambda with variables",
+            "board": "(λx _) ($x) (triangle)",
+            "goal": "(triangle)",
+            "globals": {
+            }
+        },
+        {
+            "description": "Lambda variables shadow outer ones",
+            "board": "(λx /(λx /$x)) ($x)",
+            "goal": "(star) (triangle)",
+            "toolbox": "(diamond) (triangle)",
+            "globals": {
+                "x": "(star)"
+            }
+        },
+        {
+            "description": "Outer variables are still visible",
+            "board": "(λy /(λx /$y))",
+            "goal": "(triangle)",
+            "toolbox": "(diamond) (star) (triangle)"
+        },
+        {
+            "description": "Long variable names are OK",
+            "board": "(λapple /$apple)",
+            "goal": "(diamond)",
+            "toolbox": "(diamond) (triangle)"
+        }
+    ]
+}

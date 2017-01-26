@@ -9,7 +9,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 // Node disappears and is replaced by a firework-like particle explosion.
-
 var SplosionEffect = function () {
     function SplosionEffect() {
         _classCallCheck(this, SplosionEffect);
@@ -122,9 +121,15 @@ var SparkleTrigger = function () {
 
                 var ghostySparkle = function ghostySparkle() {
                     if (triggered) return;
+
+                    size = node.absoluteSize;
+                    if (size.w === 0) size = { w: 50, h: 50 };
+
                     var vec = { x: (Math.random() - 0.5) * size.w * 1.2,
                         y: (Math.random() - 0.5) * size.h * 1.2 - part.size.h / 2.0 };
-                    part.pos = addPos(center, vec);
+
+                    //part.pos = addPos(center, vec);
+                    part.pos = addPos(node.centerPos(), vec);
                     part.color = "#0F0";
                     part.shadowOffset = 0;
                     part.opacity = 1.0;
@@ -279,9 +284,7 @@ var MirrorShatterEffect = function (_ImageExpr) {
         var pos = mirrorToShatter.upperLeftPos(mirrorToShatter.absolutePos, size);
         pos = addPos(pos, { x: size.w / 2.0 - 4, y: size.h / 2.0 - 11 });
 
-
         //this.size = size;
-
         var _this4 = _possibleConstructorReturn(this, (MirrorShatterEffect.__proto__ || Object.getPrototypeOf(MirrorShatterEffect)).call(this, pos.x, pos.y, size.w, size.h, shouldBreak ? 'mirror-icon-fade-false' : 'mirror-icon-fade-true'));
 
         _this4.pos = pos;

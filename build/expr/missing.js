@@ -27,6 +27,11 @@ var MissingExpression = function (_Expression) {
     }
 
     _createClass(MissingExpression, [{
+        key: 'isComplete',
+        value: function isComplete() {
+            return false;
+        }
+    }, {
         key: 'getClass',
         value: function getClass() {
             return MissingExpression;
@@ -347,3 +352,51 @@ var MissingKeyExpression = function (_MissingBooleanExpres) {
 
     return MissingKeyExpression;
 }(MissingBooleanExpression);
+
+var MissingChestExpression = function (_MissingTypedExpressi3) {
+    _inherits(MissingChestExpression, _MissingTypedExpressi3);
+
+    function MissingChestExpression(expr_to_miss) {
+        _classCallCheck(this, MissingChestExpression);
+
+        var _this7 = _possibleConstructorReturn(this, (MissingChestExpression.__proto__ || Object.getPrototypeOf(MissingChestExpression)).call(this, expr_to_miss));
+
+        _this7.label = new TextExpr("xy");
+        _this7.holes.push(_this7.label);
+        return _this7;
+    }
+
+    _createClass(MissingChestExpression, [{
+        key: 'getClass',
+        value: function getClass() {
+            return MissingChestExpression;
+        }
+    }]);
+
+    return MissingChestExpression;
+}(MissingTypedExpression);
+
+var MissingSequenceExpression = function (_MissingExpression2) {
+    _inherits(MissingSequenceExpression, _MissingExpression2);
+
+    function MissingSequenceExpression() {
+        _classCallCheck(this, MissingSequenceExpression);
+
+        return _possibleConstructorReturn(this, (MissingSequenceExpression.__proto__ || Object.getPrototypeOf(MissingSequenceExpression)).call(this, new Expression()));
+    }
+
+    _createClass(MissingSequenceExpression, [{
+        key: 'getClass',
+        value: function getClass() {
+            return MissingSequenceExpression;
+        }
+    }, {
+        key: 'ondropped',
+        value: function ondropped(node, pos) {
+            _get(MissingSequenceExpression.prototype.__proto__ || Object.getPrototypeOf(MissingSequenceExpression.prototype), 'ondropped', this).call(this, node, pos);
+            node.lockInteraction();
+        }
+    }]);
+
+    return MissingSequenceExpression;
+}(MissingExpression);

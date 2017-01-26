@@ -17,6 +17,7 @@ class MissingExpression extends Expression {
         this._size = { w:expr_to_miss.size.w, h:expr_to_miss.size.h };
         this.ghost = expr_to_miss;
     }
+    isComplete() { return false; }
     getClass() { return MissingExpression; }
     onmousedrag(pos) { } // disable drag
     ondropenter(node, pos) {
@@ -199,5 +200,68 @@ class MissingKeyExpression extends MissingBooleanExpression {
         // Draw keyhole.
         let sz = this.graphicNode.children[0].size;
         this.graphicNode.children[0].drawInternal( ctx, addPos(pos, { x:boundingSize.w/2.0-sz.w/2, y:boundingSize.h/2.0-sz.h/2 }), sz);
+    }
+}
+
+class MissingChestExpression extends MissingTypedExpression {
+    constructor(expr_to_miss) {
+        super(expr_to_miss);
+        this.label = new TextExpr("xy");
+        this.holes.push(this.label);
+    }
+    getClass() { return MissingChestExpression; }
+}
+
+class MissingSequenceExpression extends MissingExpression {
+    constructor() {
+        super(new Expression());
+    }
+
+    getClass() { return MissingSequenceExpression; }
+
+    ondropped(node, pos) {
+        super.ondropped(node, pos);
+        node.lockInteraction();
+    }
+}
+
+class InvisibleMissingExpression extends MissingExpression {
+    constructor() {
+        super(new Expression());
+    }
+
+    getClass() { return InvisibleMissingExpression; }
+
+    drawInternal(ctx, pos, boundingSize) {
+        if (this.stroke) {
+            ctx.fillStyle = this.stroke.color;
+            ctx.globalAlpha = 0.5;
+            ctx.fillRect(pos.x, pos.y, boundingSize.w, boundingSize.h);
+        }
+    }
+}
+
+class MissingNumberExpression extends MissingTypedExpression {
+    constructor(expr_to_miss) {
+        super(expr_to_miss);
+        this.graphicNode = new DiceNumber(3);
+
+        this.acceptedClasses = [ VarExpr, NumberExpr ];
+    }
+    getClass() { return MissingNumberExpression; }
+
+    drawInternal(ctx, pos, boundingSize) {
+        super.drawInternal(ctx, pos, boundingSize);
+        this.graphicNode.color = '#111';
+        this.graphicNode.shadowOffset = this.shadowOffset;
+        let subPos = {
+            x: pos.x + 0.1 * boundingSize.w,
+            y: pos.y + 0.1 * boundingSize.h,
+        };
+        let subSize = {
+            w: 0.8 * boundingSize.w,
+            h: 0.8 * boundingSize.h,
+        };
+        this.graphicNode.drawInternal(ctx, subPos, subSize);
     }
 }

@@ -21,6 +21,11 @@ class Toolbox extends mag.ImageRect {
         //    toolbox.removeExpression(e); // remove this expression from the toolbox
         //};
 
+        // Disable the onclick handler so that you can't reduce things
+        // in the toolbox
+        e._origonmouseclick = e.onmouseclick;
+        e.onmouseclick = function() {};
+
         // Animate new expression to toolbox position.
         this.setLayout(animated);
     }
@@ -32,6 +37,8 @@ class Toolbox extends mag.ImageRect {
             this.items.splice(idx, 1);
             this.setLayout(animated); // rearrange remaining items
             e.scale = { x: 1, y: 1 };
+            // Restore the onclick handler
+            e.onmouseclick = e._origonmouseclick;
         }
     }
 

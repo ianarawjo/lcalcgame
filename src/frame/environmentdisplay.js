@@ -1,62 +1,87 @@
-// The panel at the bottom of the screen.
-class EnvironmentDisplay extends mag.Rect {
-    constructor(x, y, w, h, stage) {
-        super(x, y, w, h);
-        this.color = "#444";
-        this.padding = 20;
-        this.env = null;
-        this.stage = stage;
-        this.contents = [];
+class EnvironmentDisplay extends Expression {
+    constructor(x, y, w, h) {
+        super([]);
+        this._pos = { x: x, y: y };
+        this._size = { w: w, h: h };
+        this.padding = { left: 0, inner: 20, between: 15, right: 0 };
+
+        this._layout = { direction: "vertical", align: "horizontal" };
         this.bindings = {};
-        this.highlighted = null;
-        this.toolbox = true;
+        this._state = 'open';
+        this._height = 1.0;
+        this._animation = null;
     }
 
-    get leftEdgePos() { return { x:this.padding + this.pos.x, y: 2 * this.padding + this.pos.y }; }
+    get pos() {
+        return this._pos;
+    }
 
-    showEnvironment(env) {
-        if (!env) return;
-        if (!this.stage) return;
-        this.clear();
-        this.env = env;
-        let pos = this.leftEdgePos;
-        let setup = (e, padding, newRow) => {
-            e.update();
-            e.ignoreEvents = true;
-            e.toolbox = true;
-            this.stage.add(e);
-            this.contents.push(e);
-            e.anchor = { x:0, y:0.5 };
-            e.pos = pos;
-            e.scale = { x: 1, y: 1 };
-            if (newRow) {
-                pos = addPos(pos, { x: 0, y: e.size.h + 20 } );
-                pos.x = this.leftEdgePos.x;
-            }
-            else {
-                pos = addPos(pos, { x: e.size.w, y: 0 } );
-            }
-        };
-        env.names().forEach((name) => {
-            // let label = new TextExpr(name + "=");
-            // label.color = "#EEE";
-            // setup(label, 0, false);
+    set pos(pos) {}
 
-            let e = env.lookup(name).clone();
-            // setup(e, this.padding, true);
-            let display = new DisplayChest(name, e);
-            if (this.bindings[name]) {
-                display = this.bindings[name];
-                display.setExpr(e);
-            }
+    get size() {
+        return this._size;
+    }
+
+    get _origPos() { return super.pos; }
+    get _origSize() { return super.size; }
+
+    updateBinding(name, expr) {
+        let display = this.bindings[name];
+        if (!display) {
+            display = new (ExprManager.getClass('reference_display'))(name, new MissingExpression(new Expression()));
             this.bindings[name] = display;
-            setup(display, this.padding, true);
-        });
+        }
+        display.ignoreEvents = true;
+        if (expr) {
+            expr = expr.clone();
+            expr.scale = { x: 1, y: 1 };
+            expr.anchor = { x:0, y:0.5 };
+            expr.unlock();
+            expr.update();
+            display.setExpr(expr);
+        }
     }
 
-    showGlobals() {
-        this.clear();
-        this.showEnvironment(this.stage.environment);
+    getEnvironment() {
+        return this.stage.environment;
+    }
+
+    updateBindings() {
+        if (this.stage) window.stage = this.stage;
+
+        if (!this.stage) return;
+
+        let env = this.getEnvironment();
+
+        for (let name of Object.keys(env.bound)) {
+            this.updateBinding(name, env.lookupDirect(name));
+        }
+        for (let name of env.names()) {
+            this.updateBinding(name, env.lookup(name));
+        }
+
+        this.holes = this.children = Object.keys(this.bindings).sort().map((name) => this.bindings[name]);
+    }
+
+    update() {
+        this.updateBindings();
+        super.update();
+    }
+
+    highlight(name) {
+        let display = this.bindings[name];
+        if (display) {
+            Animate.blink(display.getExpr());
+        }
+    }
+
+    drawBackground(ctx, pos, boundingSize) {
+        ctx.fillStyle = '#FFF8DC';
+        ctx.fillRect(pos.x, pos.y, boundingSize.w, boundingSize.h);
+    }
+
+    drawInternal(ctx, pos, boundingSize) {
+        this.drawBackground(ctx, pos, boundingSize);
     }
 
     // Show an animation in preparation for updating a binding
@@ -67,40 +92,58 @@ class EnvironmentDisplay extends mag.Rect {
         return null;
     }
 
-    clear() {
-        if (!this.stage) return;
-        for (let child of this.contents) {
-            this.stage.remove(child);
-        }
-        this.bindings = {};
-        this.contents = [];
-        this.env = null;
-        this.highlighted = null;
+    getBinding(name) {
+        return this.bindings[name];
+    }
+}
+
+class SpreadsheetEnvironmentDisplay extends EnvironmentDisplay {
+    constructor(x, y, w, h) {
+        super(x, y, w, h);
+        this._layout = { direction: "vertical", align: "none" };
+        this.padding = { left: 0, inner: 0, between: 0, right: 0 };
+        this.maxLabelSize = 30;
     }
 
-    highlightName(name) {
-        let next = false;
-        for (let expr of this.contents) {
-            if (expr instanceof TextExpr && expr.text === name + "=") {
-                this.highlighted = expr;
-                expr.color = 'green';
-                next = true;
-            }
-            else if (next) {
-                expr.onmouseenter();
-                break;
-            }
-        }
+    updateBindings(env) {
+        super.updateBindings(env);
+
+        this.holes = Object.keys(this.bindings).sort().map((name) => this.bindings[name]);
+        this.holes.forEach((e) => {
+            this.maxLabelSize = Math.max(this.maxLabelSize, e.nameLabel.pos.x + e.nameLabel.size.w);
+        });
+        this.holes.forEach((e) => {
+            e.valuePos = this.maxLabelSize + 5;
+        });
     }
 
-    clearHighlight() {
-        if (this.highlighted) {
-            this.highlighted.color = 'white';
-            this.highlighted = null;
-        }
+    drawInternal(ctx, pos, boundingSize) {
+        super.drawInternal(ctx, pos, boundingSize);
+        this.drawGrid(ctx);
     }
 
-    // Disable highlighting on hover
-    onmouseenter(pos) {}
-    onmouseleave(pos) {}
+    drawGrid(ctx) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.lineWidth = 0.5;
+
+        let y = this.absolutePos.y;
+        this.holes.forEach((display) => {
+            y = display.absolutePos.y + display.absoluteSize.h / 2;
+            ctx.moveTo(display.absolutePos.x, y);
+            ctx.lineTo(display.absolutePos.x + this.absoluteSize.w, y);
+        });
+
+        let maxY = this.absolutePos.y + this.absoluteSize.h - 42.5;
+        while (y < maxY) {
+            y += 42.5;
+            ctx.moveTo(this.absolutePos.x, Math.floor(y));
+            ctx.lineTo(this.absolutePos.x + this.absoluteSize.w, Math.floor(y));
+        }
+
+        ctx.moveTo(this.absolutePos.x + this.maxLabelSize, this.absolutePos.y);
+        ctx.lineTo(this.absolutePos.x + this.maxLabelSize, this.absolutePos.y + this.absoluteSize.h);
+        ctx.stroke();
+        ctx.restore();
+    }
 }

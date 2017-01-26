@@ -14,6 +14,8 @@ class BooleanPrimitive extends Expression {
     reduce() { return this; }
     reduceCompletely() { return this; }
 
+    isValue() { return true; }
+
     drawInternal(ctx, pos, boundingSize) {
         ctx.fillStyle = 'black';
         setStrokeStyle(ctx, this.stroke);

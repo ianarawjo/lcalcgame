@@ -4,11 +4,11 @@ var ExprManager = (function() {
     var _FADE_MAP = {
         'if':       [LockIfStatement, InlineLockIfStatement, IfStatement],
         'ifelse':   [IfElseStatement],
-        'triangle': [TriangleExpr, FadedTriangleExpr],
-        'rect':     [RectExpr, FadedRectExpr],
-        'star':     [StarExpr, FadedStarExpr],
-        'circle':   [CircleExpr, FadedCircleExpr],
-        'diamond':  [RectExpr, FadedRectExpr],
+        'triangle': [TriangleExpr, FadedTriangleExpr, StringTriangleExpr],
+        'rect':     [RectExpr, FadedRectExpr, StringRectExpr],
+        'star':     [StarExpr, FadedStarExpr, StringStarExpr],
+        'circle':   [CircleExpr, FadedCircleExpr, StringCircleExpr],
+        'diamond':  [RectExpr, FadedRectExpr, StringRectExpr],
         '_':        [MissingExpression],
         '__':       [MissingBagExpression, MissingBracketExpression],
         '_b':       [MissingKeyExpression, MissingBooleanExpression],
@@ -16,6 +16,7 @@ var ExprManager = (function() {
         'false':    [KeyFalseExpr, FalseExpr],
         'cmp':      [MirrorCompareExpr, FadedCompareExpr],
         '==':       [MirrorCompareExpr, FadedCompareExpr],
+        '+':        [AddExpr],
         '!=':       [MirrorCompareExpr, FadedCompareExpr],
         'bag':      [BagExpr, BracketArrayExpr],
         'count':    [CountExpr],
@@ -25,17 +26,26 @@ var ExprManager = (function() {
         'pop':      [PopExpr],
         'define':   [DefineExpr],
         'var':      [LambdaVarExpr, HalfFadedLambdaVarExpr, FadedLambdaVarExpr, FadedLambdaVarExpr],
-        'reference':[ChestVarExpr, LabeledChestVarExpr],
+        'reference':[JumpingChestVarExpr, ChestVarExpr, LabeledChestVarExpr, LabeledVarExpr],
+        'reference_display':[DisplayChest, LabeledDisplayChest, SpreadsheetDisplay],
+        'environment_display':[EnvironmentDisplay, SpreadsheetEnvironmentDisplay],
         'hole':     [LambdaHoleExpr, HalfFadedLambdaHoleExpr, FadedLambdaHoleExpr, FadedES6LambdaHoleExpr],
         'lambda':   [LambdaHoleExpr, HalfFadedLambdaHoleExpr, FadedES6LambdaHoleExpr],
-        'assign':   [AssignExpr],
+        'lambda_abstraction':   [LambdaExpr, EnvironmentLambdaExpr],
+        'assign':   [JumpingAssignExpr, AssignExpr, EqualsAssignExpr],
+        'sequence': [NotchedSequence, Sequence],
+        'repeat':   [RepeatLoopExpr],
     };
     var fade_level = {};
     var DEFAULT_FADE_LEVEL = 0;
 
     var DEFAULT_FADE_PROGRESSION = {
         'var'   : [[9, 30], 30, 42],
-        'reference': [10],
+        'reference': [79, 80, 96],
+        'reference_display': [80, 96],
+        'environment_display': [96],
+        'lambda_abstraction': [98],
+        'assign': [79, 96],
         'hole'  : [[9, 30], 30, 42],
         'if'    : [26, 45],
         '_b'    : [34],
@@ -44,7 +54,7 @@ var ExprManager = (function() {
         'false' : [46],
         'bag'   : [51],
         '__'    : [51],
-        'primitives' : [66],
+        'primitives' : [66, 72],
         'map'   : [61]
     };
     const primitives = ['triangle', 'rect', 'star', 'circle', 'diamond'];
@@ -52,6 +62,16 @@ var ExprManager = (function() {
         DEFAULT_FADE_PROGRESSION[p] = DEFAULT_FADE_PROGRESSION.primitives;
     });
     DEFAULT_FADE_PROGRESSION.primitives = undefined;
+
+    // Classes that should not show the 'sparkle' when they are faded.
+    const FADE_EXCEPTIONS = [JumpingChestVarExpr, JumpingAssignExpr, EnvironmentDisplay];
+
+    pub.isExcludedFromFadingAnimation = (expr) => {
+        for (let klass of FADE_EXCEPTIONS) {
+            if (expr instanceof klass) return true;
+        }
+        return false;
+    };
 
     pub.fadeBordersAt = (lvl) => {
         if (DEFAULT_FADE_LEVEL >= 4) return [];

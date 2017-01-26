@@ -38,20 +38,18 @@ class Level {
         // levels appear the same each time you play.
         Math.seed = 12045;
 
-        const showEnvironment = Object.keys(this.globals.bindings).length > 0 ||
-              mag.Stage.getNodesWithClass(VarExpr, [], true, this.exprs).length > 0;
-
         var canvas_screen = stage.boundingSize;
 
-        const envDisplayWidth = showEnvironment ? 0.25 * canvas_screen.w : 0;
+        const envDisplayWidth = 0.20 * canvas_screen.w;
 
         GLOBAL_DEFAULT_SCREENSIZE = stage.boundingSize;
         const usableWidth = canvas_screen.w - envDisplayWidth;
+        const screenOffsetX = usableWidth * (1 - 1/1.4) / 2.0;
         var screen = {
             height: canvas_screen.h/1.4 - 90,
-            width: usableWidth/(showEnvironment ? 1.0 : 1.4),
+            width: usableWidth - 2*screenOffsetX,
             y: canvas_screen.h*(1-1/1.4) / 2.0,
-            x: showEnvironment ? envDisplayWidth : ((usableWidth*(1-1/1.4)) / 2.0),
+            x: screenOffsetX,
         };
         var board_packing = this.findBestPacking(this.exprs, screen);
         stage.addAll(board_packing); // add expressions to the stage
@@ -76,12 +74,32 @@ class Level {
 
         // UI Buttons
         var ui_padding = 10;
-        var btn_back = new mag.Button(canvas_screen.w - 64*3 - ui_padding, ui_padding, 64, 64,
+        var btn_back = new mag.Button(canvas_screen.w - 64*4 - ui_padding, ui_padding, 64, 64,
             { default:'btn-back-default', hover:'btn-back-hover', down:'btn-back-down' },
             () => {
-            prev(); // go back to previous level; see index.html.
+            returnToMenu();
+            //prev(); // go back to previous level; see index.html.
         });
-        var btn_reset = new mag.Button(btn_back.pos.x + btn_back.size.w, btn_back.pos.y, 64, 64,
+
+        let mute_images = { default:'btn-mute-default', hover:'btn-mute-hover', down:'btn-mute-down' };
+        let unmute_images = { default:'btn-unmute-default', hover:'btn-unmute-hover', down:'btn-unmute-down' };
+        var btn_mute = new mag.Button(btn_back.pos.x + btn_back.size.w, ui_padding, 64, 64,
+            Resource.isMuted() ? unmute_images : mute_images,
+            function() {
+                if (this.muted) {
+                    Resource.unmute();
+                    this.muted = false;
+                    this.images = mute_images;
+                }
+                else {
+                    Resource.mute();
+                    this.muted = true;
+                    this.images = unmute_images;
+                }
+                this.onmouseenter();
+        });
+        btn_mute.muted = Resource.isMuted();
+        var btn_reset = new mag.Button(btn_mute.pos.x + btn_mute.size.w, ui_padding, 64, 64,
             { default:'btn-reset-default', hover:'btn-reset-hover', down:'btn-reset-down' },
             () => {
             initBoard(); // reset board state; see index.html.
@@ -91,10 +109,11 @@ class Level {
             () => {
             next(); // go back to previous level; see index.html.
         });
+        btn_back.pos = btn_reset.pos;
         btn_reset.pos = btn_next.pos;
-        //stage.add(btn_back);
+        stage.add(btn_back);
         stage.add(btn_reset);
-        //stage.add(btn_next);
+        stage.add(btn_next);
 
         // Toolbox
         const TOOLBOX_HEIGHT = 90;
@@ -109,18 +128,15 @@ class Level {
         stage.toolbox = toolbox;
 
         // Environment
-        let yOffset = goal_node[0].absoluteSize.h + goal_node[0].absolutePos.y + 10;
-        var env = new EnvironmentDisplay(0, yOffset, 0.15 * canvas_screen.w, canvas_screen.h - TOOLBOX_HEIGHT - yOffset, stage);
-        if (showEnvironment) {
-            stage.add(env);
-        }
+        let yOffset = goal_node[0].absoluteSize.h + goal_node[0].absolutePos.y + 20;
+        var env = new (ExprManager.getClass('environment_display'))(canvas_screen.w - envDisplayWidth, yOffset, envDisplayWidth, canvas_screen.h - TOOLBOX_HEIGHT - yOffset);
+        stage.add(env);
         stage.environmentDisplay = env;
         if (this.globals) {
             for (let name of this.globals.names()) {
                 stage.environment.update(name, this.globals.lookup(name).clone());
             }
         }
-        env.showGlobals();
 
         stage.uiNodes = [ btn_back, btn_reset, btn_next, env, toolbox ];
 
@@ -131,8 +147,7 @@ class Level {
             var nodes = [];
             var expr;
             for (let n of this.nodes) {
-                if (n in this.uiGoalNodes ||
-                    this.uiNodes.indexOf(n) > -1 ||
+                if (this.uiNodes.indexOf(n) > -1 ||
                     n.constructor.name === 'Rect' ||
                     n.constructor.name === 'ImageRect' ||
                     !(n instanceof Expression) ||
@@ -157,6 +172,25 @@ class Level {
             }
             return false;
         }.bind(stage);
+
+        // Default animation on expression creation:
+        stage.expressionNodes().forEach((n) => {
+            n.scale = { x:0.5, y:0.5 };
+            n.anchor = { x:0.5, y:0.5 };
+            Animate.tween(n, { scale:{x:1,y:1} }, 500, (elapsed) => Math.pow(elapsed, 0.3));
+        });
+        stage.goalNodes.forEach((n) => {
+            n.pos = addPos(n.pos, { x:n.size.w/2.0, y:n.size.h/2.0 });
+            n.anchor = { x:0.5, y:0.5 };
+            n.scale = { x:0.5, y:0.5 };
+            Animate.tween(n, { scale:{x:1,y:1} }, 500, (elapsed) => Math.pow(elapsed, 0.3));
+        });
+        stage.toolboxNodes().forEach((n, i) => {
+            let final_pos = n.pos;
+            n.pos = addPos(n.pos, { x:400, y:0 });
+            n.scale = { x:0.8, y:0.8 };
+            Animate.tween(n, { pos:final_pos, scale:{x:1,y:1} }, 500 + i * 100, (elapsed) => Math.pow(elapsed, 0.3));
+        });
 
         return stage;
     }
@@ -198,7 +232,8 @@ class Level {
 
         // Parse expressions recursively.
         let es = descs.map((expr_desc) => Level.parseExpr(expr_desc));
-        es = es.map((e) => e instanceof LambdaHoleExpr ? new LambdaExpr([e]) : e);
+        let LambdaClass = ExprManager.getClass('lambda_abstraction');
+        es = es.map((e) => e instanceof LambdaHoleExpr ? new LambdaClass([e]) : e);
         //console.log('exprs', es);
         return es;
     }
@@ -265,6 +300,7 @@ class Level {
             } else { // Class name. Invoke the instantiator.
                 var op_class = exprs[0];
                 if (!(op_class instanceof LambdaHoleExpr) &&
+                    !(op_class instanceof Sequence) &&
                     !(op_class instanceof BagExpr) && op_class.length !== exprs.length-1) { // missing an argument, or there's an extra argument:
                     console.warn('Operator-argument mismatch with exprs: ', exprs);
                     console.warn('Continuing...');
@@ -282,7 +318,8 @@ class Level {
                     }
                 }
                 if (op_class instanceof LambdaHoleExpr) {
-                    var lexp = new LambdaExpr([op_class]);
+                    let LambdaClass = ExprManager.getClass('lambda_abstraction');
+                    var lexp = new LambdaClass([op_class]);
                     for (let i = 1; i < exprs.length; i++) { lexp.addArg(exprs[i]); }
                     return lock(lexp, toplevel_lock);
                 }
@@ -343,6 +380,7 @@ class Level {
             'cmp':ExprManager.getClass('cmp'),
             '==':ExprManager.getClass('=='),
             '!=':ExprManager.getClass('!='),
+            '+':ExprManager.getClass('+'),
             'bag':new (ExprManager.getClass('bag'))(0,0,54,54,[]),
             'count':new (ExprManager.getClass('count'))(),
             'map':ExprManager.getClass('map'),
@@ -352,6 +390,8 @@ class Level {
             'define':ExprManager.getClass('define'),
             'null':new NullExpr(0,0,64,64),
             'assign':ExprManager.getClass('assign'),
+            'sequence':ExprManager.getClass('sequence'),
+            'repeat':ExprManager.getClass('repeat'),
             'dot':(() => {
                 let circ = new CircleExpr(0,0,18);
                 circ.color = 'gold';

@@ -18,6 +18,7 @@ var mag = function (_) {
             if (canvas) this.canvas = canvas;else this.ctx = null;
             this.nodes = [];
             this.hoverNode = null;
+            this._scale = 1;
             this.requested = false;
         }
 
@@ -27,8 +28,14 @@ var mag = function (_) {
                 this.ctx.clearRect(0, 0, canvas.width, canvas.height);
             }
         }, {
+            key: 'has',
+            value: function has(node) {
+                return node && node.stage == this && this.nodes.indexOf(node) > -1;
+            }
+        }, {
             key: 'add',
             value: function add(node) {
+                if (this.has(node)) return;
                 node.stage = this;
                 if (node.locked) node.unlock();
                 this.nodes.push(node);
@@ -36,10 +43,10 @@ var mag = function (_) {
         }, {
             key: 'addAll',
             value: function addAll(nodes) {
-                var _this2 = this;
+                var _this = this;
 
                 nodes.forEach(function (n) {
-                    return _this2.add(n);
+                    return _this.add(n);
                 });
             }
         }, {
@@ -119,6 +126,7 @@ var mag = function (_) {
             value: function bringToFront(node) {
                 var i = this.nodes.indexOf(node);
                 if (i > -1 && i < this.nodes.length - 1) {
+                    console.error('fefef');
                     var n = this.nodes[i];
                     this.nodes.splice(i, 1);
                     this.nodes.push(n);
@@ -165,16 +173,16 @@ var mag = function (_) {
             key: 'invalidate',
 
 
-            /** Invalidates a collection of nodes (or all the nodes on this stage)
-                and invalidates this stage, so that it won't draw to canvas anymore. */
-            value: function invalidate(nodes) {
-                if (typeof nodes === 'undefined') nodes = this.nodes;else if (nodes && nodes.length === 0) return;
-                var _this = this;
-                nodes.forEach(function (n) {
-                    n.ctx = null;
-                    _this.invalidate(n.children);
-                });
+            /** Invalidates this stage, so that it won't draw to canvas or receive events. */
+            value: function invalidate() {
                 this.invalidated = true;
+                delegateMouse(this._canvas, null);
+            }
+        }, {
+            key: 'validate',
+            value: function validate() {
+                this.invalidated = false;
+                delegateMouse(this._canvas, this);
             }
 
             /** Draw this stage to the canvas. */
@@ -182,7 +190,7 @@ var mag = function (_) {
         }, {
             key: 'draw',
             value: function draw() {
-                var _this3 = this;
+                var _this2 = this;
 
                 // To avoid redundant draws, when someone calls draw, we
                 // instead try to schedule an actual redraw. Another
@@ -193,23 +201,23 @@ var mag = function (_) {
                 if (!this.requested) {
                     this.requested = true;
                     window.requestAnimationFrame(function () {
-                        _this3.drawImpl();
-                        _this3.requested = false;
+                        _this2.drawImpl();
+                        _this2.requested = false;
                     });
                 }
             }
         }, {
             key: 'drawImpl',
             value: function drawImpl() {
-                var _this4 = this;
-
                 if (this.invalidated) return; // don't draw invalidated stages.
                 this.ctx.save();
                 this.ctx.scale(this._scale, this._scale);
                 this.clear();
-                this.nodes.forEach(function (n) {
-                    return n.draw(_this4.ctx);
-                }); // TODO: You should pass the ctx!!!!!!
+                var len = this.nodes.length;
+                for (var i = 0; i < len; i++) {
+                    this.nodes[i].draw(this.ctx);
+                }
+                //this.nodes.forEach((n) => n.draw(this.ctx));
                 this.ctx.restore();
             }
 
@@ -385,7 +393,7 @@ var mag = function (_) {
             value: function getNodesWithClass(Class) {
                 var excludedNodes = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
 
-                var _this5 = this;
+                var _this3 = this;
 
                 var recursive = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
                 var nodes = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
@@ -399,7 +407,7 @@ var mag = function (_) {
                     });
                     if (excluded) return;else if (n instanceof Class) rt.push(n);
                     if (recursive && n.children.length > 0) {
-                        var childs = _this5.getNodesWithClass(Class, excludedNodes, true, n.children);
+                        var childs = _this3.getNodesWithClass(Class, excludedNodes, true, n.children);
                         childs.forEach(function (c) {
                             return rt.push(c);
                         });
@@ -477,16 +485,19 @@ var mag = function (_) {
                 return false;
             };
             canvas.onmousedown = function (e) {
-                if (e.button === RIGHT_BTN) return;
+                if (e.button === RIGHT_BTN) return false;
                 onmousedown(getMousePos(e));
+                return false;
             };
             canvas.onmousemove = function (e) {
-                if (e.button === RIGHT_BTN) return;
+                if (e.button === RIGHT_BTN) return false;
                 onmousemove(getMousePos(e));
+                return false;
             };
             canvas.onmouseup = function (e) {
-                if (e.button === RIGHT_BTN) return;
+                if (e.button === RIGHT_BTN) return false;
                 onmouseup(getMousePos(e));
+                return false;
             };
 
             var ontouchstart = function ontouchstart(e) {

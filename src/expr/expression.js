@@ -18,6 +18,8 @@ class Expression extends mag.RoundedRect {
         this.padding = { left:10, inner:10, right:10 };
         this._size = { w:EMPTY_EXPR_WIDTH, h:DEFAULT_EXPR_HEIGHT };
         this.environment = null;
+        this._layout = { 'direction': 'horizontal', 'align': 'vertical' };
+        this.lockedInteraction = false;
 
         if (this.holes) {
             var _this = this;
@@ -115,7 +117,7 @@ class Expression extends mag.RoundedRect {
         var sizes = this.getHoleSizes();
         var scale_x = this.scale.x;
 
-        if (this._stackVertically) {
+        if (this._layout.direction == "vertical") {
             width = EMPTY_EXPR_WIDTH;
             height = 0;
         }
@@ -123,7 +125,7 @@ class Expression extends mag.RoundedRect {
         if (sizes.length === 0) return { w:this._size.w, h:this._size.h };
 
         sizes.forEach((s) => {
-            if (this._stackVertically) {
+            if (this._layout.direction == "vertical") {
                 height += s.h;
                 width = Math.max(width, s.w);
             }
@@ -133,8 +135,13 @@ class Expression extends mag.RoundedRect {
             }
         });
 
-        if (this._stackVertically) {
-            width += padding.right + padding.left;
+        if (this._layout.direction == "vertical" && this.padding.between) {
+            height += this.padding.between * (sizes.length - 1);
+        }
+
+        if (this._layout.direction == "vertical") {
+            height += 2 * padding.inner;
+            width += padding.left + padding.right;
         }
         else {
             width += padding.right; // the end
@@ -149,6 +156,7 @@ class Expression extends mag.RoundedRect {
         this.holes.forEach((expr) => {
             var size = expr ? expr.size : {w:EMPTY_EXPR_WIDTH, h:DEFAULT_EXPR_HEIGHT};
             size.w *= expr.scale.x;
+            size.h *= expr.scale.y;
             sizes.push(size);
         });
         return sizes;
@@ -172,8 +180,8 @@ class Expression extends mag.RoundedRect {
         var padding = this.padding.inner;
         var x = this.padding.left;
         var y = this.size.h / 2.0 + (this.exprOffsetY ? this.exprOffsetY : 0);
-        if (this._stackVertically) {
-            y = 2 * this.padding.inner;
+        if (this._layout.direction == "vertical") {
+            y = padding;
         }
 
         this.holes.forEach((expr) => { // Update hole expression positions.
@@ -181,15 +189,22 @@ class Expression extends mag.RoundedRect {
             expr.pos = { x:x, y:y };
             expr.scale = { x:0.85, y:0.85 };
             expr.update();
-            if (this._stackVertically) {
-                y += expr.size.h * expr.scale.y;
-                // Centering
-                var offset = x;
-                var innerWidth = size.w;
-                var scale = expr.scale.x;
-                offset = (innerWidth - scale * expr.size.w) / 2;
 
-                expr.pos = { x:offset, y:expr.pos.y };
+            if (this._layout.direction == "vertical") {
+                y += expr.anchor.y * expr.size.h * expr.scale.y;
+                var offset = x;
+
+                // Centering
+                if (this._layout.align == "horizontal") {
+                    var innerWidth = size.w;
+                    var scale = expr.scale.x;
+                    offset = (innerWidth - scale * expr.size.w) / 2;
+                }
+
+                expr.pos = { x:offset, y:y };
+
+                y += (1 - expr.anchor.y) * expr.size.h * expr.scale.y;
+                if (this.padding.between) y += this.padding.between;
             }
             else {
                 x += expr.size.w * expr.scale.x + padding;
@@ -220,9 +235,22 @@ class Expression extends mag.RoundedRect {
         return null;
     }
 
+    // Can this expression step to a value?
     canReduce() {
+        return false;
+    }
+
+    // Is this expression already a value?
+    isValue() {
+        return false;
+    }
+
+    // Is this expression missing any subexpressions?
+    isComplete() {
         for (let child of this.holes) {
-            if (child.canReduce && !child.canReduce()) return false;
+            if (child instanceof MissingExpression || (child instanceof Expression && !child.isComplete())) {
+                return false;
+            }
         }
         return true;
     }
@@ -231,6 +259,33 @@ class Expression extends mag.RoundedRect {
     // * Returns the newly built expression. Leaves this expression unchanged.
     reduce(options=undefined) {
         return this;
+    }
+
+    // Try and reduce the given child expression before continuing with our reduction
+    performSubReduction(expr, animated=true) {
+        return new Promise((resolve, reject) => {
+            let result = expr.performReduction(animated);
+            if (result instanceof Promise) {
+                result.then((result) => {
+                    if (result instanceof Expression) result.lock();
+
+                    window.setTimeout(() => {
+                        resolve(result);
+                    }, 600);
+                });
+            }
+            else {
+                let delay = 250;
+                if (!result) {
+                    result = expr;
+                    delay = 0;
+                }
+                if (result instanceof Expression && !(result instanceof MissingExpression)) result.lock();
+                window.setTimeout(() => {
+                    resolve(result);
+                }, delay);
+            }
+        });
     }
 
     // * Swaps this expression for its reduction (if one exists) in the expression hierarchy.
@@ -329,6 +384,10 @@ class Expression extends mag.RoundedRect {
             this.toolbox.removeExpression(this); // remove this expression from the toolbox
             Logger.log('toolbox-dragout', this.toString());
         }
+
+        if (this.lockedInteraction) {
+            this.unlockInteraction();
+        }
     }
 
     lock() {
@@ -358,6 +417,33 @@ class Expression extends mag.RoundedRect {
                 child.unlockSubexpressions(filterFunc);
             }
         });
+    }
+
+    lockInteraction() {
+        if (!this.lockedInteraction) {
+            this.lockedInteraction = true;
+            this._origonmouseclick = this.onmouseclick;
+            this.onmouseclick = function(pos) {
+                if (this.parent) this.parent.onmouseclick(pos);
+            }.bind(this);
+            this.holes.forEach((child) => {
+                if (child instanceof Expression) {
+                    child.lockInteraction();
+                }
+            });
+        }
+    }
+
+    unlockInteraction() {
+        if (this.lockedInteraction) {
+            this.lockedInteraction = false;
+            this.onmouseclick = this._origonmouseclick;
+            this.holes.forEach((child) => {
+                if (child instanceof Expression) {
+                    child.unlockInteraction();
+                }
+            });
+        }
     }
 
     hits(pos, options=undefined) {

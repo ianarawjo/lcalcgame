@@ -1,8 +1,8 @@
 'use strict';
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -11,6 +11,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 // Wrapper class to make arbitrary nodes into draggable expressions.
+
 var ValueExpr = function (_Expression) {
     _inherits(ValueExpr, _Expression);
 
@@ -19,6 +20,18 @@ var ValueExpr = function (_Expression) {
 
         return _possibleConstructorReturn(this, (ValueExpr.__proto__ || Object.getPrototypeOf(ValueExpr)).apply(this, arguments));
     }
+
+    _createClass(ValueExpr, [{
+        key: 'canReduce',
+        value: function canReduce() {
+            return false;
+        }
+    }, {
+        key: 'isValue',
+        value: function isValue() {
+            return true;
+        }
+    }]);
 
     return ValueExpr;
 }(Expression);
@@ -346,6 +359,13 @@ var MirrorExpr = function (_ImageExpr3) {
             ctx.restore();
         }
     }, {
+        key: 'size',
+        get: function get() {
+            var sz = _get(MirrorExpr.prototype.__proto__ || Object.getPrototypeOf(MirrorExpr.prototype), 'size', this);
+            sz.h = 54;
+            return sz;
+        }
+    }, {
         key: 'exprInMirror',
         set: function set(e) {
             this.innerExpr = e;
@@ -401,6 +421,16 @@ var FadedValueExpr = function (_Expression2) {
         key: 'reduce',
         value: function reduce() {
             return this;
+        }
+    }, {
+        key: 'canReduce',
+        value: function canReduce() {
+            return false;
+        }
+    }, {
+        key: 'isValue',
+        value: function isValue() {
+            return true;
         }
     }, {
         key: 'toString',
@@ -469,3 +499,108 @@ var FadedCircleExpr = function (_FadedValueExpr4) {
 
     return FadedCircleExpr;
 }(FadedValueExpr);
+
+var StringValueExpr = function (_Expression3) {
+    _inherits(StringValueExpr, _Expression3);
+
+    function StringValueExpr(name) {
+        _classCallCheck(this, StringValueExpr);
+
+        var text = new TextExpr('"' + name + '"');
+
+        var _this17 = _possibleConstructorReturn(this, (StringValueExpr.__proto__ || Object.getPrototypeOf(StringValueExpr)).call(this, [text]));
+
+        _this17.primitiveName = name;
+        text.color = "OrangeRed";
+        _this17.color = "gold";
+        _this17.primitiveName = name;
+        return _this17;
+    }
+
+    _createClass(StringValueExpr, [{
+        key: 'reduceCompletely',
+        value: function reduceCompletely() {
+            return this;
+        }
+    }, {
+        key: 'reduce',
+        value: function reduce() {
+            return this;
+        }
+    }, {
+        key: 'canReduce',
+        value: function canReduce() {
+            return false;
+        }
+    }, {
+        key: 'isValue',
+        value: function isValue() {
+            return true;
+        }
+    }, {
+        key: 'toString',
+        value: function toString() {
+            return this.primitiveName;
+        }
+    }, {
+        key: 'value',
+        value: function value() {
+            return this.primitiveName;
+        }
+    }, {
+        key: 'graphicNode',
+        get: function get() {
+            return this.holes[0];
+        }
+    }]);
+
+    return StringValueExpr;
+}(Expression);
+
+var StringStarExpr = function (_StringValueExpr) {
+    _inherits(StringStarExpr, _StringValueExpr);
+
+    function StringStarExpr() {
+        _classCallCheck(this, StringStarExpr);
+
+        return _possibleConstructorReturn(this, (StringStarExpr.__proto__ || Object.getPrototypeOf(StringStarExpr)).call(this, 'star'));
+    }
+
+    return StringStarExpr;
+}(StringValueExpr);
+
+var StringRectExpr = function (_StringValueExpr2) {
+    _inherits(StringRectExpr, _StringValueExpr2);
+
+    function StringRectExpr() {
+        _classCallCheck(this, StringRectExpr);
+
+        return _possibleConstructorReturn(this, (StringRectExpr.__proto__ || Object.getPrototypeOf(StringRectExpr)).call(this, 'rect'));
+    }
+
+    return StringRectExpr;
+}(StringValueExpr);
+
+var StringTriangleExpr = function (_StringValueExpr3) {
+    _inherits(StringTriangleExpr, _StringValueExpr3);
+
+    function StringTriangleExpr() {
+        _classCallCheck(this, StringTriangleExpr);
+
+        return _possibleConstructorReturn(this, (StringTriangleExpr.__proto__ || Object.getPrototypeOf(StringTriangleExpr)).call(this, 'tri'));
+    }
+
+    return StringTriangleExpr;
+}(StringValueExpr);
+
+var StringCircleExpr = function (_StringValueExpr4) {
+    _inherits(StringCircleExpr, _StringValueExpr4);
+
+    function StringCircleExpr() {
+        _classCallCheck(this, StringCircleExpr);
+
+        return _possibleConstructorReturn(this, (StringCircleExpr.__proto__ || Object.getPrototypeOf(StringCircleExpr)).call(this, 'dot'));
+    }
+
+    return StringCircleExpr;
+}(StringValueExpr);

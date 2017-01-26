@@ -1,6 +1,6 @@
 'use strict';
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -41,6 +41,51 @@ var mag = function (_) {
                 });
                 twn.run();
                 return twn;
+            }
+        }, {
+            key: 'run',
+            value: function run(func) {
+                var dur = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1000;
+
+                var twn = new Tween(func, dur);
+                twn.run();
+                return twn;
+            }
+
+            // Takes alternating sequence of func, dur, onComplete arguments and runs tweens in sequence.
+
+        }, {
+            key: 'chain',
+            value: function chain() {
+                var _arguments = arguments;
+
+                if (arguments.length % 3 !== 0 || arguments.length === 0) {
+                    console.error('Cannot chain even (or zero) number of arguments.');
+                    return;
+                }
+
+                var tweens = [];
+
+                var _loop = function _loop(i) {
+
+                    var f = _arguments.length <= i + 0 ? undefined : _arguments[i + 0];
+                    var d = _arguments.length <= i + 1 + 0 ? undefined : _arguments[i + 1 + 0];
+                    var o = _arguments.length <= i + 2 + 0 ? undefined : _arguments[i + 2 + 0];
+
+                    var t = new Tween(f, d);
+                    if (o) t.after(o);
+                    if (tweens.length > 0) tweens[tweens.length - 1].after(function () {
+                        return t.run();
+                    });
+                    tweens.push(t);
+                };
+
+                for (var i = 0; i < arguments.length; i += 3) {
+                    _loop(i);
+                }
+
+                tweens[0].run();
+                return tweens[0];
             }
         }, {
             key: 'blink',
@@ -184,6 +229,20 @@ var mag = function (_) {
                     if (autodraw && node.stage) node.stage.draw();
                 }, dur);
                 twn.run();
+                twn.after(function () {
+                    // Make sure the final value is actually set by using
+                    // elapsed = 1.0; also, redraw the stage one last
+                    // time.
+                    var new_props = lerpProps(sourceValue, targetValue, 1.0);
+
+                    for (var prop in new_props) {
+                        if (new_props.hasOwnProperty(prop)) {
+                            node[prop] = new_props[prop];
+                        }
+                    }
+
+                    if (autodraw && node.stage) node.stage.draw();
+                });
                 return twn;
             }
         }, {
@@ -476,6 +535,7 @@ var mag = function (_) {
             value: function timeout() {
                 var delta = new Date().getTime() - this.startTimeMS;
                 this.startTimeMS += delta;
+                if (delta > 50) delta = 50; // cap it, just in case.
                 this.update(delta); // how much time has passed _between frames_ (in ms)
             }
         }]);

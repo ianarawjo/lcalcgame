@@ -1,6 +1,6 @@
-"use strict";
+'use strict';
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 /** Logging singleton.
  * Logs to internal JSON, local server (if run from localhost),
@@ -14,7 +14,7 @@ var Logger = function () {
     var __VERSION_ID = 0.54;
     var __OFFLINE_NAME_PROMPT = false;
     var __RUNNING_LOCALLY = location.hostname === "localhost" || location.hostname === "127.0.0.1";
-    var __LOCAL_LOGGING = __RUNNING_LOCALLY;
+    var __LOCAL_LOGGING = false && __RUNNING_LOCALLY;
     var __LOCAL_LOGGER_PORT = 3333;
     var __GDIAC_BASEURL = 'http://gdiac.cs.cornell.edu/research_games/';
     var __PAGE_LOAD_URL = __GDIAC_BASEURL + 'page_load.php';
@@ -169,7 +169,8 @@ var Logger = function () {
                 if (!userID) {
                     // Gets generated user ID + stores as cookie in client's browser.
                     userID = json['user_id'];
-                    cond = Math.random() < 0.5 ? 'A' : 'B';
+                    //cond = (Math.random() < 0.5 ? 'A' : 'B');
+                    cond = 'A'; // fading ON
                     storeCookie('user_id', userID);
                     storeCookie('cond', cond);
                 }
@@ -274,8 +275,8 @@ var Logger = function () {
             };
             return pub.endTask(currentTaskID).then(startNextTask, startNextTask); // start next task on both rejection and resolution
         } else {
-                return pub.startTask(taskID, data);
-            }
+            return pub.startTask(taskID, data);
+        }
     };
 
     pub.log = function (actionID, data) {
@@ -289,7 +290,7 @@ var Logger = function () {
             // For now...
             //console.log('@ Logger.log: ', actionID, data);
 
-            if (data && (typeof data === "undefined" ? "undefined" : _typeof(data)) === 'object') data = JSON.stringify(data);
+            if (data && (typeof data === 'undefined' ? 'undefined' : _typeof(data)) === 'object') data = JSON.stringify(data);
 
             var int_actionID = actionID;
             if (typeof actionID === 'string') {

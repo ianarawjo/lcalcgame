@@ -36,6 +36,8 @@ var Expression = function (_mag$RoundedRect) {
         _this2.padding = { left: 10, inner: 10, right: 10 };
         _this2._size = { w: EMPTY_EXPR_WIDTH, h: DEFAULT_EXPR_HEIGHT };
         _this2.environment = null;
+        _this2._layout = { 'direction': 'horizontal', 'align': 'vertical' };
+        _this2.lockedInteraction = false;
 
         if (_this2.holes) {
             var _this = _this2;
@@ -140,6 +142,7 @@ var Expression = function (_mag$RoundedRect) {
             this.holes.forEach(function (expr) {
                 var size = expr ? expr.size : { w: EMPTY_EXPR_WIDTH, h: DEFAULT_EXPR_HEIGHT };
                 size.w *= expr.scale.x;
+                size.h *= expr.scale.y;
                 sizes.push(size);
             });
             return sizes;
@@ -168,8 +171,8 @@ var Expression = function (_mag$RoundedRect) {
             var padding = this.padding.inner;
             var x = this.padding.left;
             var y = this.size.h / 2.0 + (this.exprOffsetY ? this.exprOffsetY : 0);
-            if (this._stackVertically) {
-                y = 2 * this.padding.inner;
+            if (this._layout.direction == "vertical") {
+                y = padding;
             }
 
             this.holes.forEach(function (expr) {
@@ -178,15 +181,22 @@ var Expression = function (_mag$RoundedRect) {
                 expr.pos = { x: x, y: y };
                 expr.scale = { x: 0.85, y: 0.85 };
                 expr.update();
-                if (_this3._stackVertically) {
-                    y += expr.size.h * expr.scale.y;
-                    // Centering
-                    var offset = x;
-                    var innerWidth = size.w;
-                    var scale = expr.scale.x;
-                    offset = (innerWidth - scale * expr.size.w) / 2;
 
-                    expr.pos = { x: offset, y: expr.pos.y };
+                if (_this3._layout.direction == "vertical") {
+                    y += expr.anchor.y * expr.size.h * expr.scale.y;
+                    var offset = x;
+
+                    // Centering
+                    if (_this3._layout.align == "horizontal") {
+                        var innerWidth = size.w;
+                        var scale = expr.scale.x;
+                        offset = (innerWidth - scale * expr.size.w) / 2;
+                    }
+
+                    expr.pos = { x: offset, y: y };
+
+                    y += (1 - expr.anchor.y) * expr.size.h * expr.scale.y;
+                    if (_this3.padding.between) y += _this3.padding.between;
                 } else {
                     x += expr.size.w * expr.scale.x + padding;
                 }
@@ -224,9 +234,28 @@ var Expression = function (_mag$RoundedRect) {
 
             return null;
         }
+
+        // Can this expression step to a value?
+
     }, {
         key: 'canReduce',
         value: function canReduce() {
+            return false;
+        }
+
+        // Is this expression already a value?
+
+    }, {
+        key: 'isValue',
+        value: function isValue() {
+            return false;
+        }
+
+        // Is this expression missing any subexpressions?
+
+    }, {
+        key: 'isComplete',
+        value: function isComplete() {
             var _iteratorNormalCompletion = true;
             var _didIteratorError = false;
             var _iteratorError = undefined;
@@ -235,7 +264,9 @@ var Expression = function (_mag$RoundedRect) {
                 for (var _iterator = this.holes[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
                     var child = _step.value;
 
-                    if (child.canReduce && !child.canReduce()) return false;
+                    if (child instanceof MissingExpression || child instanceof Expression && !child.isComplete()) {
+                        return false;
+                    }
                 }
             } catch (err) {
                 _didIteratorError = true;
@@ -264,6 +295,37 @@ var Expression = function (_mag$RoundedRect) {
             var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : undefined;
 
             return this;
+        }
+
+        // Try and reduce the given child expression before continuing with our reduction
+
+    }, {
+        key: 'performSubReduction',
+        value: function performSubReduction(expr) {
+            var animated = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+
+            return new Promise(function (resolve, reject) {
+                var result = expr.performReduction(animated);
+                if (result instanceof Promise) {
+                    result.then(function (result) {
+                        if (result instanceof Expression) result.lock();
+
+                        window.setTimeout(function () {
+                            resolve(result);
+                        }, 600);
+                    });
+                } else {
+                    var delay = 250;
+                    if (!result) {
+                        result = expr;
+                        delay = 0;
+                    }
+                    if (result instanceof Expression) result.lock();
+                    window.setTimeout(function () {
+                        resolve(result);
+                    }, delay);
+                }
+            });
         }
 
         // * Swaps this expression for its reduction (if one exists) in the expression hierarchy.
@@ -364,6 +426,10 @@ var Expression = function (_mag$RoundedRect) {
                 this.toolbox.removeExpression(this); // remove this expression from the toolbox
                 Logger.log('toolbox-dragout', this.toString());
             }
+
+            if (this.lockedInteraction) {
+                this.unlockInteraction();
+            }
         }
     }, {
         key: 'lock',
@@ -402,6 +468,35 @@ var Expression = function (_mag$RoundedRect) {
                     child.unlockSubexpressions(filterFunc);
                 }
             });
+        }
+    }, {
+        key: 'lockInteraction',
+        value: function lockInteraction() {
+            if (!this.lockedInteraction) {
+                this.lockedInteraction = true;
+                this._origonmouseclick = this.onmouseclick;
+                this.onmouseclick = function (pos) {
+                    if (this.parent) this.parent.onmouseclick(pos);
+                }.bind(this);
+                this.holes.forEach(function (child) {
+                    if (child instanceof Expression) {
+                        child.lockInteraction();
+                    }
+                });
+            }
+        }
+    }, {
+        key: 'unlockInteraction',
+        value: function unlockInteraction() {
+            if (this.lockedInteraction) {
+                this.lockedInteraction = false;
+                this.onmouseclick = this._origonmouseclick;
+                this.holes.forEach(function (child) {
+                    if (child instanceof Expression) {
+                        child.unlockInteraction();
+                    }
+                });
+            }
         }
     }, {
         key: 'hits',
@@ -494,7 +589,7 @@ var Expression = function (_mag$RoundedRect) {
             var sizes = this.getHoleSizes();
             var scale_x = this.scale.x;
 
-            if (this._stackVertically) {
+            if (this._layout.direction == "vertical") {
                 width = EMPTY_EXPR_WIDTH;
                 height = 0;
             }
@@ -502,7 +597,7 @@ var Expression = function (_mag$RoundedRect) {
             if (sizes.length === 0) return { w: this._size.w, h: this._size.h };
 
             sizes.forEach(function (s) {
-                if (_this4._stackVertically) {
+                if (_this4._layout.direction == "vertical") {
                     height += s.h;
                     width = Math.max(width, s.w);
                 } else {
@@ -511,8 +606,9 @@ var Expression = function (_mag$RoundedRect) {
                 }
             });
 
-            if (this._stackVertically) {
-                width += padding.right + padding.left;
+            if (this._layout.direction == "vertical") {
+                height += 2 * padding.inner;
+                width += padding.left + padding.right;
             } else {
                 width += padding.right; // the end
             }

@@ -12,9 +12,9 @@
              this._scale = { x:1, y:1 };
              this._color = "lightgray";
              this._highlightColor = 'yellow';
-             this._stackVertically = false;
              this.stroke = null;
              this.shadowOffset = 2;
+             this.shadowColor = 'black';
          }
          get highlightColor() { return this._highlightColor; }
          set highlightColor(clr) { this._highlightColor = clr; }
@@ -95,7 +95,7 @@
          }
          drawInternal(ctx, pos, boundingSize) {
              setStrokeStyle(ctx, this.stroke);
-             ctx.fillStyle = 'black';
+             ctx.fillStyle = this.shadowColor;
              ctx.fillRect(pos.x, pos.y, boundingSize.w, boundingSize.h+this.shadowOffset);
              this.strokeRect(ctx, pos.x, pos.y, boundingSize.w, boundingSize.h+this.shadowOffset);
              ctx.fillStyle = this.color;
@@ -118,6 +118,9 @@
              if (hitChild) return hitChild;
 
              // Hasn't hit any children, so test if the point lies on this node.
+             return this.hitsWithin(pos);
+         }
+         hitsWithin(pos) {
              var boundingSize = this.absoluteSize;
              var upperLeftPos = this.upperLeftPos(this.absolutePos, boundingSize);
              if (pointInRect(pos, rectFromPosAndSize(upperLeftPos, boundingSize) )) return this;
@@ -154,7 +157,7 @@
              this.radius = rad;
          }
          drawInternal(ctx, pos, boundingSize) {
-             ctx.fillStyle = 'black';
+             ctx.fillStyle = this.shadowColor;
              setStrokeStyle(ctx, this.stroke);
              if (this.shadowOffset !== 0) {
                  roundRect(ctx,
@@ -163,11 +166,11 @@
                            this.radius*this.absoluteScale.x, true, this.stroke ? true : false,
                            this.stroke ? this.stroke.opacity : null); // just fill for now
              }
-             ctx.fillStyle = this.color;
+             if (this.color) ctx.fillStyle = this.color;
              roundRect(ctx,
                        pos.x, pos.y,
                        boundingSize.w, boundingSize.h,
-                       this.radius*this.absoluteScale.x, true, this.stroke ? true : false,
+                       this.radius*this.absoluteScale.x, this.color !== null, this.stroke ? true : false,
                        this.stroke ? this.stroke.opacity : null); // just fill for now
          }
      }

@@ -30,9 +30,9 @@ var mag = function (_) {
             _this._scale = { x: 1, y: 1 };
             _this._color = "lightgray";
             _this._highlightColor = 'yellow';
-            _this._stackVertically = false;
             _this.stroke = null;
             _this.shadowOffset = 2;
+            _this.shadowColor = 'black';
             return _this;
         }
 
@@ -94,7 +94,7 @@ var mag = function (_) {
             key: 'drawInternal',
             value: function drawInternal(ctx, pos, boundingSize) {
                 setStrokeStyle(ctx, this.stroke);
-                ctx.fillStyle = 'black';
+                ctx.fillStyle = this.shadowColor;
                 ctx.fillRect(pos.x, pos.y, boundingSize.w, boundingSize.h + this.shadowOffset);
                 this.strokeRect(ctx, pos.x, pos.y, boundingSize.w, boundingSize.h + this.shadowOffset);
                 ctx.fillStyle = this.color;
@@ -143,6 +143,11 @@ var mag = function (_) {
                 if (hitChild) return hitChild;
 
                 // Hasn't hit any children, so test if the point lies on this node.
+                return this.hitsWithin(pos);
+            }
+        }, {
+            key: 'hitsWithin',
+            value: function hitsWithin(pos) {
                 var boundingSize = this.absoluteSize;
                 var upperLeftPos = this.upperLeftPos(this.absolutePos, boundingSize);
                 if (pointInRect(pos, rectFromPosAndSize(upperLeftPos, boundingSize))) return this;else return null;
@@ -296,13 +301,13 @@ var mag = function (_) {
         _createClass(RoundedRect, [{
             key: 'drawInternal',
             value: function drawInternal(ctx, pos, boundingSize) {
-                ctx.fillStyle = 'black';
+                ctx.fillStyle = this.shadowColor;
                 setStrokeStyle(ctx, this.stroke);
                 if (this.shadowOffset !== 0) {
                     roundRect(ctx, pos.x, pos.y + this.shadowOffset, boundingSize.w, boundingSize.h, this.radius * this.absoluteScale.x, true, this.stroke ? true : false, this.stroke ? this.stroke.opacity : null); // just fill for now
                 }
-                ctx.fillStyle = this.color;
-                roundRect(ctx, pos.x, pos.y, boundingSize.w, boundingSize.h, this.radius * this.absoluteScale.x, true, this.stroke ? true : false, this.stroke ? this.stroke.opacity : null); // just fill for now
+                if (this.color) ctx.fillStyle = this.color;
+                roundRect(ctx, pos.x, pos.y, boundingSize.w, boundingSize.h, this.radius * this.absoluteScale.x, this.color !== null, this.stroke ? true : false, this.stroke ? this.stroke.opacity : null); // just fill for now
             }
         }]);
 

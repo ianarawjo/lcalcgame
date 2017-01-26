@@ -10,7 +10,7 @@ var Logger = (function() {
     const __VERSION_ID = 0.54;
     const __OFFLINE_NAME_PROMPT = false;
     const __RUNNING_LOCALLY = location.hostname === "localhost" || location.hostname === "127.0.0.1";
-    const __LOCAL_LOGGING = __RUNNING_LOCALLY;
+    const __LOCAL_LOGGING = false && __RUNNING_LOCALLY;
     const __LOCAL_LOGGER_PORT = 3333;
     const __GDIAC_BASEURL = 'http://gdiac.cs.cornell.edu/research_games/';
     const __PAGE_LOAD_URL = __GDIAC_BASEURL + 'page_load.php';
@@ -163,7 +163,8 @@ var Logger = (function() {
                 if (!userID) {
                     // Gets generated user ID + stores as cookie in client's browser.
                     userID = json['user_id'];
-                    cond = (Math.random() < 0.5 ? 'A' : 'B');
+                    //cond = (Math.random() < 0.5 ? 'A' : 'B');
+                    cond = 'A'; // fading ON
                     storeCookie('user_id', userID);
                     storeCookie('cond', cond);
                 }

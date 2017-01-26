@@ -36,7 +36,11 @@ var mag = (function(_) {
         clear() {
             this.ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
+        has(node) {
+            return node && node.stage == this && this.nodes.indexOf(node) > -1;
+        }
         add(node) {
+            if (this.has(node)) return;
             node.stage = this;
             if(node.locked) node.unlock();
             this.nodes.push(node);
@@ -115,6 +119,7 @@ var mag = (function(_) {
         bringToFront(node) {
             var i = this.nodes.indexOf(node);
             if (i > -1 && i < this.nodes.length-1) {
+                console.error('fefef');
                 var n = this.nodes[i];
                 this.nodes.splice(i, 1);
                 this.nodes.push(n);
@@ -153,17 +158,14 @@ var mag = (function(_) {
             return rt;
         }
 
-        /** Invalidates a collection of nodes (or all the nodes on this stage)
-            and invalidates this stage, so that it won't draw to canvas anymore. */
-        invalidate(nodes) {
-            if (typeof nodes === 'undefined') nodes = this.nodes;
-            else if (nodes && nodes.length === 0) return;
-            var _this = this;
-            nodes.forEach((n) => {
-                n.ctx = null;
-                _this.invalidate(n.children);
-            });
+        /** Invalidates this stage, so that it won't draw to canvas or receive events. */
+        invalidate() {
             this.invalidated = true;
+            delegateMouse(this._canvas, null);
+        }
+        validate() {
+            this.invalidated = false;
+            delegateMouse(this._canvas, this);
         }
 
         /** Draw this stage to the canvas. */
@@ -188,7 +190,11 @@ var mag = (function(_) {
             this.ctx.save();
             this.ctx.scale(this._scale, this._scale);
             this.clear();
-            this.nodes.forEach((n) => n.draw(this.ctx)); // TODO: You should pass the ctx!!!!!!
+            const len = this.nodes.length;
+            for (let i = 0; i < len; i++) {
+                this.nodes[i].draw(this.ctx);
+            }
+            //this.nodes.forEach((n) => n.draw(this.ctx));
             this.ctx.restore();
         }
 
@@ -374,16 +380,19 @@ var mag = (function(_) {
                 return false;
             };
             canvas.onmousedown = (e) => {
-                if (e.button === RIGHT_BTN) return;
+                if (e.button === RIGHT_BTN) return false;
                 onmousedown( getMousePos(e) );
+                return false;
             };
             canvas.onmousemove = (e) => {
-                if (e.button === RIGHT_BTN) return;
+                if (e.button === RIGHT_BTN) return false;
                 onmousemove( getMousePos(e) );
+                return false;
             };
             canvas.onmouseup   = (e) => {
-                if (e.button === RIGHT_BTN) return;
+                if (e.button === RIGHT_BTN) return false;
                 onmouseup( getMousePos(e) );
+                return false;
             };
 
             var ontouchstart = function(e) {

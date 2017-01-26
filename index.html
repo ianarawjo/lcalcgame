@@ -2,6 +2,8 @@
 <html>
     <head>
         <meta charset="utf-8">
+        <meta HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
+
         <title>A game to teach code comprehension</title>
 
         <!-- Third-party dependencies -->
@@ -39,7 +41,9 @@
         <script src="build/core/stage.js" charset="utf-8"></script>
         <script src="build/misc/bag.js" charset="utf-8"></script>
         <script src="build/misc/arrowpath.js" charset="utf-8"></script>
+        <script src="build/misc/rainbowtrail.js" charset="utf-8"></script>
         <script src="build/expr/expression.js" charset="utf-8"></script>
+        <script src="build/frame/environmentdisplay.js" charset="utf-8"></script>
         <script src="build/expr/value.js" charset="utf-8"></script>
         <script src="build/expr/bool.js" charset="utf-8"></script>
         <script src="build/expr/collection.js" charset="utf-8"></script>
@@ -52,15 +56,18 @@
         <script src="build/expr/number.js" charset="utf-8"></script>
         <script src="build/expr/text.js" charset="utf-8"></script>
         <script src="build/expr/var.js" charset="utf-8"></script>
+        <script src="build/expr/vardisplay.js" charset="utf-8"></script>
+        <script src="build/expr/sequence.js" charset="utf-8"></script>
+        <script src="build/expr/loops.js" charset="utf-8"></script>
         <script src="build/fx/effect.js" charset="utf-8"></script>
         <script src="build/func/func.js" charset="utf-8"></script>
         <script src="build/func/map.js" charset="utf-8"></script>
         <script src="build/func/count.js" charset="utf-8"></script>
-        <script src="build/frame/environmentdisplay.js" charset="utf-8"></script>
         <script src="build/frame/toolbox.js" charset="utf-8"></script>
         <script src="build/frame/loadresources.js" charset="utf-8"></script>
         <script src="build/frame/reductstage.js" charset="utf-8"></script>
         <script src="build/frame/game.js" charset="utf-8"></script>
+        <script src="build/frame/menus.js" charset="utf-8"></script>
         <script src="build/frame/exprmanager.js" charset="utf-8"></script>
         <script src="build/init.js" charset="utf-8"></script>
 
@@ -142,15 +149,15 @@
         </style>
     </head>
 
-    <body onload="init()" bgcolor="lightgray">
+    <body onload="init()" bgcolor="#594764">
 
-        <div id="progressBarContainer" class="centered shadow">
+        <!-- <div id="progressBarContainer" class="centered shadow">
             <div id="progressBar">
             </div>
-        </div>
+        </div> -->
 
         <div id="canvasContainer">
-            <canvas id="canvas" onmousedown="" width="800" height="600" style="background-color:#EEE;"></canvas>
+            <canvas id="canvas" onmousedown="" width="800" height="600" style="background-color:#534764;"></canvas>
             <div id="help" class="textOverlay centered">
                 <h3>Drop the star into the (x).</h3>
             </div>
