@@ -45,17 +45,15 @@ class Level {
         const showEnvironment = Object.keys(this.globals.bindings).length > 0
               || (varNodesOnBoard && varNodesOnBoard.length > 0)
               || (varNodesInToolbox && varNodesInToolbox.length > 0);
-        const envDisplayWidth = 0.20 * canvas_screen.w;
+        const envDisplayWidth = showEnvironment ? 0.20 * canvas_screen.w : 0;
 
         GLOBAL_DEFAULT_SCREENSIZE = stage.boundingSize;
 
-        const usableWidth = canvas_screen.w - envDisplayWidth;
-        const screenOffsetX = usableWidth * (1 - 1/1.4) / 2.0;
         var screen = {
-            height: canvas_screen.h/1.4 - 90,
-            width: showEnvironment ? usableWidth - 2 * screenOffsetX : usableWidth/1.4,
-            y: canvas_screen.h*(1-1/1.4) / 2.0,
-            x: showEnvironment ? screenOffsetX : ((usableWidth*(1-1/1.4)) / 2.0),
+            height:canvas_screen.h/1.4,
+            width:(canvas_screen.w - envDisplayWidth)/1.4,
+            y:canvas_screen.h*(1-1/1.4) / 2.0,
+            x:(canvas_screen.w*(1-1/1.4) / 2.0)
         };
         var board_packing = this.findBestPacking(this.exprs, screen);
         stage.addAll(board_packing); // add expressions to the stage
@@ -193,6 +191,8 @@ class Level {
         stage.expressionNodes().forEach((n) => {
             n.scale = { x:0.5, y:0.5 };
             n.anchor = { x:0.5, y:0.5 };
+            // Adjust positions to account for the new anchor
+            n.pos = { x: n.pos.x + 0.5 * n.size.w, y: n.pos.y + 0.5 * n.size.h };
             Animate.tween(n, { scale:{x:1,y:1} }, 500, (elapsed) => Math.pow(elapsed, 0.3));
         });
         stage.goalNodes.forEach((n) => {
