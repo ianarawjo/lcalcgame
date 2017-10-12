@@ -51,27 +51,20 @@ function LOAD_REDUCT_GAMEAUDIO(Resource) {
 
 function LOAD_REDUCT_RESOURCES(Resource) {
     var __RESOURCE_PATH = Resource.path;
-    var __LEVELS_PATH = __RESOURCE_PATH + 'levels/';
+    var __LEVELS_PATH = __RESOURCE_PATH + 'levels-hourofcode/';
 
     // Add levels here:
-    // const chapterDigraph = {
-    //     'intro': ['booleans'],
-    //     'booleans': ['strings'],
-    //     'strings': ['variables'],
-    //     'variables': ['typing_variables'],
-    //     'typing_variables': []
-    // };
     var chapterDigraph = {
         'intro': ['booleans'],
         'booleans': ['conditionals'],
         'conditionals': ['bindings'],
-        'bindings': ['map'],
-        'map': ['strings'],
-        'strings': ['confusing_strings'],
-        'confusing_strings': []
-        // 'map': ['variables'],
-        // 'variables': ['typing_variables'],
-        // 'typing_variables': []
+        'bindings': ['bags'],
+        'bags': ['combination'],
+        'combination': ['map'],
+        'map': ['variables'],
+        'variables': ['sequence'],
+        'sequence': ['typing_variables'],
+        'typing_variables': []
     };
 
     var loadAudio = Resource.loadAudio;
