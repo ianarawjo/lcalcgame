@@ -314,6 +314,53 @@ class Expression extends mag.RoundedRect {
             e.animatePlaceholderStatus();
     }
 
+    hasTextbox(n) {
+        if (n && n.hasPlaceholderChildren()) {
+            const placeholders = n.getPlaceholderChildren();
+            for (const placeholder of placeholders) {
+                // If the placeholder is filled and valid, lock it
+                if (placeholder instanceof TypeInTextExpr || placeholder instanceof TypeInStringValueExpr) {
+                    if (placeholder.canReduce() && (!placeholder.typeBox || !placeholder.typeBox.hasIcon())) {
+                        continue;
+                    }
+                    else {
+                        return true;
+                    }
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+        return false;
+    }
+
+    // Disallow dropping if lambda body has missing expression.
+    hasPlaceholder(n) {
+        if (n && n.hasPlaceholderChildren()) {
+            const placeholders = n.getPlaceholderChildren();
+            outer:
+            for (const placeholder of placeholders) {
+                if (placeholder instanceof MissingExpression) {
+                    // Check that it's not a child of a VarExpr
+                    // (which would imply that it's a preview, not
+                    // actually part of the lambda)
+                    let current = placeholder;
+                    while (current) {
+                        if (current instanceof LambdaVarExpr ||
+                            current instanceof VarExpr ||
+                            current instanceof VtableVarExpr) {
+                            continue outer;
+                        }
+                        current = current.parent;
+                    }
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     // Play an animation to remind the user that this is currently reducing.
     animateReducingStatus() {
         this._reducingTime = 0;

@@ -389,6 +389,94 @@ var Expression = function (_mag$RoundedRect) {
                 }
             }
         }
+    }, {
+        key: 'hasTextbox',
+        value: function hasTextbox(n) {
+            if (n && n.hasPlaceholderChildren()) {
+                var placeholders = n.getPlaceholderChildren();
+                var _iteratorNormalCompletion3 = true;
+                var _didIteratorError3 = false;
+                var _iteratorError3 = undefined;
+
+                try {
+                    for (var _iterator3 = placeholders[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+                        var placeholder = _step3.value;
+
+                        // If the placeholder is filled and valid, lock it
+                        if (placeholder instanceof TypeInTextExpr || placeholder instanceof TypeInStringValueExpr) {
+                            if (placeholder.canReduce() && (!placeholder.typeBox || !placeholder.typeBox.hasIcon())) {
+                                continue;
+                            } else {
+                                return true;
+                            }
+                        } else {
+                            return false;
+                        }
+                    }
+                } catch (err) {
+                    _didIteratorError3 = true;
+                    _iteratorError3 = err;
+                } finally {
+                    try {
+                        if (!_iteratorNormalCompletion3 && _iterator3.return) {
+                            _iterator3.return();
+                        }
+                    } finally {
+                        if (_didIteratorError3) {
+                            throw _iteratorError3;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        // Disallow dropping if lambda body has missing expression.
+
+    }, {
+        key: 'hasPlaceholder',
+        value: function hasPlaceholder(n) {
+            if (n && n.hasPlaceholderChildren()) {
+                var placeholders = n.getPlaceholderChildren();
+                var _iteratorNormalCompletion4 = true;
+                var _didIteratorError4 = false;
+                var _iteratorError4 = undefined;
+
+                try {
+                    outer: for (var _iterator4 = placeholders[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+                        var placeholder = _step4.value;
+
+                        if (placeholder instanceof MissingExpression) {
+                            // Check that it's not a child of a VarExpr
+                            // (which would imply that it's a preview, not
+                            // actually part of the lambda)
+                            var current = placeholder;
+                            while (current) {
+                                if (current instanceof LambdaVarExpr || current instanceof VarExpr || current instanceof VtableVarExpr) {
+                                    continue outer;
+                                }
+                                current = current.parent;
+                            }
+                            return true;
+                        }
+                    }
+                } catch (err) {
+                    _didIteratorError4 = true;
+                    _iteratorError4 = err;
+                } finally {
+                    try {
+                        if (!_iteratorNormalCompletion4 && _iterator4.return) {
+                            _iterator4.return();
+                        }
+                    } finally {
+                        if (_didIteratorError4) {
+                            throw _iteratorError4;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
 
         // Play an animation to remind the user that this is currently reducing.
 

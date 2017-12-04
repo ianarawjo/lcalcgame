@@ -286,64 +286,36 @@ class LambdaHoleExpr extends MissingExpression {
 
         // Disallow dropping if lambda body has incomplete textbox.
         const lambdaExpr = this.parent;
-        const hasTextbox = (n) => {
-            if (n && n.hasPlaceholderChildren()) {
-                const placeholders = n.getPlaceholderChildren();
-                for (const placeholder of placeholders) {
-                    // If the placeholder is filled and valid, lock it
-                    if (placeholder instanceof TypeInTextExpr || placeholder instanceof TypeInStringValueExpr) {
-                        if (placeholder.canReduce() && (!placeholder.typeBox || !placeholder.typeBox.hasIcon())) {
-                            continue;
-                        }
-                        else {
-                            // Blink the relevant placeholders.
-                            n.animatePlaceholderChildren();
-                            this.ondropexit(node, pos);
-                            console.log(n);
-                            return true;
-                        }
-                    }
-                    else {
-                        return false;
-                    }
-                }
-            }
-            return false;
-        };
+
         // Disallow dropping if lambda body has missing expression.
-        const hasPlaceholder = (n) => {
-            if (n && n.hasPlaceholderChildren()) {
-                const placeholders = n.getPlaceholderChildren();
-                outer:
-                for (const placeholder of placeholders) {
-                    if (placeholder instanceof MissingExpression) {
-                        // Check that it's not a child of a VarExpr
-                        // (which would imply that it's a preview, not
-                        // actually part of the lambda)
-                        let current = placeholder;
-                        while (current) {
-                            if (current instanceof LambdaVarExpr ||
-                                current instanceof VarExpr ||
-                                current instanceof VtableVarExpr) {
-                                continue outer;
-                            }
-                            current = current.parent;
-                        }
-                        n.animatePlaceholderChildren();
-                        this.ondropexit(node, pos);
-                        return true;
-                    }
-                }
-            }
-            return false;
-        };
 
         if (__ALLOW_PARTIAL_REPLICATION === true) {
-            if (hasTextbox(node) || hasTextbox(lambdaExpr) || hasPlaceholder(lambdaExpr))
+            if (node.hasTextbox()) {
+                node.animatePlaceholderChildren();
+                this.ondropexit(node, pos);
                 return null;
+            }
+            if (lambdaExpr.hasTextbox()) {
+                lambdaExpr.animatePlaceholderChildren();
+                this.ondropexit(node, pos);
+                return null;
+            }
+            if (lambdaExpr.hasPlaceholder()) {
+                lambdaExpr.animatePlaceholderChildren();
+                this.ondropexit(node, pos);
+                return null;
+            }
         } else {
-            if (hasTextbox(node) || hasPlaceholder(node))  return null;
-            if (hasTextbox(lambdaExpr) || hasPlaceholder(lambdaExpr))  return null;
+            if (hasTextbox(node) || hasPlaceholder(node)) {
+                node.animatePlaceholderChildren();
+                this.ondropexit(node, pos);
+                return null;
+            }
+            if (hasTextbox(lambdaExpr) || hasPlaceholder(lambdaExpr)) {
+                lambdaExpr.animatePlaceholderChildren();
+                this.ondropexit(node, pos);
+                return null;
+            }
         }
 
         if (node.dragging) { // Make sure node is being dragged by the user.

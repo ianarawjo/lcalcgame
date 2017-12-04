@@ -35,7 +35,15 @@
             "board":["4 >>> 4", "3 >>> 3"],
             "goal":["true", "6"],
             "toolbox":"",
-            "typing_hints": ["==", "+"],
+            "typing_hints": [
+                {
+                    "hint": "==",
+                    "syntax_unlock": "=="
+                }, {
+                    "hint": "+",
+                    "syntax_unlock": "+"
+                }
+            ],
             "block_variant": {
                 "board": ["4 >> 4", "3 >> 3"],
                 "toolbox": ["_op('+')", "_op('==')"]

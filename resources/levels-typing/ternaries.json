@@ -129,11 +129,11 @@
         },
         {
             "board":["give(3, _)", "_t_single"],
-            "goal":["'RNA'", "'DNA'", "'RNA'"],
+            "goal":["'rna'", "'dna'", "'rna'"],
             "toolbox":["'U'", "'T'", "'U'"],
             "block_variant": {
                 "board": ["give(3, _)"],
-                "toolbox":["'T'", "'U'", "'T'", "'U'", "'RNA'", "'DNA'",
+                "toolbox":["'t'", "'u'", "'t'", "'u'", "'rna'", "'dna'",
                            "(n) => _", "(a) => _", "n", "a", "_ ? _ : _", "_ == _", "_ + _"]
             }
         }

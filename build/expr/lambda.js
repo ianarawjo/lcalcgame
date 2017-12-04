@@ -358,100 +358,36 @@ var LambdaHoleExpr = function (_MissingExpression) {
 
             // Disallow dropping if lambda body has incomplete textbox.
             var lambdaExpr = this.parent;
-            var hasTextbox = function hasTextbox(n) {
-                if (n && n.hasPlaceholderChildren()) {
-                    var placeholders = n.getPlaceholderChildren();
-                    var _iteratorNormalCompletion2 = true;
-                    var _didIteratorError2 = false;
-                    var _iteratorError2 = undefined;
 
-                    try {
-                        for (var _iterator2 = placeholders[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-                            var placeholder = _step2.value;
-
-                            // If the placeholder is filled and valid, lock it
-                            if (placeholder instanceof TypeInTextExpr || placeholder instanceof TypeInStringValueExpr) {
-                                if (placeholder.canReduce() && (!placeholder.typeBox || !placeholder.typeBox.hasIcon())) {
-                                    continue;
-                                } else {
-                                    // Blink the relevant placeholders.
-                                    n.animatePlaceholderChildren();
-                                    _this7.ondropexit(node, pos);
-                                    console.log(n);
-                                    return true;
-                                }
-                            } else {
-                                return false;
-                            }
-                        }
-                    } catch (err) {
-                        _didIteratorError2 = true;
-                        _iteratorError2 = err;
-                    } finally {
-                        try {
-                            if (!_iteratorNormalCompletion2 && _iterator2.return) {
-                                _iterator2.return();
-                            }
-                        } finally {
-                            if (_didIteratorError2) {
-                                throw _iteratorError2;
-                            }
-                        }
-                    }
-                }
-                return false;
-            };
             // Disallow dropping if lambda body has missing expression.
-            var hasPlaceholder = function hasPlaceholder(n) {
-                if (n && n.hasPlaceholderChildren()) {
-                    var placeholders = n.getPlaceholderChildren();
-                    var _iteratorNormalCompletion3 = true;
-                    var _didIteratorError3 = false;
-                    var _iteratorError3 = undefined;
-
-                    try {
-                        outer: for (var _iterator3 = placeholders[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-                            var placeholder = _step3.value;
-
-                            if (placeholder instanceof MissingExpression) {
-                                // Check that it's not a child of a VarExpr
-                                // (which would imply that it's a preview, not
-                                // actually part of the lambda)
-                                var current = placeholder;
-                                while (current) {
-                                    if (current instanceof LambdaVarExpr || current instanceof VarExpr || current instanceof VtableVarExpr) {
-                                        continue outer;
-                                    }
-                                    current = current.parent;
-                                }
-                                n.animatePlaceholderChildren();
-                                _this7.ondropexit(node, pos);
-                                return true;
-                            }
-                        }
-                    } catch (err) {
-                        _didIteratorError3 = true;
-                        _iteratorError3 = err;
-                    } finally {
-                        try {
-                            if (!_iteratorNormalCompletion3 && _iterator3.return) {
-                                _iterator3.return();
-                            }
-                        } finally {
-                            if (_didIteratorError3) {
-                                throw _iteratorError3;
-                            }
-                        }
-                    }
-                }
-                return false;
-            };
 
             if (__ALLOW_PARTIAL_REPLICATION === true) {
-                if (hasTextbox(node) || hasTextbox(lambdaExpr) || hasPlaceholder(lambdaExpr)) return null;
+                if (node.hasTextbox()) {
+                    node.animatePlaceholderChildren();
+                    this.ondropexit(node, pos);
+                    return null;
+                }
+                if (lambdaExpr.hasTextbox()) {
+                    lambdaExpr.animatePlaceholderChildren();
+                    this.ondropexit(node, pos);
+                    return null;
+                }
+                if (lambdaExpr.hasPlaceholder()) {
+                    lambdaExpr.animatePlaceholderChildren();
+                    this.ondropexit(node, pos);
+                    return null;
+                }
             } else {
-                if (hasTextbox(node) || hasPlaceholder(node)) return null;
-                if (hasTextbox(lambdaExpr) || hasPlaceholder(lambdaExpr)) return null;
+                if (hasTextbox(node) || hasPlaceholder(node)) {
+                    node.animatePlaceholderChildren();
+                    this.ondropexit(node, pos);
+                    return null;
+                }
+                if (hasTextbox(lambdaExpr) || hasPlaceholder(lambdaExpr)) {
+                    lambdaExpr.animatePlaceholderChildren();
+                    this.ondropexit(node, pos);
+                    return null;
+                }
             }
 
             if (node.dragging) {
@@ -1052,38 +988,38 @@ var LambdaExpr = function (_Expression) {
             // Perform substitution, but stop at the 'boundary' of another lambda.
             var varExprs = findNoncapturingVarExpr(this, null, true, true);
             var environment = this.getEnvironment();
-            var _iteratorNormalCompletion4 = true;
-            var _didIteratorError4 = false;
-            var _iteratorError4 = undefined;
+            var _iteratorNormalCompletion2 = true;
+            var _didIteratorError2 = false;
+            var _iteratorError2 = undefined;
 
             try {
-                for (var _iterator4 = varExprs[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-                    var expr = _step4.value;
+                for (var _iterator2 = varExprs[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                    var expr = _step2.value;
 
                     expr.performReduction(animated);
                 }
             } catch (err) {
-                _didIteratorError4 = true;
-                _iteratorError4 = err;
+                _didIteratorError2 = true;
+                _iteratorError2 = err;
             } finally {
                 try {
-                    if (!_iteratorNormalCompletion4 && _iterator4.return) {
-                        _iterator4.return();
+                    if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                        _iterator2.return();
                     }
                 } finally {
-                    if (_didIteratorError4) {
-                        throw _iteratorError4;
+                    if (_didIteratorError2) {
+                        throw _iteratorError2;
                     }
                 }
             }
 
-            var _iteratorNormalCompletion5 = true;
-            var _didIteratorError5 = false;
-            var _iteratorError5 = undefined;
+            var _iteratorNormalCompletion3 = true;
+            var _didIteratorError3 = false;
+            var _iteratorError3 = undefined;
 
             try {
-                for (var _iterator5 = this.holes[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-                    var child = _step5.value;
+                for (var _iterator3 = this.holes[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+                    var child = _step3.value;
 
                     if (child instanceof LambdaExpr) {
                         // TODO: need to recurse down into children, but not children of lambdas
@@ -1091,16 +1027,16 @@ var LambdaExpr = function (_Expression) {
                     }
                 }
             } catch (err) {
-                _didIteratorError5 = true;
-                _iteratorError5 = err;
+                _didIteratorError3 = true;
+                _iteratorError3 = err;
             } finally {
                 try {
-                    if (!_iteratorNormalCompletion5 && _iterator5.return) {
-                        _iterator5.return();
+                    if (!_iteratorNormalCompletion3 && _iterator3.return) {
+                        _iterator3.return();
                     }
                 } finally {
-                    if (_didIteratorError5) {
-                        throw _iteratorError5;
+                    if (_didIteratorError3) {
+                        throw _iteratorError3;
                     }
                 }
             }
@@ -1377,13 +1313,13 @@ var EnvironmentLambdaExpr = function (_LambdaExpr) {
                 var varExprs = findNoncapturingVarExpr(_this16, null, true, true);
                 var environment = _this16.getEnvironment();
 
-                var _iteratorNormalCompletion6 = true;
-                var _didIteratorError6 = false;
-                var _iteratorError6 = undefined;
+                var _iteratorNormalCompletion4 = true;
+                var _didIteratorError4 = false;
+                var _iteratorError4 = undefined;
 
                 try {
-                    for (var _iterator6 = varExprs[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
-                        var v = _step6.value;
+                    for (var _iterator4 = varExprs[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+                        var v = _step4.value;
 
                         if (!v.canReduce()) {
                             // Play the animation
@@ -1393,16 +1329,16 @@ var EnvironmentLambdaExpr = function (_LambdaExpr) {
                         }
                     }
                 } catch (err) {
-                    _didIteratorError6 = true;
-                    _iteratorError6 = err;
+                    _didIteratorError4 = true;
+                    _iteratorError4 = err;
                 } finally {
                     try {
-                        if (!_iteratorNormalCompletion6 && _iterator6.return) {
-                            _iterator6.return();
+                        if (!_iteratorNormalCompletion4 && _iterator4.return) {
+                            _iterator4.return();
                         }
                     } finally {
-                        if (_didIteratorError6) {
-                            throw _iteratorError6;
+                        if (_didIteratorError4) {
+                            throw _iteratorError4;
                         }
                     }
                 }
