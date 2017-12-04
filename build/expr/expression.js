@@ -391,7 +391,8 @@ var Expression = function (_mag$RoundedRect) {
         }
     }, {
         key: 'hasTextbox',
-        value: function hasTextbox(n) {
+        value: function hasTextbox() {
+            var n = this;
             if (n && n.hasPlaceholderChildren()) {
                 var placeholders = n.getPlaceholderChildren();
                 var _iteratorNormalCompletion3 = true;
@@ -435,7 +436,8 @@ var Expression = function (_mag$RoundedRect) {
 
     }, {
         key: 'hasPlaceholder',
-        value: function hasPlaceholder(n) {
+        value: function hasPlaceholder() {
+            var n = this;
             if (n && n.hasPlaceholderChildren()) {
                 var placeholders = n.getPlaceholderChildren();
                 var _iteratorNormalCompletion4 = true;

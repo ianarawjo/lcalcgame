@@ -314,7 +314,8 @@ class Expression extends mag.RoundedRect {
             e.animatePlaceholderStatus();
     }
 
-    hasTextbox(n) {
+    hasTextbox() {
+        const n = this;
         if (n && n.hasPlaceholderChildren()) {
             const placeholders = n.getPlaceholderChildren();
             for (const placeholder of placeholders) {
@@ -336,7 +337,8 @@ class Expression extends mag.RoundedRect {
     }
 
     // Disallow dropping if lambda body has missing expression.
-    hasPlaceholder(n) {
+    hasPlaceholder() {
+        const n = this;
         if (n && n.hasPlaceholderChildren()) {
             const placeholders = n.getPlaceholderChildren();
             outer:

@@ -37,7 +37,7 @@ var GiveExpr = function (_Expression) {
     _createClass(GiveExpr, [{
         key: 'canReduce',
         value: function canReduce() {
-            return this.amountToGive > -1 && !this.exprToReplicate.isPlaceholder();
+            return this.amountToGive > -1 && !this.exprToReplicate.isPlaceholder() && !(this.hasTextbox() || this.hasPlaceholder());
         }
     }, {
         key: 'reduce',
@@ -65,6 +65,12 @@ var GiveExpr = function (_Expression) {
 
             var animated = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
             var logChangeData = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+
+
+            if (this.hasTextbox() || this.hasPlaceholder()) {
+                this.animatePlaceholderChildren();
+                Promise.reject("Has placeholder");
+            }
 
             var reduced_exprs = this.reduce();
             if (reduced_exprs != this) {

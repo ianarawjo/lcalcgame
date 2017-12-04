@@ -38,7 +38,7 @@ class GiveExpr extends Expression {
         }
     }
     canReduce() {
-        return this.amountToGive > -1 && !this.exprToReplicate.isPlaceholder();
+        return this.amountToGive > -1 && !this.exprToReplicate.isPlaceholder() && !(this.hasTextbox() || this.hasPlaceholder());
     }
     reduce() {
         if (!this.canReduce()) return this;
@@ -57,6 +57,12 @@ class GiveExpr extends Expression {
         this.performUserReduction();
     }
     performReduction(animated=true, logChangeData=null) {
+
+        if (this.hasTextbox() || this.hasPlaceholder()) {
+            this.animatePlaceholderChildren();
+            Promise.reject("Has placeholder");
+        }
+
         const reduced_exprs = this.reduce();
         if (reduced_exprs != this) {
 
