@@ -34,6 +34,7 @@
             "goal":["true", "true"],
             "toolbox":"",
             "typing_hints": ["\"cold\""],
+            "typing_solution": ["\"cold\"", "\"hot\""],
             "block_variant": {
                 "board": ["_ == 'cold'", "_ == 'hot'"],
                 "toolbox": ["'cold'", "'warm'", "'hot'"],
@@ -43,6 +44,7 @@
         {
             "board":["_t_single == 'river'", "_t_single == _t_single"],
             "goal":["true", "true"],
+            "typing_solution": ["\"river\"", "\"a\"", "\"a\""],
             "toolbox":"",
             "block_variant": {
                 "board": ["_ == 'river'", "_ == _"],
@@ -53,6 +55,7 @@
         {
             "board":["_b ? _t_single : _t_single", "_b ? _t_single : _t_single"],
             "goal":["'rainbow'", "'sparkles'"],
+            "typing_solution": ["\"rainbow\"", "\"fox\"", "\"sparkles\"", "\"linx\""],
             "toolbox":["true", "false"],
             "block_variant": {
                 "board": ["_b ? _ : _", "_b ? _ : _"],
@@ -62,6 +65,7 @@
         {
             "board":["give(3, _)", "_t_single"],
             "typing_hints": ["(b) => b ? \"yes\" : \"no\""],
+            "typing_solution": ["(b) => b ? \"yes\" : \"no\""],
             "goal":["'no'", "'no'", "'yes'"],
             "toolbox":["true", "false", "true", "false"],
             "block_variant": {
@@ -74,6 +78,7 @@
             "board":["give(3, _)", "(b) => b ? _t_single : _t_single"],
             "goal":["'totally'", "'never'", "'never'"],
             "toolbox":["true", "false", "true", "false"],
+            "typing_solution": ["\"totally\"", "\"never\""],
             "block_variant": {
                 "board": ["give(3, _)", "(b) => b ? _ : _"],
                 "toolbox": ["'never'", "'totally'", "b", "true", "false", "true", "false"]
@@ -83,6 +88,7 @@
             "board":["give(3, _)", "(x) => _t_single"],
             "goal":["'allow'", "'allow'", "'reject'"],
             "toolbox":["true", "false", "true", "false"],
+            "typing_solution": ["x ? \"allow\" : \"reject\""],
             "block_variant": {
                 "board":["give(3, _)", "(x) => _"],
                 "toolbox":["true", "false", "true", "false", "_ ? _ : _", "'allow'", "'reject'", "x"]
@@ -92,6 +98,7 @@
             "board":["give(2, _)", "(b) => _t_single"],
             "goal":["1", "0"],
             "toolbox":["true", "false"],
+            "typing_solution": ["b ? 1 : 0"],
             "block_variant": {
                 "board":["give(2, _)", "(b) => _"],
                 "toolbox":["true", "false", "2", "1", "0", "_ ? _ : _", "b", "_ == _"]
@@ -100,6 +107,7 @@
         {
             "board":["give(2, _)", "(n) => _t_single ? 'allow' : 'reject'"],
             "typing_hints": ["n == 1"],
+            "typing_solution": ["n == 1"],
             "goal":["'allow'", "'reject'"],
             "toolbox":["1", "0"],
             "block_variant": {
@@ -111,6 +119,7 @@
         {
             "board":["give(2, _)", "(n) => _t_single"],
             "goal":["'two'", "'four'"],
+            "typing_solution": ["n == 2 ? \"two\" : \"four\""],
             "toolbox":["2", "4"],
             "block_variant": {
                 "board":["give(2, _)", "(n) => _"],
@@ -120,6 +129,7 @@
         {
             "board":["give(3, _)", "_t_single"],
             "goal":["'zero'", "'one'", "'one'"],
+            "typing_solution": ["n == 0 ? \"zero\" : \"one\""],
             "toolbox":["0", "1", "1"],
             "block_variant": {
                 "board":["give(3, _)"],
@@ -130,7 +140,8 @@
         {
             "board":["give(3, _)", "_t_single"],
             "goal":["'rna'", "'dna'", "'rna'"],
-            "toolbox":["'U'", "'T'", "'U'"],
+            "toolbox":["'u'", "'t'", "'u'"],
+            "typing_solution": ["n == \"u\" ? \"rna\" : \"dna\""],
             "block_variant": {
                 "board": ["give(3, _)"],
                 "toolbox":["'t'", "'u'", "'t'", "'u'", "'rna'", "'dna'",

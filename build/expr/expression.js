@@ -389,6 +389,44 @@ var Expression = function (_mag$RoundedRect) {
                 }
             }
         }
+
+        /* Key event delegation */
+
+    }, {
+        key: 'focus',
+        value: function focus() {
+            if (!this.stage) return;
+            if (this.baseStroke) this.baseStroke.opacity = 1.0;
+            this.stage.keyEventDelegate = this;
+            console.log('Focused', this.baseStroke);
+            this.stage.draw();
+        }
+    }, {
+        key: 'blur',
+        value: function blur() {
+            if (!this.stage) return;
+            if (this.baseStroke) this.baseStroke.opacity = 0.5;
+            console.log('Blurred', this.baseStroke);
+            this.stage.keyEventDelegate = null;
+            this.stage.draw();
+        }
+    }, {
+        key: 'carriageReturn',
+        value: function carriageReturn() {
+            var stage = this.stage;
+            this.blur();
+            stage.keyEventDelegate = null;
+            this.performUserReduction();
+            stage.focusFirstKeyDelegate();
+            // if (this._reducing && 'then' in this._reducing) {
+            //     this._reducing.then(() => {
+            //         stage.focusFirstKeyDelegate();
+            //     });
+            // }
+        }
+    }, {
+        key: 'type',
+        value: function type(c) {}
     }, {
         key: 'hasTextbox',
         value: function hasTextbox() {
@@ -777,6 +815,15 @@ var Expression = function (_mag$RoundedRect) {
             });
         }
     }, {
+        key: 'isRootReducable',
+        value: function isRootReducable() {
+            var placeholderChildren = this.getPlaceholderChildren().filter(function (n) {
+                return !(n instanceof VarExpr || n instanceof TypeInTextExpr);
+            });
+            var placeholders = placeholderChildren && placeholderChildren.length > 0;
+            return !placeholders && !this._reducing && this.canReduce && this.canReduce() && (!this.parent || this.forceReducibilityIndicator);
+        }
+    }, {
         key: 'updateReducibilityIndicator',
         value: function updateReducibilityIndicator() {
             // Replace TypeInTextExpr#canReduce to prevent auto-commit and
@@ -808,11 +855,7 @@ var Expression = function (_mag$RoundedRect) {
             });
 
             // Apply green outline to reducable expressions:
-            var placeholderChildren = this.getPlaceholderChildren().filter(function (n) {
-                return !(n instanceof VarExpr || n instanceof TypeInTextExpr);
-            });
-            var placeholders = placeholderChildren && placeholderChildren.length > 0;
-            if (!placeholders && this.canReduce && this.canReduce() && (!this.parent || this.forceReducibilityIndicator)) {
+            if (this.isRootReducable()) {
                 this.baseStroke = { color: this.reducableStrokeColor ? this.reducableStrokeColor : "#00FF7F",
                     lineWidth: 4,
                     opacity: 0.5 };

@@ -48,17 +48,9 @@ function constructGanttChart(table, chapters) {
             'color': rgb(255, 182, 193),
             'matches': ['==', '!=']
         },
-        'Conditional': {
-            'color': rgb(0, 206, 209),
-            'matches': ['if', 'ifelse', /([^?]*)\?([^:]*):([^;]*)/] // matches the ternary op, thanks https://stackoverflow.com/a/26739863
-        },
-        'Map': {
+        'Give': {
             'color': rgb(120, 200, 120),
-            'matches': ['map']
-        },
-        'Typing Str.': {
-            'color': rgb(255, 239, 0),
-            'matches': ['_t_string', '_t_fullstring']
+            'matches': ['give']
         },
         'Typing Verb.': {
             'color': rgb(255, 228, 181),
@@ -76,6 +68,24 @@ function constructGanttChart(table, chapters) {
                     );
                 });
             }
+        },
+        'Typing Str.': {
+            'color': rgb(255, 239, 0),
+            'matches': ['_t_string', '_t_fullstring'],
+            'matcher': function matcher(lvl, exprs) {
+                return 'typing_solution' in lvl && lvl['typing_solution'].some(function (e) {
+                    return (/.*('.*'|".*").*/.test(e)
+                    );
+                });
+            }
+        },
+        'Conditional': {
+            'color': rgb(0, 206, 209),
+            'matches': ['if', 'ifelse', /([^?]*)\?([^:]*):([^;]*)/] // matches the ternary op, thanks https://stackoverflow.com/a/26739863
+        },
+        'Map': {
+            'color': rgb(120, 200, 120),
+            'matches': ['map']
         },
         'L. Operators': {
             'color': rgb(255, 182, 213),
@@ -147,7 +157,7 @@ function constructGanttChart(table, chapters) {
                 if (match instanceof RegExp) {
                     // Concepts can be expressed as regex patterns.
                     if (match.test(e)) return true;
-                } else if (e.indexOf(match) > -1) {
+                } else if ((typeof e === 'undefined' ? 'undefined' : _typeof(e)) === 'object') {} else if (e.indexOf(match) > -1) {
                     // We have a match.
                     return true;
                 }
@@ -245,7 +255,7 @@ function constructGanttChart(table, chapters) {
         if (contains !== false) {
             var color = concept.color;
 
-            if (conceptName.indexOf('Typing') === -1) {
+            if (false && conceptName.indexOf('Typing') === -1) {
                 if (contains === 'typed-verbatim') // Make typed expressions appear darker in the chart.
                     color = mixColors(color, rgb(100, 0, 255), 0.25);else if (contains === 'typed-free') // Make typed-free expressions appear even darker in the chart.
                     color = mixColors(color, rgb(0, 0, 255), 0.5);
@@ -348,7 +358,7 @@ function constructGanttChart(table, chapters) {
             $(div).css('margin', '0px');
             $(div).css('padding', '0px');
         } else if ('width' in cell_desc) $(div).css('width', cell_desc.width);else $(div).css('width', '100px');
-        $(div).css('padding', '4px');
+        $(div).css('padding', '5px');
         $(DOMcell).append(div);
         if ('border' in cell_desc) {
             if (cell_desc.border === 'left') {

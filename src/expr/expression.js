@@ -314,6 +314,39 @@ class Expression extends mag.RoundedRect {
             e.animatePlaceholderStatus();
     }
 
+    /* Key event delegation */
+    focus() {
+        if (!this.stage) return;
+        if (this.baseStroke)
+            this.baseStroke.opacity = 1.0;
+        this.stage.keyEventDelegate = this;
+        console.log('Focused', this.baseStroke);
+        this.stage.draw();
+    }
+    blur() {
+        if (!this.stage) return;
+        if (this.baseStroke)
+            this.baseStroke.opacity = 0.5;
+        console.log('Blurred', this.baseStroke);
+        this.stage.keyEventDelegate = null;
+        this.stage.draw();
+    }
+    carriageReturn() {
+        const stage = this.stage;
+        this.blur();
+        stage.keyEventDelegate = null;
+        this.performUserReduction();
+        stage.focusFirstKeyDelegate();
+        // if (this._reducing && 'then' in this._reducing) {
+        //     this._reducing.then(() => {
+        //         stage.focusFirstKeyDelegate();
+        //     });
+        // }
+    }
+    type(c) {
+
+    }
+
     hasTextbox() {
         const n = this;
         if (n && n.hasPlaceholderChildren()) {
@@ -426,10 +459,10 @@ class Expression extends mag.RoundedRect {
             this._reducing = this.performReduction(true);
             this._reducing.then(() => {
                 this._reducing = false;
-		if (stage) stage.saveState();
+        		if (stage) stage.saveState();
             }, () => {
                 this._reducing = false;
-		if (stage) stage.saveState();
+        		if (stage) stage.saveState();
             });
         }
         return this._reducing;
@@ -621,6 +654,13 @@ class Expression extends mag.RoundedRect {
         });
     }
 
+    isRootReducable() {
+        const placeholderChildren = this.getPlaceholderChildren().filter(
+            (n) => !(n instanceof VarExpr || n instanceof TypeInTextExpr));
+        const placeholders = placeholderChildren && placeholderChildren.length > 0;
+        return !placeholders && !this._reducing && this.canReduce && this.canReduce() &&
+            (!this.parent || this.forceReducibilityIndicator);
+    }
     updateReducibilityIndicator() {
         // Replace TypeInTextExpr#canReduce to prevent auto-commit and
         // logging calls
@@ -651,11 +691,7 @@ class Expression extends mag.RoundedRect {
         });
 
         // Apply green outline to reducable expressions:
-        const placeholderChildren = this.getPlaceholderChildren().filter(
-            (n) => !(n instanceof VarExpr || n instanceof TypeInTextExpr));
-        const placeholders = placeholderChildren && placeholderChildren.length > 0;
-        if (!placeholders && this.canReduce && this.canReduce() &&
-            (!this.parent || this.forceReducibilityIndicator)) {
+        if (this.isRootReducable()) {
             this.baseStroke = { color: this.reducableStrokeColor ? this.reducableStrokeColor : "#00FF7F",
                                 lineWidth: 4,
                                 opacity: 0.5 };

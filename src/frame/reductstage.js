@@ -5,7 +5,7 @@ const UI_PADDING = __IS_MOBILE ? 2.5 : 10;
 class ReductStage extends mag.Stage {
     constructor(canvas=null) {
         super(canvas);
-        this.color = '#eee';
+        this.color = '#fff'; // should be eee, change to fff if taking photos of expressions
         this.stateGraph = new mag.Network();
         this.environment = new Environment();
         this.functions = {};
@@ -14,7 +14,7 @@ class ReductStage extends mag.Stage {
     }
 
     buildSyntaxJournalUI() {
-        
+
         const CORNER_PAD = 12;
         let journal = new SyntaxJournal();
         let journal_btn = new SyntaxJournalButton(journal);
@@ -465,10 +465,20 @@ class ReductStage extends mag.Stage {
         };
         return this.getNodesWithClass(TypeBox).sort(topDownSort);
     }
+    getReduceableExprs() {
+        let es = this.expressionNodes().filter(
+            (e) => ('isRootReducable' in e && e.isRootReducable() === true));
+        return es;
+    }
     focusFirstTypeBox() {
-        const available_delegates = this.getTypeBoxes();
-        if (available_delegates.length > 0)
+        this.focusFirstKeyDelegate();
+    }
+    focusFirstKeyDelegate() {
+        const available_delegates = this.getTypeBoxes().concat(this.getReduceableExprs());
+        if (available_delegates.length > 0) {
             available_delegates[0].focus();
+            this.keyEventDelegate = available_delegates[0];
+        }
     }
     onkeypress(event) {
 
@@ -492,12 +502,14 @@ class ReductStage extends mag.Stage {
             }
             else if (event.keyCode === 9) { // Tab.
                 // Cycle to next possible keyEventDelegate...
-                let available_delegates = this.getTypeBoxes();
+                let available_delegates = this.getTypeBoxes().concat(this.getReduceableExprs());
                 let cur_delegate = this.keyEventDelegate;
                 this.keyEventDelegate.blur();
                 let idx_delegate = available_delegates.indexOf(cur_delegate);
                 if (idx_delegate > -1) {
                     let next_delegate = available_delegates[ (idx_delegate + 1) % available_delegates.length ];
+                    this.keyEventDelegate = next_delegate;
+                    console.log('focusing delegate', idx_delegate);
                     next_delegate.focus();
                 } else {
                     console.error('@ onkeypress: That\'s odd -- key event delegate is not inside stage...');
@@ -508,7 +520,7 @@ class ReductStage extends mag.Stage {
                 this.keyEventDelegate.type(character);
             }
         } else if (event.keyCode === 9) { // Tab with no text box focused.
-            this.focusFirstTypeBox();
+            this.focusFirstKeyDelegate();
         }
     }
 
