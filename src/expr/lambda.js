@@ -306,12 +306,12 @@ class LambdaHoleExpr extends MissingExpression {
                 return null;
             }
         } else {
-            if (hasTextbox(node) || hasPlaceholder(node)) {
+            if (node.hasTextbox() || node.hasPlaceholder()) {
                 node.animatePlaceholderChildren();
                 this.ondropexit(node, pos);
                 return null;
             }
-            if (hasTextbox(lambdaExpr) || hasPlaceholder(lambdaExpr)) {
+            if (lambdaExpr.hasTextbox() || lambdaExpr.hasPlaceholder()) {
                 lambdaExpr.animatePlaceholderChildren();
                 this.ondropexit(node, pos);
                 return null;

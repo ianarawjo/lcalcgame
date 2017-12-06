@@ -213,7 +213,7 @@ class ReductStage extends mag.Stage {
         innerStages.forEach((stg) => {
             stg.build();
         });
-        this.focusFirstTypeBox();
+        this.focusFirstKeyDelegate();
         this.update();
     }
 
@@ -456,12 +456,12 @@ class ReductStage extends mag.Stage {
         }
     }
     getTypeBoxes() {
-        const isClose = (a, b) => Math.abs(a - b) < 1.0;
+        const isClose = (a, b) => Math.abs(a - b) < 50.0;
         const topDownSort = (e1, e2) => {
                 const p1 = e1.absolutePos;
                 const p2 = e2.absolutePos;
-                if (isClose(p1.y, p2.y)) return p1.x >= p2.x;
-                else                     return p1.y >= p2.y;
+                if (isClose(p1.y, p2.y)) return p1.x <= p2.x ? -1 : 1;
+                else                     return p1.y <= p2.y ? -1 : 1;
         };
         return this.getNodesWithClass(TypeBox).sort(topDownSort);
     }

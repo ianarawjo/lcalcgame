@@ -997,7 +997,9 @@ var TypeInTextExpr = function (_TextExpr) {
                         // need for redundant clicking). Don't reduce things
                         // that are already in the process of reducing,
                         // though.
-                        if (rootParent && !rootParent.hasPlaceholderChildren() && !(rootParent instanceof LambdaExpr) && !rootParent._reducting) rootParent.performUserReduction();
+                        if (rootParent && !rootParent.hasPlaceholderChildren() && !(rootParent instanceof LambdaExpr) && !rootParent._reducting) {
+                            if (__AUTO_REDUCE_ON_TYPING_COMMIT) rootParent.performUserReduction();
+                        }
                     });
                 })();
             } else {
@@ -1008,7 +1010,11 @@ var TypeInTextExpr = function (_TextExpr) {
             if (_thisTextExpr.validator(this.text) === true) {
                 //this.color = 'green';
                 this.stroke = { color: '#0f0', lineWidth: 4 };
-            } else this.stroke = null;
+                if (_thisTextExpr.onTextChanged) _thisTextExpr.onTextChanged(this.text, true); // txt, validated?
+            } else {
+                    this.stroke = null;
+                    if (_thisTextExpr.onTextChanged) _thisTextExpr.onTextChanged(this.text, false);
+                }
 
             if (_thisTextExpr.stage) {
                 _thisTextExpr.stage.saveSubstate();
@@ -1093,7 +1099,7 @@ var TypeInTextExpr = function (_TextExpr) {
             this.removeChild(this.typeBox);
             this.typeBox = null;
             this.update();
-            stage.focusFirstTypeBox(); // auto-enter the next TypeBox on screen, if one exists.
+            stage.focusFirstKeyDelegate(); // auto-enter the next TypeBox on screen, if one exists.
             ShapeExpandEffect.run(this, 200, function (e) {
                 return Math.pow(e, 1);
             });

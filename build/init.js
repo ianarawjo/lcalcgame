@@ -12,6 +12,7 @@ var canvas;
 var __ALLOW_PARTIAL_REPLICATION = false;
 var __ALLOW_SKIPPING = false;
 var __ALLOW_ARRAY_EVENTS = false;
+var __AUTO_REDUCE_ON_TYPING_COMMIT = false;
 
 var __ACTIVE_LEVEL_VARIANT = getCookie('active_variant') || null;
 var __DEBUG_DISPLAY_STATEGRAPH = false;
@@ -71,7 +72,7 @@ function init() {
     });
 
     // Mute by default.
-    // Resource.mute();
+    Resource.mute();
 
     // -- TEST CORS --
     // $.ajax({

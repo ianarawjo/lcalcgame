@@ -114,7 +114,9 @@ var GiveExpr = function (_Expression) {
                     parent.remove(_this2);
                     reduced_exprs.forEach(function (e) {
                         stage.add(e);
-                        e.lockSubexpressions();
+                        e.lockSubexpressions(function (e) {
+                            return !(e instanceof LambdaHoleExpr);
+                        });
                     });
 
                     // Call update() on the new exprs.

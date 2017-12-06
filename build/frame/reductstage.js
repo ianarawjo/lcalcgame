@@ -227,7 +227,7 @@ var ReductStage = function (_mag$Stage) {
             innerStages.forEach(function (stg) {
                 stg.build();
             });
-            this.focusFirstTypeBox();
+            this.focusFirstKeyDelegate();
             this.update();
         }
 
@@ -512,12 +512,12 @@ var ReductStage = function (_mag$Stage) {
         key: 'getTypeBoxes',
         value: function getTypeBoxes() {
             var isClose = function isClose(a, b) {
-                return Math.abs(a - b) < 1.0;
+                return Math.abs(a - b) < 50.0;
             };
             var topDownSort = function topDownSort(e1, e2) {
                 var p1 = e1.absolutePos;
                 var p2 = e2.absolutePos;
-                if (isClose(p1.y, p2.y)) return p1.x >= p2.x;else return p1.y >= p2.y;
+                if (isClose(p1.y, p2.y)) return p1.x <= p2.x ? -1 : 1;else return p1.y <= p2.y ? -1 : 1;
             };
             return this.getNodesWithClass(TypeBox).sort(topDownSort);
         }

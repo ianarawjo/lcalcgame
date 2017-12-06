@@ -803,8 +803,10 @@ class TypeInTextExpr extends TextExpr {
                     // that are already in the process of reducing,
                     // though.
                     if (rootParent && !rootParent.hasPlaceholderChildren() &&
-                        !(rootParent instanceof LambdaExpr) && !rootParent._reducting)
-                        rootParent.performUserReduction();
+                        !(rootParent instanceof LambdaExpr) && !rootParent._reducting) {
+                        if (__AUTO_REDUCE_ON_TYPING_COMMIT)
+                            rootParent.performUserReduction();
+                    }
                 });
 
             } else {
@@ -815,8 +817,13 @@ class TypeInTextExpr extends TextExpr {
             if (_thisTextExpr.validator(this.text) === true) {
                 //this.color = 'green';
                 this.stroke = { color:'#0f0', lineWidth:4 };
-            } else
+                if (_thisTextExpr.onTextChanged)
+                    _thisTextExpr.onTextChanged(this.text, true); // txt, validated?
+            } else {
                 this.stroke = null;
+                if (_thisTextExpr.onTextChanged)
+                    _thisTextExpr.onTextChanged(this.text, false);
+            }
 
             if (_thisTextExpr.stage) {
                 _thisTextExpr.stage.saveSubstate();
@@ -894,7 +901,7 @@ class TypeInTextExpr extends TextExpr {
         this.removeChild(this.typeBox);
         this.typeBox = null;
         this.update();
-        stage.focusFirstTypeBox(); // auto-enter the next TypeBox on screen, if one exists.
+        stage.focusFirstKeyDelegate(); // auto-enter the next TypeBox on screen, if one exists.
         ShapeExpandEffect.run(this, 200, (e) => Math.pow(e, 1));
         ShapeExpandEffect.run(this, 350, (e) => Math.pow(e, 0.9));
         ShapeExpandEffect.run(this, 500, (e) => Math.pow(e, 0.8));

@@ -311,15 +311,30 @@ var ES6Parser = function () {
                                             var parent = comp.parent || comp.stage;
                                             parent.swap(comp, addExpr);
                                             if (locked) addExpr.lock();
-                                            if (!addExpr.parent && !addExpr.hasPlaceholderChildren()) addExpr.performUserReduction();
+                                            if (__AUTO_REDUCE_ON_TYPING_COMMIT && !addExpr.parent && !addExpr.hasPlaceholderChildren()) addExpr.performUserReduction();
+                                        } else if (finalText === '==') {
+                                            // If this is concat, we have to swap the CompareExpr for an AddExpr...
+                                            var cmpExpr = new FadedCompareExpr(comp.leftExpr.clone(), comp.rightExpr.clone(), '==');
+                                            var _parent = comp.parent || comp.stage;
+                                            _parent.swap(comp, cmpExpr);
+                                            if (locked) cmpExpr.lock();
+                                            if (__AUTO_REDUCE_ON_TYPING_COMMIT && !cmpExpr.parent && !cmpExpr.hasPlaceholderChildren()) cmpExpr.performUserReduction();
                                         } else if (finalText === '=') {
                                             // If assignment, swap for AssignmentExpression.
                                             var assignExpr = new EqualsAssignExpr(comp.leftExpr.clone(), comp.rightExpr.clone());
-                                            var _parent = comp.parent || comp.stage;
-                                            _parent.swap(comp, assignExpr);
+                                            var _parent2 = comp.parent || comp.stage;
+                                            _parent2.swap(comp, assignExpr);
                                             if (locked) assignExpr.lock();
                                         }
                                     });
+                                    comp.holes[1].onTextChanged = function (txt, validated) {
+                                        txt = txt.trim();
+                                        comp.baseShape = 'rounded';
+                                        if (!validated) comp.color = 'lightgray';else if (txt === '==') {
+                                            comp.color = 'DeepPink';
+                                            comp.baseShape = 'hexa';
+                                        } else if (txt === '+') comp.color = '#ffcc00';
+                                    };
                                     comp.holes[1].typeBox.onFocus = function () {
                                         if (!this.hasHint()) showHintText(hint_text);
                                     };

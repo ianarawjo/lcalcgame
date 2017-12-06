@@ -320,7 +320,7 @@ class Expression extends mag.RoundedRect {
         if (this.baseStroke)
             this.baseStroke.opacity = 1.0;
         this.stage.keyEventDelegate = this;
-        console.log('Focused', this.baseStroke);
+        console.log('Focused', this.baseStroke, this);
         this.stage.draw();
     }
     blur() {
@@ -337,14 +337,14 @@ class Expression extends mag.RoundedRect {
         stage.keyEventDelegate = null;
         this.performUserReduction();
         stage.focusFirstKeyDelegate();
-        // if (this._reducing && 'then' in this._reducing) {
+        // if (this._reducing && 'then' in this._reducing) { // Switch to next only after this expr is done reducing.
         //     this._reducing.then(() => {
         //         stage.focusFirstKeyDelegate();
         //     });
         // }
     }
     type(c) {
-
+        // .. //
     }
 
     hasTextbox() {
@@ -694,7 +694,7 @@ class Expression extends mag.RoundedRect {
         if (this.isRootReducable()) {
             this.baseStroke = { color: this.reducableStrokeColor ? this.reducableStrokeColor : "#00FF7F",
                                 lineWidth: 4,
-                                opacity: 0.5 };
+                                opacity: ((this.stage && this.stage.keyEventDelegate == this) ? 1.0 : 0.5) };
         }
         else {
             this.baseStroke = null;

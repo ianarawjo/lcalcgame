@@ -335,13 +335,14 @@ var GraphicFadedCompareExpr = function (_FadedCompareExpr) {
 
         _this5._color = _this5._origColor = "lightgray";
         _this5.operatorExpr.color = SyntaxColor.for('operator');
+        _this5.baseShape = 'rounded';
         return _this5;
     }
 
     _createClass(GraphicFadedCompareExpr, [{
         key: 'drawBaseShape',
         value: function drawBaseShape(ctx, pos, size) {
-            roundRect(ctx, pos.x, pos.y, size.w, size.h, this.radius * this.absoluteScale.x, this.color ? true : false, this.stroke ? true : false, this.stroke ? this.stroke.opacity : null, this.notches ? this.notches : null);
+            if (this.baseShape === 'hexa') _get(GraphicFadedCompareExpr.prototype.__proto__ || Object.getPrototypeOf(GraphicFadedCompareExpr.prototype), 'drawBaseShape', this).call(this, ctx, pos, size);else roundRect(ctx, pos.x, pos.y, size.w, size.h, this.radius * this.absoluteScale.x, this.color ? true : false, this.stroke ? true : false, this.stroke ? this.stroke.opacity : null, this.notches ? this.notches : null);
         }
     }]);
 

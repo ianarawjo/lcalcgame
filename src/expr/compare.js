@@ -279,9 +279,13 @@ class GraphicFadedCompareExpr extends FadedCompareExpr {
         super(b1, b2, compareFuncName);
         this._color = this._origColor = "lightgray";
         this.operatorExpr.color = SyntaxColor.for('operator');
+        this.baseShape = 'rounded';
     }
     drawBaseShape(ctx, pos, size) {
-        roundRect(ctx,
+        if (this.baseShape === 'hexa')
+            super.drawBaseShape(ctx, pos, size);
+        else
+            roundRect(ctx,
                   pos.x, pos.y,
                   size.w, size.h,
                   this.radius*this.absoluteScale.x, this.color ? true : false, this.stroke ? true : false,
