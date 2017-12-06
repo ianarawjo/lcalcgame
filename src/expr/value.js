@@ -432,3 +432,36 @@ class StringAddExpr extends Expression {
         }
     }
 }
+
+class DynamicVariantExpr extends Expression {
+    constructor(variantClass, variantValue) {
+        let text = new TextExpr(variantValue);
+        super([text]);
+        this.variantClass = variantClass;
+        this.variantValue = variantValue;
+        this.color = "lightblue";
+    }
+
+    get graphicNode() { return this.holes[0]; }
+    reduceCompletely() { return this; }
+    reduce() { return this; }
+    canReduce() { return false; }
+    isValue() { return true; }
+
+    onmouseclick(pos) {
+        super.onmouseclick(pos);
+        // Bubble mouse clicks to parent.
+        // TODO: reconfigure this behavior
+        if (this.parent) this.parent.onmouseclick(pos);
+    }
+
+    toString() {
+        return (this.locked ? '/' : '') + `(variant ${this.variantClass} ${this.variantValue})`;
+    }
+
+    toJavaScript() {
+        return `__variant_${this.variantClass}_${this.variantValue}`;
+    }
+
+    value() { return this.toJavaScript(); }
+}

@@ -68,12 +68,12 @@ class NamedFuncExpr extends Expression {
             for (let m of missing) {
                 if (m instanceof TypeInTextExpr && m.canReduce())
                     m.reduce();
-                else m.animatePlaceholderStatus();
+                // else m.animatePlaceholderStatus();
             }
             return false;
         }
-        else if (this.funcExpr.hasPlaceholderChildren()) {
-            this.funcExpr.animatePlaceholderChildren();
+        else if (this.funcExpr && this.funcExpr.hasPlaceholderChildren()) {
+            // this.funcExpr.animatePlaceholderChildren();
             return false;
         }
         else return true;

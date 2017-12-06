@@ -144,6 +144,17 @@ class ES6Parser {
                     return this.makePrimitive(node.name);
                 else if (node.name.indexOf('__') === 0 && ExprManager.isPrimitive(node.name.substring(2))) // e.g. __star
                     return this.makePrimitive(node.name.substring(2));
+                else if (node.name.indexOf('__') === 0 && node.name.substring(2, 9) === "variant") { // dynamic variant types
+                    const description = node.name.substring(10).split("_");
+                    if (description.length !== 2) {
+                        console.error("Invalid dynamic variant description", node.name);
+                        console.debug(description);
+                        return null;
+                    }
+                    const variantClass = description[0];
+                    const variantValue = description[1];
+                    return new (ExprManager.getClass('dynamic_variant'))(variantClass, variantValue);
+                }
 
                 // Otherwise, treat this as a variable name...
                 return new (ExprManager.getClass('var'))(node.name);
@@ -218,6 +229,19 @@ class ES6Parser {
                             type_expr.typeBox.text = node.arguments[0].value;
                         return type_expr;
                     }
+                    else if (node.callee.name === "_") {
+                        // ApplyExpr with placeholder
+                        if (node.arguments.length === 0) {
+                            console.error("Zero-argument call expressions are currently undefined.");
+                            return;
+                        }
+
+                        let base = new MissingExpression();
+                        for (let arg of node.arguments) {
+                            base = new (ExprManager.getClass('apply'))(this.parseNode(arg), base);
+                        }
+                        return base;
+                    }
 
                     // Special case 'foo(_t_params)': Call parameters (including paretheses) will be entered by player.
                     if (node.arguments.length === 1 && node.arguments[0].type === 'Identifier' && node.arguments[0].name === '_t_params')
@@ -225,8 +249,12 @@ class ES6Parser {
                     else // All other cases, including special case _t_varname(...) specifying that call name will be entered by player.
                         return new NamedFuncExpr(node.callee.name, null, ...node.arguments.map((a) => this.parseNode(a)));
                 } else {
-                    console.error('Call expressions involving callee name resolution are currently undefined.');
-                    return null;
+                    if (node.arguments.length != 1) {
+                        console.error("Multi-argument call expressions are currently undefined.");
+                        return;
+                    }
+                    return new (ExprManager.getClass('apply'))(this.parseNode(node.arguments[0]),
+                                                               this.parseNode(node.callee));
                 }
             },
 
@@ -401,7 +429,17 @@ class ES6Parser {
                 return new (ExprManager.getClass('define'))(this.parseNode(node.body), node.id ? node.id : '???', node.params.map((id) => id.name));
             },
             'FunctionDeclaration': (node) => {
-                return new (ExprManager.getClass('define'))(this.parseNode(node.body), node.id ? node.id.name : '???', node.params.map((id) => id.name));
+                let body = this.parseNode(node.body);
+                if (node.params.length > 0) {
+                    node.params.reverse().forEach((param) => {
+                        let newBody = new (ExprManager.getClass('lambda_abstraction'))([
+                            new (ExprManager.getClass('hole'))(param.name),
+                        ]);
+                        newBody.addArg(body);
+                        body = newBody;
+                    });
+                }
+                return new (ExprManager.getClass('define'))(body, node.id ? node.id.name : '???', node.params.map((id) => id.name));
             },
             'BlockStatement': (node) => {
                 if (node.body.length === 1) {
@@ -423,7 +461,20 @@ class ES6Parser {
             },
             'ReturnStatement': (node) => {
                 return new (ExprManager.getClass('return'))(this.parseNode(node.argument));
-            }
+            },
+            'VariableDeclaration': (node) => {
+                if (node.kind !== "let") {
+                    console.error("Only let-statements are supported.");
+                    return;
+                }
+                if (node.declarations.length !== 1) {
+                    console.error("Only one definition per let expression is supported.");
+                    return null;
+                }
+                return new (ExprManager.getClass('define'))(
+                    this.parseNode(node.declarations[0].init),
+                    node.declarations[0].id.name, []);
+            },
         }
 
         // Apply!

@@ -1,6 +1,24 @@
 /* For fast-switching between game progressions. */
-const __ACTIVE_PROGRESSION = 'Typing Study';
+const __ACTIVE_PROGRESSION = 'Elementary';
 const __PROGRESSIONS = {
+    'Elementary': {
+        dir: 'levels-progression/',
+        digraph: {
+            'functions': ['arithmetic'],
+            'arithmetic': ['application'],
+            'application': ['definition'],
+            'definition': ['define-challenges'],
+            'define-challenges': ['booleans-intro'],
+            'booleans-intro': ['weekdays'],
+            'weekdays': ['recursion'],
+            'recursion': [],
+        },
+        settings: { // This sets global flags.
+            '__ALLOW_PARTIAL_REPLICATION': false,
+            '__ALLOW_SKIPPING': true,
+            '__ALLOW_ARRAY_EVENTS': false
+        }
+    },
     'Default': {
         dir: 'levels/',
         digraph: {
@@ -151,8 +169,8 @@ function LOAD_REDUCT_RESOURCES(Resource) {
                 // hole. If one has fewer fade levels than the other,
                 // saturate the fade level.
                 if (lvl.fade["lambda"]) {
-                    lvl.fade["var"] = Math.min(lvl.fade["lambda"], ExprManager.getNumOfFadeLevels("var"));
-                    lvl.fade["hole"] = Math.min(lvl.fade["lambda"], ExprManager.getNumOfFadeLevels("hole"));
+                    lvl.fade["var"] = Math.min(lvl.fade["lambda"], ExprManager.getNumOfFadeLevels("var") - 1);
+                    lvl.fade["hole"] = Math.min(lvl.fade["lambda"], ExprManager.getNumOfFadeLevels("hole") - 1);
                     delete lvl.fade["lambda"];
                 }
             }

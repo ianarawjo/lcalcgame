@@ -2,6 +2,7 @@ var ExprManager = (function() {
     let pub = {};
 
     var _FADE_MAP = {
+        'apply':    [ApplyExpr],
         'if':       [LockIfStatement, InlineLockIfStatement, IfStatement],
         'ifelse':   [IfElseStatement],
         'ifelseblock': [IfElseBlockStatement],
@@ -10,6 +11,7 @@ var ExprManager = (function() {
         'star':     [StarExpr],//, FadedStarExpr, StringStarExpr],
         'circle':   [CircleExpr],//, FadedCircleExpr, StringCircleExpr],
         'diamond':  [RectExpr],//, FadedRectExpr, StringRectExpr],
+        'dynamic_variant':  [DynamicVariantExpr],
         '_':        [MissingExpression],
         '__':       [MissingBracketExpression],
         '_b':       [MissingKeyExpression, MissingBooleanExpression],

@@ -90,7 +90,8 @@ class ApplyExpr extends Expression {
 
     drawInternalAfterChildren(ctx, pos, boundingSize) {
         this.arrow.parent = this;
-        this.arrow.pos = { x:this.lambdaExpr.pos.x - this.lambdaExpr.hole.absoluteSize.w / 3, y:-16 };
+        const hole = this.lambdaExpr.hole || this.lambdaExpr;
+        this.arrow.pos = { x:this.lambdaExpr.pos.x - hole.absoluteSize.w / 3, y:-16 };
         this.arrow.draw(ctx);
     }
 

@@ -134,6 +134,9 @@ class Level {
         stage.toolboxNodes = function() {
             return this.nodes.filter((n) => n.toolbox && n.toolbox instanceof Toolbox && !n.fadingOut);
         }.bind(stage);
+        stage.snappedNodes = function() {
+            return this.nodes.filter((n) => n.isSnapped && n.isSnapped());
+        };
 
         stage.testBoard = function(exprs, checkUnpaired=true) {
             let matching = goal.test(exprs.map((n) => n.clone()), this.environmentDisplay);
@@ -238,8 +241,20 @@ class Level {
         if (help_text && help_text.length > 0)
             showHelpText(help_text);
 
+        const exprs = Level.parse(expr_descs, language, macros, typing_options);
+        for (let expr of exprs) {
+            if (expr === null || expr === undefined) {
+                console.warning("Undefined or null expression when constructing level");
+                console.info(expr_descs);
+            }
+            else if (expr instanceof ExprManager.getClass('define')) {
+                // Auto-insert notches for definitions
+                exprs.push(new (ExprManager.getClass('notch'))(1));
+            }
+        }
+
         var lvl = new Level(
-            Level.parse(expr_descs, language, macros, typing_options),
+            exprs,
             new Goal(new ExpressionPattern(Level.parse(goal_descs, language, macros, typing_options)), goal_descs, resources.aliens),
             toolbox_descs ? Level.parse(toolbox_descs, language, macros, typing_options) : null,
             Environment.parse(globals_descs)
@@ -793,18 +808,20 @@ class Goal {
         var exprs_node = new mag.Rect(0,0,0,0);
         exprs_node.addAll(exprs);
 
-        exprs[0].pos = { x:bubbleLeft.size.w / 4, y:0 };
+        if (exprs.length > 0) {
+            exprs[0].pos = { x:bubbleLeft.size.w / 4, y:0 };
 
-        // TODO: Fix the need for this hack.
-        if (exprs[0] instanceof BagExpr) {
-            //exprs[0].pos = { x:70, y:50 };
-            exprs[0].anchor = { x:0, y:0 };
-        }
+            // TODO: Fix the need for this hack.
+            if (exprs[0] instanceof BagExpr) {
+                //exprs[0].pos = { x:70, y:50 };
+                exprs[0].anchor = { x:0, y:0 };
+            }
 
-        exprs[0].ignoreEvents = true;
-        for(let i = 1; i < exprs.length; i++) {
-            exprs[i].pos = addPos({ x:exprs[i-1].size.w, y:0 }, exprs[i-1].pos);
-            exprs[i].ignoreEvents = true;
+            exprs[0].ignoreEvents = true;
+            for(let i = 1; i < exprs.length; i++) {
+                exprs[i].pos = addPos({ x:exprs[i-1].size.w, y:0 }, exprs[i-1].pos);
+                exprs[i].ignoreEvents = true;
+            }
         }
 
         let image = Resource.getImage(this.alien_image);
@@ -820,16 +837,18 @@ class Goal {
 
         node.addAll([bg_accent, bg, alien]);
 
-        let lastExpr = exprs[exprs.length - 1];
-        let firstExpr = exprs[0];
-        let exprsWidth = lastExpr.absolutePos.x + lastExpr.absoluteSize.w - firstExpr.absolutePos.x;
-
-        exprsWidth -= 0.6 * (bubbleLeftWidth + bubbleRightWidth);
         let bubble = [bubbleLeft];
+        if (exprs.length > 0) {
+            let lastExpr = exprs[exprs.length - 1];
+            let firstExpr = exprs[0];
+            let exprsWidth = lastExpr.absolutePos.x + lastExpr.absoluteSize.w - firstExpr.absolutePos.x;
 
-        while (exprsWidth > 0) {
-            exprsWidth -= bubbleMidWidth - 1;
-            bubble.push(new mag.ImageRect(0, 0, bubbleMidWidth, BUBBLE_HEIGHT, 'caption-long-mid'));
+            exprsWidth -= 0.6 * (bubbleLeftWidth + bubbleRightWidth);
+
+            while (exprsWidth > 0) {
+                exprsWidth -= bubbleMidWidth - 1;
+                bubble.push(new mag.ImageRect(0, 0, bubbleMidWidth, BUBBLE_HEIGHT, 'caption-long-mid'));
+            }
         }
 
         bubble.push(bubbleRight);

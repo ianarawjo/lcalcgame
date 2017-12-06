@@ -239,13 +239,21 @@ class ReductStage extends mag.Stage {
             // * This is only valid in the CHI '18 version.
             // If the goal is an array, and no MapExprs remain,
             // then this level can't be completed no matter what is left.
+            // TODO: for David: figure out better API for determining
+            // properties like this
             if (this.goalNodes.every(e => (e instanceof BracketArrayExpr)) &&
-                !(remaining_exprs.some(e => e instanceof MapFunc || e instanceof SmallStepBagExpr || e instanceof BracketArrayExpr || e instanceof IfStatement)) &&
+                !(remaining_exprs.some(e => e instanceof MapFunc || e instanceof SmallStepBagExpr || e instanceof BracketArrayExpr || e instanceof IfStatement || e instanceof DefineExpr)) &&
                 this.getNodesWithClass(TypeInTextExpr).length === 0) {
                 return false;
             }
 
             return true;
+        }
+
+        // If there are defined things, put a copy of each in the toolbox.
+        const snappedNodes = this.snappedNodes();
+        for (const snapped of snappedNodes) {
+            toolbox_exprs.push(snapped.generateNamedExpr());
         }
 
         // If there's nothing in the toolbox,
