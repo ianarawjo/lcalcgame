@@ -51,7 +51,10 @@
             "fade": {
                 "==": 2
             },
-            "showFade": false
+            "showFade": false,
+            "typing_options": {
+                ">>>": ["==", "+", "-"]
+            }
         },
         {
             "board":["2 >>> 2", "1 >>> 1"],

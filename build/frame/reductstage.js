@@ -566,14 +566,16 @@ var ReductStage = function (_mag$Stage) {
                 } else if (event.keyCode === 9) {
                         // Tab.
                         // Cycle to next possible keyEventDelegate...
-                        var available_delegates = this.getTypeBoxes().concat(this.getReduceableExprs());
                         var cur_delegate = this.keyEventDelegate;
-                        this.keyEventDelegate.blur();
+
+                        if (cur_delegate.parent && cur_delegate.parent instanceof TypeInTextExpr && cur_delegate.parent.isComplete()) cur_delegate.carriageReturn();else cur_delegate.blur();
+
+                        var available_delegates = this.getTypeBoxes().concat(this.getReduceableExprs());
                         var idx_delegate = available_delegates.indexOf(cur_delegate);
                         if (idx_delegate > -1) {
                             var next_delegate = available_delegates[(idx_delegate + 1) % available_delegates.length];
                             this.keyEventDelegate = next_delegate;
-                            console.log('focusing delegate', idx_delegate);
+                            // console.log('focusing delegate', idx_delegate);
                             next_delegate.focus();
                         } else {
                             console.error('@ onkeypress: That\'s odd -- key event delegate is not inside stage...');

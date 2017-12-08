@@ -773,8 +773,8 @@ class TypeInTextExpr extends TextExpr {
                     parent = parent.parent;
                 }
             };
-            this.afterCommit = afterCommit;
         }
+        this.afterCommit = afterCommit;
 
         let _thisTextExpr = this;
         let onCommit = function() {

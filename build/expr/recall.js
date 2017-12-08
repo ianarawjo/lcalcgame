@@ -966,8 +966,8 @@ var TypeInTextExpr = function (_TextExpr) {
                     parent = parent.parent;
                 }
             };
-            _this10.afterCommit = afterCommit;
         }
+        _this10.afterCommit = afterCommit;
 
         var _thisTextExpr = _this10;
         var onCommit = function onCommit() {

@@ -756,7 +756,8 @@ var Level = function () {
                                 typing_exprs[i].runOnCommit(function () {
                                     var stage = this.stage;
                                     if (!stage) console.error('Cannot unlock syntax: Expression is not part of stage', this);
-                                    return stage.unlockSyntax(syntax_key, this).then(Promise.reject);
+                                    stage.unlockSyntax(syntax_key, this);
+                                    return Promise.resolve();
                                 });
                             })();
                         }

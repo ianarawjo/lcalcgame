@@ -257,7 +257,8 @@ class Level {
                         typing_exprs[i].runOnCommit(function () {
                             const stage = this.stage;
                             if (!stage) console.error('Cannot unlock syntax: Expression is not part of stage', this);
-                            return stage.unlockSyntax(syntax_key, this).then(Promise.reject);
+                            stage.unlockSyntax(syntax_key, this);
+                            return Promise.resolve();
                         });
                     }
                 } else {
