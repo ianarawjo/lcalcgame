@@ -36,7 +36,7 @@
             "typing_hints": ["\"cold\""],
             "typing_solution": ["\"cold\"", "\"hot\""],
             "block_variant": {
-                "board": ["_ == 'cold'", "_ == 'hot'"],
+                "board": ["__verbatim; _ == 'cold';", "__verbatim; _ == 'hot';"],
                 "toolbox": ["'cold'", "'warm'", "'hot'"],
                 "typing_hints": []
             }
@@ -47,7 +47,7 @@
             "typing_solution": ["\"river\"", "\"a\"", "\"a\""],
             "toolbox":"",
             "block_variant": {
-                "board": ["_ == 'river'", "_ == _"],
+                "board": ["__verbatim; _ == 'river';", "__verbatim; _ == _;"],
                 "toolbox": ["'river'", "'zoo'", "'bunny'", "'zoo'", "'rabbit'"],
                 "typing_hints": []
             }
@@ -58,7 +58,7 @@
             "typing_solution": ["\"rainbow\"", "\"fox\"", "\"sparkles\"", "\"linx\""],
             "toolbox":["true", "false"],
             "block_variant": {
-                "board": ["_b ? _ : _", "_b ? _ : _"],
+                "board": ["__verbatim; _b ? _ : _;", "__verbatim; _b ? _ : _;"],
                 "toolbox": ["true", "false", "'rainbow'", "'unicorn'", "'sparkles'", "'glitter'"]
             }
         },
@@ -69,8 +69,8 @@
             "goal":["'no'", "'no'", "'yes'"],
             "toolbox":["true", "false", "true", "false"],
             "block_variant": {
-                "board": ["give(3, _)"],
-                "toolbox": ["'no'", "'yes'", "(b) => _", "b", "_ ? _ : _", "true", "false", "true", "false"],
+                "board": ["give(3, _)", "(b) => b ? \"yes\" : \"no\""],
+                "toolbox": ["true", "false", "true", "false"],
                 "typing_hints": []
             }
         },
@@ -80,7 +80,7 @@
             "toolbox":["true", "false", "true", "false"],
             "typing_solution": ["\"totally\"", "\"never\""],
             "block_variant": {
-                "board": ["give(3, _)", "(b) => b ? _ : _"],
+                "board": ["give(3, _)", "__verbatim; (b) => b ? _ : _;"],
                 "toolbox": ["'never'", "'totally'", "b", "true", "false", "true", "false"]
             }
         },
@@ -90,7 +90,7 @@
             "toolbox":["true", "false", "true", "false"],
             "typing_solution": ["x ? \"allow\" : \"reject\""],
             "block_variant": {
-                "board":["give(3, _)", "(x) => _"],
+                "board":["give(3, _)", "__verbatim; (x) => _;"],
                 "toolbox":["true", "false", "true", "false", "_ ? _ : _", "'allow'", "'reject'", "x"]
             }
         },
@@ -100,7 +100,7 @@
             "toolbox":["true", "false"],
             "typing_solution": ["b ? 1 : 0"],
             "block_variant": {
-                "board":["give(2, _)", "(b) => _"],
+                "board":["give(2, _)", "__verbatim; (b) => _;"],
                 "toolbox":["true", "false", "2", "1", "0", "_ ? _ : _", "b", "_ == _"]
             }
         },
@@ -111,7 +111,7 @@
             "goal":["'allow'", "'reject'"],
             "toolbox":["1", "0"],
             "block_variant": {
-                "board":["give(2, _)", "(n) => _"],
+                "board":["give(2, _)", "__verbatim; (n) => _;"],
                 "typing_hints": "",
                 "toolbox":["2", "1", "1", "0", "0", "'allow'", "'reject'", "_ ? _ : _", "n", "_ == _"]
             }
@@ -122,7 +122,7 @@
             "typing_solution": ["n == 2 ? \"two\" : \"four\""],
             "toolbox":["2", "4"],
             "block_variant": {
-                "board":["give(2, _)", "(n) => _"],
+                "board":["give(2, _)", "__verbatim; (n) => _;"],
                 "toolbox":["2", "2", "4", "4", "6", "'two'", "'four'", "_ ? _ : _", "n", "_ == _", "_ + _"]
             }
         },
@@ -134,7 +134,7 @@
             "block_variant": {
                 "board":["give(3, _)"],
                 "toolbox":["0", "0", "1", "1", "'zero'", "'one'", "'one'",
-                           "(n) => _", "(x) => _", "n", "x", "_ ? _ : _", "_ == _", "_ + _"]
+                           "__verbatim; (n) => _;", "__verbatim; (x) => _;", "n", "x", "_ ? _ : _", "_ == _", "_ + _"]
             }
         },
         {
@@ -145,7 +145,7 @@
             "block_variant": {
                 "board": ["give(3, _)"],
                 "toolbox":["'t'", "'u'", "'t'", "'u'", "'rna'", "'dna'",
-                           "(n) => _", "(a) => _", "n", "a", "_ ? _ : _", "_ == _", "_ + _"]
+                           "__verbatim; (n) => _;", "__verbatim; (a) => _;", "n", "a", "_ ? _ : _", "_ == _", "_ + _"]
             }
         }
     ],

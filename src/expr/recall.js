@@ -633,7 +633,7 @@ class TypeInTextExpr extends TextExpr {
     // There's also a special token, the operator >>>, which
     // means _t_equiv.
     */
-    static fromExprCode(code, afterCommit) {
+    static fromExprCode(code, afterCommit, transformer=null) {
         code = code.replace('_t_', ''); // remove prepend
 
         // Special cases:
@@ -642,12 +642,12 @@ class TypeInTextExpr extends TextExpr {
         // Entering arrays without brackets...
         else if (code === 'array') return new (ExprManager.getClass('typing_array'))();
 
-        let transformer = null;
         if (code === 'innerstring') transformer = txt => `"${txt}"`;
         else if (code === 'innerarray')  transformer = txt => `[${txt}]`;
 
         let validators = {
             'arrow':(txt) => txt === '=>',
+            'fullarrow':(txt) => (__PARSER.parse(transformer(txt)) instanceof LambdaExpr),
             'fullstring':(txt) => (__PARSER.parse(txt) instanceof StringValueExpr),
             'innerstring':(txt) => (__PARSER.parse(transformer(txt)) instanceof StringValueExpr),
             'nonneg':(txt) => {

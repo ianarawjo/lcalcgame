@@ -42,7 +42,7 @@
             "goal":["8"],
             "toolbox":"",
             "block_variant": {
-                "board": ["_ + 5"],
+                "board": ["__verbatim; _ + 5;"],
                 "toolbox": ["1", "2", "3", "4", "5"]
             }
         },
@@ -51,7 +51,7 @@
             "goal":["12", "15", "17"],
             "toolbox":"",
             "block_variant": {
-                "board": ["_ + 2", "_ + 3", "_ + 4"],
+                "board": ["__verbatim; _ + 2;", "__verbatim; _ + 3;", "__verbatim; _ + 4;"],
                 "toolbox": ["7", "8", "9", "10", "11", "12", "13", "14", "15"]
             }
         },
@@ -60,7 +60,7 @@
             "goal":["10"],
             "toolbox":"",
             "block_variant": {
-                "board": ["_ + _", "_ - 3"],
+                "board": ["__verbatim; _ + _;", "_ - 3"],
                 "toolbox": ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
             }
         }

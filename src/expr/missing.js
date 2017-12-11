@@ -109,6 +109,10 @@ class MissingExpression extends Expression {
                             },
                         });
                     }
+                    if (code.indexOf('=>') > -1) { // Patch in parens for arrow functions...
+                        const varname = code.split('=>')[0].trim();
+                        code = `(${varname}) =>${code.split('=>')[1]}`;
+                    }
                     challenge.enforceHint(code);
                     challenge.typeBox.update();
                     const wrapper = new Expression([challenge]);
@@ -128,7 +132,7 @@ class MissingExpression extends Expression {
                     stage.saveState({name:"verbatim-prompt", text:code});
                     Logger.log('verbatim-prompt', {text: code});
 
-                    ShapeExpandEffect.run(wrapper, 500, (e) => Math.pow(e, 0.5), 'magenta', 1.5);
+                    ShapeExpandEffect.run(wrapper, 500, (e) => Math.pow(e, 0.5), __VERBATIM_COLOR, 1.5);
 
                     challenge.focus();
                     return;

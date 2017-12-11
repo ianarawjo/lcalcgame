@@ -91,7 +91,8 @@ class ES6Parser {
                 if (!expr) return null;
                 if (__ACTIVE_LEVEL_VARIANT === "verbatim_variant") {
                     expr.forceTypingOnFill = true;
-                    expr.stroke = { color:'magenta', lineWidth:4 };
+                    expr.stroke = { color:__VERBATIM_COLOR, lineWidth:4 };
+                    console.log('reached');
                 }
                 expr.lockSubexpressions(this.lockFilter);
                 expr.unlock();
@@ -213,9 +214,15 @@ class ES6Parser {
                 } else if (node.callee.type === 'Identifier') {
 
                     if (node.callee.name.substring(0, 2) === '_t') {
-                        let type_expr = TypeInTextExpr.fromExprCode(node.callee.name);
-                        if (node.arguments.length === 1 && node.arguments[0].type === 'Literal')
-                            type_expr.typeBox.text = node.arguments[0].value;
+
+                        let type_expr;
+                        if (node.callee.name === '_t_arrow')
+                            type_expr = new (ExprManager.getClass('typing_arrow'))(this.parseNode(node.arguments[0]));
+                        else  {
+                            type_expr = TypeInTextExpr.fromExprCode(node.callee.name);
+                            if (node.arguments.length === 1 && node.arguments[0].type === 'Literal')
+                                type_expr.typeBox.text = node.arguments[0].value;
+                        }
                         return type_expr;
                     }
 

@@ -840,6 +840,8 @@ var TypeInTextExpr = function (_TextExpr) {
         // means _t_equiv.
         */
         value: function fromExprCode(code, afterCommit) {
+            var transformer = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+
             code = code.replace('_t_', ''); // remove prepend
 
             // Special cases:
@@ -848,7 +850,6 @@ var TypeInTextExpr = function (_TextExpr) {
             // Entering arrays without brackets...
             else if (code === 'array') return new (ExprManager.getClass('typing_array'))();
 
-            var transformer = null;
             if (code === 'innerstring') transformer = function transformer(txt) {
                 return '"' + txt + '"';
             };else if (code === 'innerarray') transformer = function transformer(txt) {
@@ -858,6 +859,9 @@ var TypeInTextExpr = function (_TextExpr) {
             var validators = {
                 'arrow': function arrow(txt) {
                     return txt === '=>';
+                },
+                'fullarrow': function fullarrow(txt) {
+                    return __PARSER.parse(transformer(txt)) instanceof LambdaExpr;
                 },
                 'fullstring': function fullstring(txt) {
                     return __PARSER.parse(txt) instanceof StringValueExpr;

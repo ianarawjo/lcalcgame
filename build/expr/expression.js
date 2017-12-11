@@ -919,7 +919,7 @@ var Expression = function (_mag$RoundedRect) {
     }, {
         key: 'onmouseleave',
         value: function onmouseleave(pos) {
-            if (this.forceTypingOnFill) this.stroke = { color: 'magenta', lineWidth: 4 };else _get(Expression.prototype.__proto__ || Object.getPrototypeOf(Expression.prototype), 'onmouseleave', this).call(this, pos);
+            if (this.forceTypingOnFill) this.stroke = { color: __VERBATIM_COLOR, lineWidth: 4 };else _get(Expression.prototype.__proto__ || Object.getPrototypeOf(Expression.prototype), 'onmouseleave', this).call(this, pos);
 
             if (this.baseStroke) SET_CURSOR_STYLE(CONST.CURSOR.DEFAULT);
         }

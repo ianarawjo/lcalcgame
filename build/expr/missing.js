@@ -169,6 +169,11 @@ var MissingExpression = function (_Expression) {
                                 }
                             });
                         }
+                        if (code.indexOf('=>') > -1) {
+                            // Patch in parens for arrow functions...
+                            var varname = code.split('=>')[0].trim();
+                            code = '(' + varname + ') =>' + code.split('=>')[1];
+                        }
                         challenge.enforceHint(code);
                         challenge.typeBox.update();
                         var wrapper = new Expression([challenge]);
@@ -190,7 +195,7 @@ var MissingExpression = function (_Expression) {
 
                         ShapeExpandEffect.run(wrapper, 500, function (e) {
                             return Math.pow(e, 0.5);
-                        }, 'magenta', 1.5);
+                        }, __VERBATIM_COLOR, 1.5);
 
                         challenge.focus();
                         return;

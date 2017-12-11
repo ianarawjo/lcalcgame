@@ -64,7 +64,8 @@ var ExprManager = (function() {
         'string':   [StringValueExpr, ColorlessStringValueExpr],
         'typing_str':   [TypeInStringValueExpr, ColorlessTypeInStringValueExpr],
         'typing_array':   [TypeInArrayExpr],
-        'give':     [GiveExpr]
+        'give':     [GiveExpr],
+        'typing_arrow': [TypeInArrowFuncExpr]
     };
     var fade_levels = {};
     var DEFAULT_FADE_LEVEL = 0;

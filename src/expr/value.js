@@ -238,7 +238,7 @@ class StringValueExpr extends Expression {
     isValue() { return true; }
     onmouseclick(pos) {
         super.onmouseclick(pos);
-        // Bubble mouse clicks to parent. 
+        // Bubble mouse clicks to parent.
         if (this.parent) this.parent.onmouseclick(pos);
     }
     toString() {
@@ -257,7 +257,7 @@ class ColorlessStringValueExpr extends StringValueExpr {
     }
 }
 class ContextualTypeInTextExpr extends Expression {
-    constructor(left_text, right_text, type_expr_code, reduce_cb, defaultName="") {
+    constructor(left_text, right_text, type_expr_code, reduce_cb, defaultName="", transformer=null) {
         let left = new TextExpr(left_text);
         left.color = 'black';
         let right = left.clone();
@@ -269,7 +269,7 @@ class ContextualTypeInTextExpr extends Expression {
             parent.swap(this, replace_expr); // Swap this makeshift textbox expr for a real one...
             if (locked) replace_expr.lock();
             stage.update();
-        });
+        }, transformer);
         super([left, mid, right]);
         this.exprCode = type_expr_code;
         this.defaultName = defaultName;
@@ -307,6 +307,21 @@ class ContextualTypeInTextExpr extends Expression {
         return this.exprCode;
     }
     value() { return this.name; }
+}
+class TypeInArrowFuncExpr extends ContextualTypeInTextExpr {
+    constructor(bodyExpr) {
+
+        const body = bodyExpr.toJavaScript();
+        super('', '', '_t_fullarrow', (final_txt) => {
+            return __PARSER.parse(final_txt + body); // e.g. '(a) =>' + 'a + 1'
+        }, "", (txt) => `${txt} ${body}`);
+
+        this.holes[2] = this.children[2] = bodyExpr;
+        this.color = 'lightgray';
+    }
+    get constructorArgs() {
+        return [this.holes[2].clone()];
+    }
 }
 class TypeInStringValueExpr extends ContextualTypeInTextExpr {
     constructor(defaultName="") {

@@ -16,6 +16,7 @@ var __AUTO_REDUCE_ON_TYPING_COMMIT = false;
 
 var __ACTIVE_LEVEL_VARIANT = getCookie('active_variant') || null;
 var __DEBUG_DISPLAY_STATEGRAPH = false;
+var __VERBATIM_COLOR = 'blue';
 
 var __VIS_CANVAS_ID = 'stateGraphCanvas';
 var __STATEGRAPH_DISPLAY_EDGES = false;

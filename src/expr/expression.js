@@ -751,7 +751,7 @@ class Expression extends mag.RoundedRect {
     }
     onmouseleave(pos) {
         if (this.forceTypingOnFill)
-            this.stroke = { color:'magenta', lineWidth:4 };
+            this.stroke = { color:__VERBATIM_COLOR, lineWidth:4 };
         else
             super.onmouseleave(pos);
 

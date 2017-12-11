@@ -63,7 +63,7 @@
             "goal":["2", "3", "4"],
             "toolbox":["1", "2", "3"],
             "block_variant": {
-                "board": ["give(3, _)", "(n) => _"],
+                "board": ["give(3, _)", "__verbatim; (n) => _;"],
                 "toolbox": ["1", "1", "2", "2", "3", "3", "n", "_ + _"]
             }
         },
@@ -72,7 +72,7 @@
             "goal":["true", "false", "false"],
             "toolbox":["1", "0", "0"],
             "block_variant": {
-                "board": ["give(3, _)", "(x) => _"],
+                "board": ["give(3, _)", "__verbatim; (x) => _;"],
                 "toolbox": ["1", "1", "0", "0", "x", "_ == _"]
             }
         },
@@ -84,7 +84,7 @@
             "typing_hints": ["(a) =>", "(b) =>"],
             "block_variant": {
                 "board": ["a - 2", "b - 3", "c - 4"],
-                "toolbox": ["(x) => _", "(a) => _", "(b) => _", "(c) => _", "2", "3", "4"],
+                "toolbox": ["__verbatim; (x) => _;", "__verbatim; (a) => _;", "__verbatim; (b) => _;", "__verbatim; (c) => _;", "2", "3", "4"],
                 "typing_hints": []
             }
         },
@@ -95,7 +95,7 @@
             "toolbox":["9", "8", "7"],
             "block_variant": {
                 "board": ["give(3, _)"],
-                "toolbox": ["9", "8", "7", "6", "5", "(num) => _", "(b) => _", "num", "b", "_ - _"]
+                "toolbox": ["9", "8", "7", "6", "5", "__verbatim; (num) => _;", "__verbatim; (b) => _;", "num", "b", "_ - _"]
             }
         },
         {
@@ -105,7 +105,7 @@
             "toolbox":["8", "6", "4"],
             "block_variant": {
                 "board": ["give(3, _)"],
-                "toolbox": ["9", "8", "7", "6", "5", "(num) => _", "(b) => _", "num", "b", "_ - _"]
+                "toolbox": ["9", "8", "7", "6", "5", "__verbatim; (num) => _;", "__verbatim; (b) => _;", "num", "b", "_ - _"]
             }
         },
         {
@@ -114,7 +114,7 @@
             "toolbox":["500", "1000", "250", "500"],
             "block_variant": {
                 "board": ["give(2, _)"],
-                "toolbox": ["500", "1000", "250", "500", "(a) => _", "(b) => _", "a", "a", "b", "b", "_ - _", "_ == _"]
+                "toolbox": ["500", "1000", "250", "500", "__verbatim; (a) => _;", "__verbatim; (b) => _;", "a", "a", "b", "b", "_ - _", "_ == _"]
             }
         },
         {
@@ -124,7 +124,7 @@
             "toolbox":["8", "12", "15"],
             "block_variant": {
                 "board": ["give(3, _)"],
-                "toolbox": ["8", "12", "15", "(a) => _", "(b) => _", "a", "a", "b", "b", "_ + _", "_ - _", "_ == _"]
+                "toolbox": ["8", "12", "15", "__verbatim; (a) => _;", "__verbatim; (b) => _;", "a", "a", "b", "b", "_ + _", "_ - _", "_ == _"]
             }
         }
     ],
