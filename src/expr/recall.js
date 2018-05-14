@@ -516,19 +516,19 @@ class TypeBox extends mag.RoundedRect {
     }
 
     // Only call after the player has pressed ENTER when this box is focused.
-    carriageReturn() { // Solidify block (if possible)
+    carriageReturn(focusNext=true) { // Solidify block (if possible)
         this._logState('carriage-return');
         if (this.onCarriageReturn)
-            this.onCarriageReturn();
+            this.onCarriageReturn(focusNext);
         if (this.stage) this.stage.update();
         this._logState('after-carriage-return');
     }
 
     // Simulates carriage return but without the logging of a CR,
     // which is reserved for actually pressing the ENTER key.
-    simulateCarriageReturn() {
+    simulateCarriageReturn(focusNext=true) {
         if (this.onCarriageReturn)
-            this.onCarriageReturn();
+            this.onCarriageReturn(focusNext);
         if (this.stage) this.stage.update();
     }
 
@@ -777,13 +777,13 @@ class TypeInTextExpr extends TextExpr {
         this.afterCommit = afterCommit;
 
         let _thisTextExpr = this;
-        let onCommit = function() {
+        let onCommit = function(focusNext=true) {
             let txt = this.text; // this.text is the TypeBox's text string, *not* the TextExpr's!
             console.log(txt);
             if (_thisTextExpr.validator(txt)) {
                 const rootParent = _thisTextExpr.rootParent;
                 const stage = _thisTextExpr.stage;
-                _thisTextExpr.commit(txt);
+                _thisTextExpr.commit(txt, focusNext);
                 Resource.play('carriage-return');
 
                 let prom = Promise.resolve();
@@ -893,7 +893,7 @@ class TypeInTextExpr extends TextExpr {
         return Promise.reject();
     }
 
-    commit(renderedText) {
+    commit(renderedText, focusNext=true) {
         const stage = this.stage;
         const rootParent = this.rootParent;
         this.blur();
@@ -901,7 +901,10 @@ class TypeInTextExpr extends TextExpr {
         this.removeChild(this.typeBox);
         this.typeBox = null;
         this.update();
-        stage.focusFirstKeyDelegate(); // auto-enter the next TypeBox on screen, if one exists.
+
+        if (focusNext)
+          stage.focusFirstKeyDelegate(); // auto-enter the next TypeBox on screen, if one exists.
+
         ShapeExpandEffect.run(this, 200, (e) => Math.pow(e, 1));
         ShapeExpandEffect.run(this, 350, (e) => Math.pow(e, 0.9));
         ShapeExpandEffect.run(this, 500, (e) => Math.pow(e, 0.8));

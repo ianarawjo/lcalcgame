@@ -423,8 +423,14 @@ class ReductStage extends mag.Stage {
         super.onmousedown(pos);
         if ((this.heldNode && this.keyEventDelegate && this.heldNode != this.keyEventDelegate) ||
             (!this.heldNode && this.keyEventDelegate)) {
-            this.keyEventDelegate.blur();
-            this.keyEventDelegate = null;
+            if (this.keyEventDelegate.parent instanceof TypeInTextExpr &&
+              this.keyEventDelegate.parent.isComplete()) {
+                this.keyEventDelegate.carriageReturn(false); // don't focus next typebox bc user clicked 
+                this.keyEventDelegate = null;
+            } else {
+              this.keyEventDelegate.blur();
+              this.keyEventDelegate = null;
+            }
         }
     }
     onmouseclick(pos) {

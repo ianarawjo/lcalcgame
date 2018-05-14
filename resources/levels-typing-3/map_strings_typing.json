@@ -3,56 +3,69 @@
     "description":"Anonymous functions and replication",
     "language": "JavaScript",
     "levels": [
-        {
-            "board":["(x) => x", "star"],
-            "goal":["star"],
-            "toolbox":""
-        },
-        {
-            "board":["(x) => x", "(x) => x", "(x) => x", "star"],
-            "goal":["star"],
-            "toolbox":""
-        },
-        {
-            "board":["give(2, _)"],
-            "goal":["triangle", "triangle"],
-            "toolbox":["star", "triangle", "rect"]
-        },
-        {
-            "board":["give(2, _)", "_ + 1"],
-            "goal":["4", "4"],
-            "toolbox":["1", "2", "3", "4"]
-        },
-        {
-            "board":["give(2, _)", "(x) => x"],
-            "goal":["(x) => x", "(x) => x"],
-            "toolbox":""
-        },
-        {
-            "board":["give(2, _)", "(x) => x", "star"],
-            "goal":["star"],
-            "toolbox":""
-        },
-        {
-            "board":["give(_t_single, star)"],
-            "goal":["star", "star", "star", "star"],
-            "toolbox":"",
-            "block_variant": {
-                "board": ["__verbatim; give(_, star);"],
-                "toolbox": ["1", "2", "3", "4", "5", "6"],
-                "typing_hints": []
-            }
-        },
-        {
-            "board":["give(_t_single, star)", "give(_t_single, rect)"],
-            "goal":["star", "star", "rect", "rect", "rect"],
-            "toolbox":"",
-            "block_variant": {
-                "board": ["__verbatim; give(_, star);", "__verbatim; give(_, rect);"],
-                "toolbox": ["1", "2", "3", "4", "5", "6"],
-                "typing_hints": []
-            }
-        }
+      {
+          "description": "Intro to map: Typing II.",
+          "board": "['ne', 'li', 'be'].map(s => _t_single)",
+          "goal": "['near', 'liar', 'bear']",
+          "toolbox": "",
+          "block_variant": {
+              "board": "__verbatim; ['ne', 'li', 'be'].map(s => _);",
+              "toolbox": ["_ + _", "_ == _", "'ar'", "s", "s", "_b ? _ : _", "x => _"]
+          },
+          "verbatim_variant": {
+              "typing_hints": ["s + \"ar\""]
+          }
+      },
+      {
+          "description": "Intro to map: Choosing arrays.",
+          "board": "__.map(a => _t_single)",
+          "goal": "['met', 'net']",
+          "toolbox": ["['b', 'a']", "['n', 'm']", "['m', 'n']"],
+          "block_variant": {
+              "board": "__verbatim; __.map(a => _);",
+              "toolbox": ["['b', 'a']", "['n', 'm']", "['m', 'n']", "a + 'et'"]
+          },
+          "verbatim_variant": {
+              "typing_hints": ["a + \"et\""]
+          }
+      },
+      {
+          "description": "Intro to map: Choosing arrays II.",
+          "board": "__.map(_t_single)",
+          "goal": "[false, true]",
+          "toolbox": ["['0', '1']", "[0, 0]", "['a', 'b']", "[3, 5]"],
+          "block_variant": {
+              "board": "__verbatim; __.map(_l);",
+              "toolbox": ["x => x == _", "0", "1", "['0', '1']", "[1, 0]"]
+          },
+          "verbatim_variant": {
+              "typing_hints": ["x => x == \"b\""]
+          }
+      },
+      {
+          "description": "Typing arrays.",
+          "board": ["_t_array.map(x => x + 'er')"],
+          "goal": "['better', 'faster', 'stronger']",
+          "block_variant": {
+              "board": "__verbatim; __.map(x => x + 'er');",
+              "toolbox": ["['bet', 'fas', 'stron']", "['bett', 'fast', 'strong']", "['be', 'fa', 'stro']", "['better', 'faster', 'stronget']"]
+          },
+          "verbatim_variant": {
+              "typing_hints": ["\"bett\", \"fast\", \"strong\""]
+          }
+      },
+      {
+          "description": "Typing arrays ||.",
+          "board": ["_t_array.map(x => 'po' + x)", "__.map(y => y + 'tion')"],
+          "goal": "['position', 'portion', 'pollution']",
+          "block_variant": {
+              "board": "__verbatim; __.map(x => x + 'er');",
+              "toolbox": ["['bet', 'fas', 'stron']", "['bett', 'fast', 'strong']", "['be', 'fa', 'stro']", "['better', 'faster', 'stronget']"]
+          },
+          "verbatim_variant": {
+              "typing_hints": ["\"bett\", \"fast\", \"strong\""]
+          }
+      }
     ],
     "resources":{
         "planet":"planet-functiana",

@@ -3,56 +3,60 @@
     "description":"Anonymous functions and replication",
     "language": "JavaScript",
     "levels": [
-        {
-            "board":["(x) => x", "star"],
-            "goal":["star"],
-            "toolbox":""
-        },
-        {
-            "board":["(x) => x", "(x) => x", "(x) => x", "star"],
-            "goal":["star"],
-            "toolbox":""
-        },
-        {
-            "board":["give(2, _)"],
-            "goal":["triangle", "triangle"],
-            "toolbox":["star", "triangle", "rect"]
-        },
-        {
-            "board":["give(2, _)", "_ + 1"],
-            "goal":["4", "4"],
-            "toolbox":["1", "2", "3", "4"]
-        },
-        {
-            "board":["give(2, _)", "(x) => x"],
-            "goal":["(x) => x", "(x) => x"],
-            "toolbox":""
-        },
-        {
-            "board":["give(2, _)", "(x) => x", "star"],
-            "goal":["star"],
-            "toolbox":""
-        },
-        {
-            "board":["give(_t_single, star)"],
-            "goal":["star", "star", "star", "star"],
-            "toolbox":"",
-            "block_variant": {
-                "board": ["__verbatim; give(_, star);"],
-                "toolbox": ["1", "2", "3", "4", "5", "6"],
-                "typing_hints": []
-            }
-        },
-        {
-            "board":["give(_t_single, star)", "give(_t_single, rect)"],
-            "goal":["star", "star", "rect", "rect", "rect"],
-            "toolbox":"",
-            "block_variant": {
-                "board": ["__verbatim; give(_, star);", "__verbatim; give(_, rect);"],
-                "toolbox": ["1", "2", "3", "4", "5", "6"],
-                "typing_hints": []
-            }
-        }
+      {
+          "description": "Typing conditionals I.",
+          "board": ["give(3, _t_single)"],
+          "goal": ["1", "0", "0"],
+          "toolbox": ["true", "false", "true", "false"],
+          "typing_hints": ["(b) => b ? 1 : 0"],
+          "block_variant": {
+              "board": ["give(3, (b => b ? 1 : 0))"]
+          }
+      },
+      {
+          "description": "Typing conditionals II.",
+          "board": ["give(3, num => _t_single)"],
+          "goal": ["'yes'", "'no'", "'no'"],
+          "toolbox": ["1", "0", "1", "0"],
+          "typing_help": ["You'll have to use ==, ?, and :"],
+          "block_variant": {
+              "board": ["__verbatim; b => _ ? _ : _;", "x => xxx"],
+              "toolbox": ["_ == _", "b", "b", "'yes'", "'no'", "true", "false", "false"]
+          },
+          "verbatim_variant": {
+              "board": ["_t_single", "x => xxx"],
+              "typing_hints": ["(x) => x ? \"yes\" : \"no\""]
+          }
+      },
+      {
+          "description": "Typing conditionals inside map.",
+          "board": ["['A', 'F', 'F'].map(_t_single)"],
+          "goal": ["['pass', 'fail', 'fail']"],
+          "toolbox": "",
+          "typing_help": ["You'll have to use =>, ?, and :"],
+          "block_variant": {
+              "board": ["__verbatim; ['A', 'F', 'F'].map(_l);", "'pass'", "'fail'"],
+              "toolbox": ["y => _", "_ == _", "y", "y", "'A'", "'F'", "_b ? _ : _"]
+          },
+          "verbatim_variant": {
+              "typing_hints": ["x => x == \"A\" ? \"pass\" : \"fail\""],
+              "typing_help": null
+          }
+      },
+      {
+          "description": "Typing both array and function inside map. Using conditonals in map II.",
+          "board": ["_t_array.map(_t_single)"],
+          "goal": ["['two', 'one', 'two']"],
+          "toolbox": "",
+          "typing_help": ["You'll have to use =>, ?, and :"],
+          "block_variant": {
+              "board": ["__verbatim; __.map(_l);" ],
+              "toolbox": ["[1, 2, 1]", "['a', 'b', 'b']", "1", "2", "'a'", "'b'", "x", "n", "_b ? _ : _", "'two'", "'one'", "x => _", "n => _", "_ == _"]
+          },
+          "verbatim_variant": {
+              "typing_hints": ["2, 1, 2", "n => n == 2 ? \"two\" : \"one\""]
+          }
+      }
     ],
     "resources":{
         "planet":"planet-functiana",

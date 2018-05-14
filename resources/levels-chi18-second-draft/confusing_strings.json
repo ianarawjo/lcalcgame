@@ -36,20 +36,20 @@
             "toolbox": ["'o'", "'p'", "'pop'", "'op'"]
         },
         {
-            "description": "Confusion I.1.",
+            "description": "Confusion I.b.",
             "board": ["e => e", "b => 'b'", "b => b", "'e'", "'b'", "'k'"],
             "goal": ["'e'", "'b'", "'b'"],
             "toolbox": []
         },
         {
             "description": "Confusion II.",
-            "board": ["'a'", "'b'", "'c'"],
-            "goal": ["'aa'", "'bb'", "'cc'"],
-            "toolbox": ["b => 'b' + b", "a => a + a", "c => 'c' + 'c'"]
+            "board": ["'o'", "b => 'dr' + b", "a => a + a", "c => c + 'l'"],
+            "goal": ["drool"],
+            "toolbox": []
         },
         {
-            "description": "Confusion IV.",
-            "board": ["a => _t_fullstring + a", "b => _t_single + 'oo'"],
+            "description": "Confusion IV: Typing.",
+            "board": ["a => _t_single + a", "b => _t_single + 'oo'"],
             "goal": ["'at'", "'zoo'"],
             "typing_hints": ["\"a\""],
             "toolbox": ["'z'", "'a'", "'t'", "'b'", "'x'"],
@@ -64,7 +64,7 @@
         },
         {
             "description": "Confusion V: Typing function bodies.",
-            "board": ["b => _t_single", "x => x x x"],
+            "board": ["b => _t_single", "give(3, _l)"],
             "goal": ["'bee'", "'see'", "'Lee'"],
             "typing_hints": ["b + \"ee\""],
             "toolbox": ["'b'", "'s'", "'L'"],
@@ -75,7 +75,7 @@
         },
         {
             "description": "Confusion VI: Constructing functions.",
-            "board": ["b => _t_single", "x => x x x"],
+            "board": ["b => _t_single", "give(3, _l)"],
             "goal": ["'knew'", "'knave'", "'know'"],
             "toolbox": ["'ew'", "'ave'", "'ow'"],
             "block_variant": {
@@ -89,7 +89,7 @@
         },
         {
             "description": "Confusion VII: Constructing functions II: Triple concat.",
-            "board": ["w => _t_single", "x => x x x"],
+            "board": ["w => _t_single", "give(3, _l)"],
             "goal": ["'widow'", "'willow'", "'window'"],
             "toolbox": ["'d'", "'ll'", "'nd'"],
             "block_variant": {
@@ -103,7 +103,7 @@
         },
         {
             "description": "Typing conditionals I.",
-            "board": ["_t_single", "x => xx"],
+            "board": ["_t_single", "give(2, _l)"],
             "goal": ["1", "0"],
             "toolbox": ["true", "false", "true", "false"],
             "typing_hints": ["n => n ? 1 : 0"],
@@ -113,7 +113,7 @@
         },
         {
             "description": "Typing conditionals II.",
-            "board": ["_t_single", "x => xxx"],
+            "board": ["_t_single", "give(3, _l)"],
             "goal": ["'yes'", "'no'", "'no'"],
             "toolbox": ["true", "false", "true", "false"],
             "typing_help": ["You'll have to use =>, ?, and :"],

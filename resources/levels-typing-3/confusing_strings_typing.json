@@ -3,56 +3,60 @@
     "description":"Anonymous functions and replication",
     "language": "JavaScript",
     "levels": [
-        {
-            "board":["(x) => x", "star"],
-            "goal":["star"],
-            "toolbox":""
-        },
-        {
-            "board":["(x) => x", "(x) => x", "(x) => x", "star"],
-            "goal":["star"],
-            "toolbox":""
-        },
-        {
-            "board":["give(2, _)"],
-            "goal":["triangle", "triangle"],
-            "toolbox":["star", "triangle", "rect"]
-        },
-        {
-            "board":["give(2, _)", "_ + 1"],
-            "goal":["4", "4"],
-            "toolbox":["1", "2", "3", "4"]
-        },
-        {
-            "board":["give(2, _)", "(x) => x"],
-            "goal":["(x) => x", "(x) => x"],
-            "toolbox":""
-        },
-        {
-            "board":["give(2, _)", "(x) => x", "star"],
-            "goal":["star"],
-            "toolbox":""
-        },
-        {
-            "board":["give(_t_single, star)"],
-            "goal":["star", "star", "star", "star"],
-            "toolbox":"",
-            "block_variant": {
-                "board": ["__verbatim; give(_, star);"],
-                "toolbox": ["1", "2", "3", "4", "5", "6"],
-                "typing_hints": []
-            }
-        },
-        {
-            "board":["give(_t_single, star)", "give(_t_single, rect)"],
-            "goal":["star", "star", "rect", "rect", "rect"],
-            "toolbox":"",
-            "block_variant": {
-                "board": ["__verbatim; give(_, star);", "__verbatim; give(_, rect);"],
-                "toolbox": ["1", "2", "3", "4", "5", "6"],
-                "typing_hints": []
-            }
-        }
+      {
+          "description": "Confusion IV: Typing.",
+          "board": ["a => _t_single + a", "b => _t_single + 'oo'"],
+          "goal": ["'at'", "'zoo'"],
+          "typing_hints": ["\"a\""],
+          "toolbox": ["'z'", "'a'", "'t'", "'b'", "'x'"],
+          "block_variant": {
+              "board": ["a => 'a' + a", "__verbatim; b => _ + 'oo';"],
+              "toolbox": ["'z'", "z", "'a'", "'t'", "'b'", "b"]
+          },
+          "verbatim_variant": {
+              "board": ["a => _t_fullstring + a", "b => _t_single + 'oo'"],
+              "typing_hints": ["\"a\"", "b"]
+          }
+      },
+      {
+          "description": "Confusion V: Typing function bodies.",
+          "board": ["give(3, b => _t_single)"],
+          "goal": ["'bee'", "'see'", "'Lee'"],
+          "typing_hints": ["b + \"ee\""],
+          "toolbox": ["'b'", "'s'", "'L'"],
+          "block_variant": {
+              "board": ["__verbatim; b => _;", "x => x x x"],
+              "toolbox": ["b + _", "'ee'", "'b'", "'s'", "'L'"]
+          }
+      },
+      {
+          "description": "Confusion VI: Constructing functions.",
+          "board": ["give(3, s => _t_single)"],
+          "goal": ["'knew'", "'knave'", "'know'"],
+          "toolbox": ["'ew'", "'ave'", "'ow'"],
+          "block_variant": {
+              "board": ["__verbatim; b => _;", "x => x x x"],
+              "toolbox": ["b", "b", "_ + _", "_ == _", "'kn'", "'ew'", "'ave'", "'ow'"]
+          },
+          "verbatim_variant": {
+              "board": ["b => _t_single", "x => x x x"],
+              "typing_hints": ["\"kn\" + b"]
+          }
+      },
+      {
+          "description": "Confusion VII: Constructing functions II: Triple concat.",
+          "board": ["give(3, w => _t_single)"],
+          "goal": ["'widow'", "'willow'", "'window'"],
+          "toolbox": ["'d'", "'ll'", "'nd'"],
+          "block_variant": {
+              "board": ["__verbatim; w => _;", "x => x x x"],
+              "toolbox": ["_ + _ + _", "w", "w", "w", "'wi'", "'d'", "'ll'", "'ow'", "'nd'"]
+          },
+          "verbatim_variant": {
+              "board": ["w => _t_single", "x => x x x"],
+              "typing_hints": ["\"wi\" + w + \"ow\""]
+          }
+      }
     ],
     "resources":{
         "planet":"planet-functiana",

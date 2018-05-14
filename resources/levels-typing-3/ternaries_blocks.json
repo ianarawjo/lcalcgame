@@ -1,57 +1,31 @@
 {
-    "chapterName":"Lambdas",
-    "description":"Anonymous functions and replication",
+    "chapterName":"Conditionals",
+    "description":"Ternaries and strings",
     "language": "JavaScript",
     "levels": [
         {
-            "board":["(x) => x", "star"],
-            "goal":["star"],
-            "toolbox":""
-        },
-        {
-            "board":["(x) => x", "(x) => x", "(x) => x", "star"],
-            "goal":["star"],
-            "toolbox":""
-        },
-        {
-            "board":["give(2, _)"],
-            "goal":["triangle", "triangle"],
-            "toolbox":["star", "triangle", "rect"]
-        },
-        {
-            "board":["give(2, _)", "_ + 1"],
-            "goal":["4", "4"],
-            "toolbox":["1", "2", "3", "4"]
-        },
-        {
-            "board":["give(2, _)", "(x) => x"],
-            "goal":["(x) => x", "(x) => x"],
-            "toolbox":""
-        },
-        {
-            "board":["give(2, _)", "(x) => x", "star"],
-            "goal":["star"],
-            "toolbox":""
-        },
-        {
-            "board":["give(_t_single, star)"],
-            "goal":["star", "star", "star", "star"],
+            "description": "Intro to conditionals.",
+            "board":["_b ? 'apple' : 'pear'", "true"],
+            "goal":["'apple'"],
             "toolbox":"",
-            "block_variant": {
-                "board": ["__verbatim; give(_, star);"],
-                "toolbox": ["1", "2", "3", "4", "5", "6"],
-                "typing_hints": []
+            "fade": {
+                "==": 1
             }
         },
         {
-            "board":["give(_t_single, star)", "give(_t_single, rect)"],
-            "goal":["star", "star", "rect", "rect", "rect"],
-            "toolbox":"",
-            "block_variant": {
-                "board": ["__verbatim; give(_, star);", "__verbatim; give(_, rect);"],
-                "toolbox": ["1", "2", "3", "4", "5", "6"],
-                "typing_hints": []
-            }
+            "board":["_b ? 'juice' : 'pie'", "false ? 'grape' : 'cherry'"],
+            "goal":["'cherry'", "'pie'"],
+            "toolbox":["true", "false"]
+        },
+        {
+            "board":["_b ? 'blue' : 'white'", "_b ? 'sun' : 'moon'"],
+            "goal":["'blue'", "'moon'"],
+            "toolbox":["true", "false", "true", "false"]
+        },
+        {
+            "board":["'cry' == _", "_b ? 'grape' : 'onion'"],
+            "goal":["'onion'"],
+            "toolbox":["'eat'", "'cry'", "'bite'"]
         }
     ],
     "resources":{

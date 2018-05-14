@@ -1,56 +1,67 @@
 {
-    "chapterName":"Lambdas",
-    "description":"Anonymous functions and replication",
+    "chapterName":"Basics",
+    "description":"Addition and typing numbers",
     "language": "JavaScript",
     "levels": [
         {
-            "board":["(x) => x", "star"],
-            "goal":["star"],
+            "board":["1 + 1"],
+            "goal":["2"],
+            "toolbox":"",
+            "fade": {
+                "lambda": 2,
+                "number": 1,
+                "==":1,
+                "true":1,
+                "false":1
+            },
+            "showFade": false
+        },
+        {
+            "board":["_ + 1", "6", "3"],
+            "goal":["7", "3"],
             "toolbox":""
         },
         {
-            "board":["(x) => x", "(x) => x", "(x) => x", "star"],
-            "goal":["star"],
-            "toolbox":""
-        },
-        {
-            "board":["give(2, _)"],
-            "goal":["triangle", "triangle"],
-            "toolbox":["star", "triangle", "rect"]
-        },
-        {
-            "board":["give(2, _)", "_ + 1"],
-            "goal":["4", "4"],
+            "board":["2 + _"],
+            "goal":["5"],
             "toolbox":["1", "2", "3", "4"]
         },
         {
-            "board":["give(2, _)", "(x) => x"],
-            "goal":["(x) => x", "(x) => x"],
-            "toolbox":""
+            "board":["_ + 1", "_ + 4"],
+            "goal":["6", "6"],
+            "toolbox":["1", "2", "3", "4", "5"]
         },
         {
-            "board":["give(2, _)", "(x) => x", "star"],
-            "goal":["star"],
-            "toolbox":""
+            "board":["_ + 2", "6 + _"],
+            "goal":["12"],
+            "toolbox":["1", "2", "3", "4", "5"]
         },
         {
-            "board":["give(_t_single, star)"],
-            "goal":["star", "star", "star", "star"],
+            "description": "Intro to typing (numbers)",
+            "board":["_t_int + 5"],
+            "goal":["8"],
             "toolbox":"",
             "block_variant": {
-                "board": ["__verbatim; give(_, star);"],
-                "toolbox": ["1", "2", "3", "4", "5", "6"],
-                "typing_hints": []
+                "board": ["__verbatim; _ + 5;"],
+                "toolbox": ["1", "2", "3", "4", "5"]
             }
         },
         {
-            "board":["give(_t_single, star)", "give(_t_single, rect)"],
-            "goal":["star", "star", "rect", "rect", "rect"],
+            "board":["_t_int + 2", "_t_int + 3", "_t_int + 4"],
+            "goal":["12", "15", "17"],
             "toolbox":"",
             "block_variant": {
-                "board": ["__verbatim; give(_, star);", "__verbatim; give(_, rect);"],
-                "toolbox": ["1", "2", "3", "4", "5", "6"],
-                "typing_hints": []
+                "board": ["__verbatim; _ + 2;", "__verbatim; _ + 3;", "__verbatim; _ + 4;"],
+                "toolbox": ["7", "8", "9", "10", "11", "12", "13", "14", "15"]
+            }
+        },
+        {
+            "board":["_t_int + _t_int", "_ - 3"],
+            "goal":["10"],
+            "toolbox":"",
+            "block_variant": {
+                "board": ["__verbatim; _ + _;", "_ - 3"],
+                "toolbox": ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
             }
         }
     ],

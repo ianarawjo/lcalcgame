@@ -1,57 +1,40 @@
 {
-    "chapterName":"Lambdas",
-    "description":"Anonymous functions and replication",
+    "chapterName":"Basics",
+    "description":"Addition and typing numbers",
     "language": "JavaScript",
     "levels": [
         {
-            "board":["(x) => x", "star"],
-            "goal":["star"],
+            "board":["1 + 1"],
+            "goal":["2"],
+            "toolbox":"",
+            "fade": {
+                "lambda": 2,
+                "number": 1,
+                "==":1,
+                "true":1,
+                "false":1
+            },
+            "showFade": false
+        },
+        {
+            "board":["_ + 1", "6", "3"],
+            "goal":["7", "3"],
             "toolbox":""
         },
         {
-            "board":["(x) => x", "(x) => x", "(x) => x", "star"],
-            "goal":["star"],
-            "toolbox":""
-        },
-        {
-            "board":["give(2, _)"],
-            "goal":["triangle", "triangle"],
-            "toolbox":["star", "triangle", "rect"]
-        },
-        {
-            "board":["give(2, _)", "_ + 1"],
-            "goal":["4", "4"],
+            "board":["2 + _"],
+            "goal":["5"],
             "toolbox":["1", "2", "3", "4"]
         },
         {
-            "board":["give(2, _)", "(x) => x"],
-            "goal":["(x) => x", "(x) => x"],
-            "toolbox":""
+            "board":["_ + 1", "_ + 4"],
+            "goal":["6", "6"],
+            "toolbox":["1", "2", "3", "4", "5"]
         },
         {
-            "board":["give(2, _)", "(x) => x", "star"],
-            "goal":["star"],
-            "toolbox":""
-        },
-        {
-            "board":["give(_t_single, star)"],
-            "goal":["star", "star", "star", "star"],
-            "toolbox":"",
-            "block_variant": {
-                "board": ["__verbatim; give(_, star);"],
-                "toolbox": ["1", "2", "3", "4", "5", "6"],
-                "typing_hints": []
-            }
-        },
-        {
-            "board":["give(_t_single, star)", "give(_t_single, rect)"],
-            "goal":["star", "star", "rect", "rect", "rect"],
-            "toolbox":"",
-            "block_variant": {
-                "board": ["__verbatim; give(_, star);", "__verbatim; give(_, rect);"],
-                "toolbox": ["1", "2", "3", "4", "5", "6"],
-                "typing_hints": []
-            }
+            "board":["_ + 2", "6 + _"],
+            "goal":["12"],
+            "toolbox":["1", "2", "3", "4", "5"]
         }
     ],
     "resources":{

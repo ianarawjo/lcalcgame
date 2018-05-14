@@ -3,56 +3,28 @@
     "description":"Anonymous functions and replication",
     "language": "JavaScript",
     "levels": [
-        {
-            "board":["(x) => x", "star"],
-            "goal":["star"],
-            "toolbox":""
-        },
-        {
-            "board":["(x) => x", "(x) => x", "(x) => x", "star"],
-            "goal":["star"],
-            "toolbox":""
-        },
-        {
-            "board":["give(2, _)"],
-            "goal":["triangle", "triangle"],
-            "toolbox":["star", "triangle", "rect"]
-        },
-        {
-            "board":["give(2, _)", "_ + 1"],
-            "goal":["4", "4"],
-            "toolbox":["1", "2", "3", "4"]
-        },
-        {
-            "board":["give(2, _)", "(x) => x"],
-            "goal":["(x) => x", "(x) => x"],
-            "toolbox":""
-        },
-        {
-            "board":["give(2, _)", "(x) => x", "star"],
-            "goal":["star"],
-            "toolbox":""
-        },
-        {
-            "board":["give(_t_single, star)"],
-            "goal":["star", "star", "star", "star"],
-            "toolbox":"",
-            "block_variant": {
-                "board": ["__verbatim; give(_, star);"],
-                "toolbox": ["1", "2", "3", "4", "5", "6"],
-                "typing_hints": []
-            }
-        },
-        {
-            "board":["give(_t_single, star)", "give(_t_single, rect)"],
-            "goal":["star", "star", "rect", "rect", "rect"],
-            "toolbox":"",
-            "block_variant": {
-                "board": ["__verbatim; give(_, star);", "__verbatim; give(_, rect);"],
-                "toolbox": ["1", "2", "3", "4", "5", "6"],
-                "typing_hints": []
-            }
-        }
+      {
+          "description": "Intro to map, leveraging math knowledge.",
+          "board": "[1, 2, 3].map(x => x + 1)",
+          "goal": "[2, 3, 4]",
+          "toolbox": "",
+          "fade": {
+              "map": 1
+          },
+          "showFade": false
+      },
+      {
+          "description": "Function placement.",
+          "board": "[0, 1, 0].map(_l)",
+          "goal": "[false, true, false]",
+          "toolbox": ["n => 0 == n", "m => 1 == m", "k => 1 + k"]
+      },
+      {
+          "description": "Map, order of operations",
+          "board": ["__.map(y => y + _n)", "__.map(x => _n - x)", "[10, 20, 30]"],
+          "goal": "[30, 20, 10]",
+          "toolbox": ["10", "20", "30", "40"]
+      }
     ],
     "resources":{
         "planet":"planet-functiana",

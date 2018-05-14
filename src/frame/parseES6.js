@@ -288,8 +288,9 @@ class ES6Parser {
                         comp.holes[1] = new TypeInTextExpr(validator, (finalText) => {
                             const locked = comp.locked;
                             comp.funcName = finalText;
-                            if (finalText === '+') { // If this is concat, we have to swap the CompareExpr for an AddExpr...
-                                const addExpr = new AddExpr(comp.leftExpr.clone(), comp.rightExpr.clone());
+                            if (['+', '-', '*', '/'].indexOf(finalText) > -1) { // If this is concat, we have to swap the CompareExpr for an AddExpr...
+                                const _m = { '+':AddExpr, '-':SubtractionExpr, '*':MultiplicationExpr, '/':DivisionExpr };
+                                const addExpr = new _m[finalText](comp.leftExpr.clone(), comp.rightExpr.clone());
                                 const parent = (comp.parent || comp.stage);
                                 parent.swap(comp, addExpr);
                                 if (locked) addExpr.lock();
@@ -297,8 +298,8 @@ class ES6Parser {
                                     !addExpr.parent && !addExpr.hasPlaceholderChildren())
                                     addExpr.performUserReduction();
                             }
-                            else if (finalText === '==') { // If this is concat, we have to swap the CompareExpr for an AddExpr...
-                                const cmpExpr = new FadedCompareExpr(comp.leftExpr.clone(), comp.rightExpr.clone(), '==');
+                            else if (finalText === '==' || finalText == '!=') { // If this is concat, we have to swap the CompareExpr for an AddExpr...
+                                const cmpExpr = new FadedCompareExpr(comp.leftExpr.clone(), comp.rightExpr.clone(), finalText);
                                 const parent = (comp.parent || comp.stage);
                                 parent.swap(comp, cmpExpr);
                                 if (locked) cmpExpr.lock();

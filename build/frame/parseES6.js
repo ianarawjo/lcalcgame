@@ -310,16 +310,17 @@ var ES6Parser = function () {
                                     comp.holes[1] = new TypeInTextExpr(validator, function (finalText) {
                                         var locked = comp.locked;
                                         comp.funcName = finalText;
-                                        if (finalText === '+') {
+                                        if (['+', '-', '*', '/'].indexOf(finalText) > -1) {
                                             // If this is concat, we have to swap the CompareExpr for an AddExpr...
-                                            var addExpr = new AddExpr(comp.leftExpr.clone(), comp.rightExpr.clone());
+                                            var _m = { '+': AddExpr, '-': SubtractionExpr, '*': MultiplicationExpr, '/': DivisionExpr };
+                                            var addExpr = new _m[finalText](comp.leftExpr.clone(), comp.rightExpr.clone());
                                             var parent = comp.parent || comp.stage;
                                             parent.swap(comp, addExpr);
                                             if (locked) addExpr.lock();
                                             if (__AUTO_REDUCE_ON_TYPING_COMMIT && !addExpr.parent && !addExpr.hasPlaceholderChildren()) addExpr.performUserReduction();
-                                        } else if (finalText === '==') {
+                                        } else if (finalText === '==' || finalText == '!=') {
                                             // If this is concat, we have to swap the CompareExpr for an AddExpr...
-                                            var cmpExpr = new FadedCompareExpr(comp.leftExpr.clone(), comp.rightExpr.clone(), '==');
+                                            var cmpExpr = new FadedCompareExpr(comp.leftExpr.clone(), comp.rightExpr.clone(), finalText);
                                             var _parent = comp.parent || comp.stage;
                                             _parent.swap(comp, cmpExpr);
                                             if (locked) cmpExpr.lock();

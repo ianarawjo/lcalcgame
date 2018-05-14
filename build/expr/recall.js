@@ -607,9 +607,10 @@ var TypeBox = function (_mag$RoundedRect) {
     }, {
         key: 'carriageReturn',
         value: function carriageReturn() {
+            var focusNext = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
             // Solidify block (if possible)
             this._logState('carriage-return');
-            if (this.onCarriageReturn) this.onCarriageReturn();
+            if (this.onCarriageReturn) this.onCarriageReturn(focusNext);
             if (this.stage) this.stage.update();
             this._logState('after-carriage-return');
         }
@@ -620,7 +621,9 @@ var TypeBox = function (_mag$RoundedRect) {
     }, {
         key: 'simulateCarriageReturn',
         value: function simulateCarriageReturn() {
-            if (this.onCarriageReturn) this.onCarriageReturn();
+            var focusNext = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+
+            if (this.onCarriageReturn) this.onCarriageReturn(focusNext);
             if (this.stage) this.stage.update();
         }
     }, {
@@ -975,13 +978,15 @@ var TypeInTextExpr = function (_TextExpr) {
 
         var _thisTextExpr = _this10;
         var onCommit = function onCommit() {
+            var focusNext = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+
             var txt = this.text; // this.text is the TypeBox's text string, *not* the TextExpr's!
             console.log(txt);
             if (_thisTextExpr.validator(txt)) {
                 (function () {
                     var rootParent = _thisTextExpr.rootParent;
                     var stage = _thisTextExpr.stage;
-                    _thisTextExpr.commit(txt);
+                    _thisTextExpr.commit(txt, focusNext);
                     Resource.play('carriage-return');
 
                     var prom = Promise.resolve();
@@ -1096,6 +1101,8 @@ var TypeInTextExpr = function (_TextExpr) {
     }, {
         key: 'commit',
         value: function commit(renderedText) {
+            var focusNext = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+
             var stage = this.stage;
             var rootParent = this.rootParent;
             this.blur();
@@ -1103,7 +1110,9 @@ var TypeInTextExpr = function (_TextExpr) {
             this.removeChild(this.typeBox);
             this.typeBox = null;
             this.update();
-            stage.focusFirstKeyDelegate(); // auto-enter the next TypeBox on screen, if one exists.
+
+            if (focusNext) stage.focusFirstKeyDelegate(); // auto-enter the next TypeBox on screen, if one exists.
+
             ShapeExpandEffect.run(this, 200, function (e) {
                 return Math.pow(e, 1);
             });

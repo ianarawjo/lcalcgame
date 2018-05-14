@@ -3,7 +3,7 @@
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
 /* For fast-switching between game progressions. */
-var __ACTIVE_PROGRESSION = 'Typing Study';
+var __ACTIVE_PROGRESSION = 'Typing Study 18';
 var __PROGRESSIONS = {
     'Default': {
         dir: 'levels/',
@@ -35,6 +35,63 @@ var __PROGRESSIONS = {
             '__ALLOW_PARTIAL_REPLICATION': false,
             '__ALLOW_SKIPPING': true,
             '__ALLOW_ARRAY_EVENTS': false
+        }
+    },
+    'Typing Study 18': {
+        dir: 'levels-typing-3/',
+        digraph: {
+            'addition_blocks': ['addition_typing'],
+            'addition_typing': ['booleans_blocks'],
+            // 'lambdas_blocks': ['lambdas_typing'],
+            // 'lambdas_typing': ['booleans_blocks'],
+            'booleans_blocks': ['booleans_typing'],
+            'booleans_typing': ['ternaries_blocks'],
+            'ternaries_blocks': ['ternaries_typing'],
+            'ternaries_typing': ['concat_blocks'],
+            'concat_blocks': ['concat_typing'],
+            'concat_typing': ['give_blocks'],
+            'give_blocks': ['give_typing'],
+            'give_typing': ['bindings_blocks'],
+            'bindings_blocks': ['bindings_typing'],
+            'bindings_typing': ['map_operators_blocks'],
+            'map_operators_blocks': ['map_operators_typing'],
+            'map_operators_typing': ['confusing_strings_blocks'],
+            'confusing_strings_blocks': ['confusing_strings_typing'],
+            'confusing_strings_typing': ['map_strings_typing'],
+            'map_strings_typing': ['ternary_bindings_blocks'],
+            'ternary_bindings_blocks': ['ternary_bindings_typing'],
+            'ternary_bindings_typing': []
+        },
+        settings: { // This sets global flags.
+            '__ALLOW_PARTIAL_REPLICATION': false,
+            '__ALLOW_SKIPPING': true,
+            '__ALLOW_ARRAY_EVENTS': false
+        }
+    },
+    'Typing Study 18 - Blocks only': {
+        dir: 'levels-typing-3/',
+        digraph: {
+            'addition_blocks': ['booleans_blocks'],
+            'booleans_blocks': ['ternaries_blocks'],
+            'ternaries_blocks': ['concat_blocks'],
+            'concat_blocks': []
+        },
+        settings: { // This sets global flags.
+            '__ALLOW_PARTIAL_REPLICATION': false,
+            '__ALLOW_SKIPPING': true,
+            '__ALLOW_ARRAY_EVENTS': false
+        }
+    },
+    'Original Typing Study': {
+        dir: 'levels-chi18-second-draft/',
+        digraph: {
+            'intro': ['booleans'],
+            'booleans': ['strings'],
+            'strings': ['bindings'],
+            'bindings': ['confusing_strings'],
+            'confusing_strings': ['conditionals'],
+            'conditionals': ['map'],
+            'map': []
         }
     },
     'Hour of Code': {

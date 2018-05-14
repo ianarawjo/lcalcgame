@@ -1,56 +1,151 @@
 {
-    "chapterName":"Lambdas",
-    "description":"Anonymous functions and replication",
+    "chapterName":"Conditionals",
+    "description":"Ternaries and strings",
     "language": "JavaScript",
     "levels": [
         {
-            "board":["(x) => x", "star"],
-            "goal":["star"],
+            "description": "Intro to conditionals.",
+            "board":["_b ? 'apple' : 'pear'", "true"],
+            "goal":["'apple'"],
             "toolbox":""
         },
         {
-            "board":["(x) => x", "(x) => x", "(x) => x", "star"],
-            "goal":["star"],
+            "board":["_b ? 'juice' : 'pie'", "false ? 'grape' : 'cherry'"],
+            "goal":["'cherry'", "'pie'"],
+            "toolbox":["true", "false"]
+        },
+        {
+            "board":["_b ? 'blue' : 'white'", "_b ? 'sun' : 'moon'"],
+            "goal":["'blue'", "'moon'"],
+            "toolbox":["true", "false", "true", "false"]
+        },
+        {
+            "board":["'cry' == _", "_b ? 'grape' : 'onion'"],
+            "goal":["'onion'"],
+            "toolbox":["'eat'", "'cry'", "'bite'"]
+        },
+        {
+            "board":["'yup' == _", "true", "_b ? 'yup' : 'nope'"],
+            "goal":["true"],
             "toolbox":""
         },
         {
-            "board":["give(2, _)"],
-            "goal":["triangle", "triangle"],
-            "toolbox":["star", "triangle", "rect"]
-        },
-        {
-            "board":["give(2, _)", "_ + 1"],
-            "goal":["4", "4"],
-            "toolbox":["1", "2", "3", "4"]
-        },
-        {
-            "board":["give(2, _)", "(x) => x"],
-            "goal":["(x) => x", "(x) => x"],
-            "toolbox":""
-        },
-        {
-            "board":["give(2, _)", "(x) => x", "star"],
-            "goal":["star"],
-            "toolbox":""
-        },
-        {
-            "board":["give(_t_single, star)"],
-            "goal":["star", "star", "star", "star"],
+            "board":["_t_single == 'cold'", "_t_single == 'hot'"],
+            "goal":["true", "true"],
             "toolbox":"",
+            "typing_hints": ["\"cold\""],
+            "typing_solution": ["\"cold\"", "\"hot\""],
             "block_variant": {
-                "board": ["__verbatim; give(_, star);"],
-                "toolbox": ["1", "2", "3", "4", "5", "6"],
+                "board": ["__verbatim; _ == 'cold';", "__verbatim; _ == 'hot';"],
+                "toolbox": ["'cold'", "'warm'", "'hot'"],
                 "typing_hints": []
             }
         },
         {
-            "board":["give(_t_single, star)", "give(_t_single, rect)"],
-            "goal":["star", "star", "rect", "rect", "rect"],
+            "board":["_t_single == 'river'", "_t_single == _t_single"],
+            "goal":["true", "true"],
+            "typing_solution": ["\"river\"", "\"a\"", "\"a\""],
             "toolbox":"",
             "block_variant": {
-                "board": ["__verbatim; give(_, star);", "__verbatim; give(_, rect);"],
-                "toolbox": ["1", "2", "3", "4", "5", "6"],
+                "board": ["__verbatim; _ == 'river';", "__verbatim; _ == _;"],
+                "toolbox": ["'river'", "'zoo'", "'bunny'", "'zoo'", "'rabbit'"],
                 "typing_hints": []
+            }
+        },
+        {
+            "board":["_b ? _t_single : _t_single", "_b ? _t_single : _t_single"],
+            "goal":["'rainbow'", "'sparkles'"],
+            "typing_solution": ["\"rainbow\"", "\"fox\"", "\"sparkles\"", "\"linx\""],
+            "toolbox":["true", "false"],
+            "block_variant": {
+                "board": ["__verbatim; _b ? _ : _;", "__verbatim; _b ? _ : _;"],
+                "toolbox": ["true", "false", "'rainbow'", "'unicorn'", "'sparkles'", "'glitter'"]
+            }
+        },
+        {
+            "board":["give(3, _)", "_t_single"],
+            "typing_hints": ["(b) => b ? \"yes\" : \"no\""],
+            "typing_solution": ["(b) => b ? \"yes\" : \"no\""],
+            "goal":["'no'", "'no'", "'yes'"],
+            "toolbox":["true", "false", "true", "false"],
+            "block_variant": {
+                "board": ["give(3, _)", "(b) => b ? \"yes\" : \"no\""],
+                "toolbox": ["true", "false", "true", "false"],
+                "typing_hints": []
+            }
+        },
+        {
+            "board":["give(3, _)", "(b) => b ? _t_single : _t_single"],
+            "goal":["'totally'", "'never'", "'never'"],
+            "toolbox":["true", "false", "true", "false"],
+            "typing_solution": ["\"totally\"", "\"never\""],
+            "block_variant": {
+                "board": ["give(3, _)", "__verbatim; (b) => b ? _ : _;"],
+                "toolbox": ["'never'", "'totally'", "b", "true", "false", "true", "false"]
+            }
+        },
+        {
+            "board":["give(3, _)", "(x) => _t_single"],
+            "goal":["'allow'", "'allow'", "'reject'"],
+            "toolbox":["true", "false", "true", "false"],
+            "typing_solution": ["x ? \"allow\" : \"reject\""],
+            "block_variant": {
+                "board":["give(3, _)", "__verbatim; (x) => _;"],
+                "toolbox":["true", "false", "true", "false", "_ ? _ : _", "'allow'", "'reject'", "x"]
+            }
+        },
+        {
+            "board":["give(2, _)", "(b) => _t_single"],
+            "goal":["1", "0"],
+            "toolbox":["true", "false"],
+            "typing_solution": ["b ? 1 : 0"],
+            "block_variant": {
+                "board":["give(2, _)", "__verbatim; (b) => _;"],
+                "toolbox":["true", "false", "2", "1", "0", "_ ? _ : _", "b", "_ == _"]
+            }
+        },
+        {
+            "board":["give(2, _)", "(n) => _t_single ? 'allow' : 'reject'"],
+            "typing_hints": ["n == 1"],
+            "typing_solution": ["n == 1"],
+            "goal":["'allow'", "'reject'"],
+            "toolbox":["1", "0"],
+            "block_variant": {
+                "board":["give(2, _)", "__verbatim; (n) => _;"],
+                "typing_hints": "",
+                "toolbox":["2", "1", "1", "0", "0", "'allow'", "'reject'", "_ ? _ : _", "n", "_ == _"]
+            }
+        },
+        {
+            "board":["give(2, _)", "(n) => _t_single"],
+            "goal":["'two'", "'four'"],
+            "typing_solution": ["n == 2 ? \"two\" : \"four\""],
+            "toolbox":["2", "4"],
+            "block_variant": {
+                "board":["give(2, _)", "__verbatim; (n) => _;"],
+                "toolbox":["2", "2", "4", "4", "6", "'two'", "'four'", "_ ? _ : _", "n", "_ == _", "_ + _"]
+            }
+        },
+        {
+            "board":["give(3, _)", "_t_single"],
+            "goal":["'zero'", "'one'", "'one'"],
+            "typing_solution": ["n == 0 ? \"zero\" : \"one\""],
+            "toolbox":["0", "1", "1"],
+            "block_variant": {
+                "board":["give(3, _)"],
+                "toolbox":["0", "0", "1", "1", "'zero'", "'one'", "'one'",
+                           "__verbatim; (n) => _;", "__verbatim; (x) => _;", "n", "x", "_ ? _ : _", "_ == _", "_ + _"]
+            }
+        },
+        {
+            "board":["give(3, _)", "_t_single"],
+            "goal":["'rna'", "'dna'", "'rna'"],
+            "toolbox":["'u'", "'t'", "'u'"],
+            "typing_solution": ["n == \"u\" ? \"rna\" : \"dna\""],
+            "block_variant": {
+                "board": ["give(3, _)"],
+                "toolbox":["'t'", "'u'", "'t'", "'u'", "'rna'", "'dna'",
+                           "__verbatim; (n) => _;", "__verbatim; (a) => _;", "n", "a", "_ ? _ : _", "_ == _", "_ + _"]
             }
         }
     ],

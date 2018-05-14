@@ -4,54 +4,26 @@
     "language": "JavaScript",
     "levels": [
         {
-            "board":["(x) => x", "star"],
-            "goal":["star"],
-            "toolbox":""
+            "description":"Ternary: Review",
+            "board":["a => a ? 'meters' : 'miles'", "b => b ? 'twenty' : 'forty'", "c => c ? 'more' : 'left'"],
+            "goal":["'twenty'", "'more'", "'miles'"],
+            "toolbox":["true", "false", "true", "false", "true", "false"]
         },
         {
-            "board":["(x) => x", "(x) => x", "(x) => x", "star"],
-            "goal":["star"],
-            "toolbox":""
+            "description": "Ternary: Review II.",
+            "board": ["give(3, (b) => b ? _n : _n)", "true", "false", "true"],
+            "goal": ["1", "0", "0"],
+            "toolbox": ["0", "1", "2"]
         },
         {
-            "board":["give(2, _)"],
-            "goal":["triangle", "triangle"],
-            "toolbox":["star", "triangle", "rect"]
+            "board":["['A', 'A', 'F'].map(b => _b ? 'pass' : 'fail')"],
+            "goal":["['pass', 'pass', 'fail']"],
+            "toolbox":["b", "b", "_ == _", "'A'", "'F'"]
         },
         {
-            "board":["give(2, _)", "_ + 1"],
-            "goal":["4", "4"],
-            "toolbox":["1", "2", "3", "4"]
-        },
-        {
-            "board":["give(2, _)", "(x) => x"],
-            "goal":["(x) => x", "(x) => x"],
-            "toolbox":""
-        },
-        {
-            "board":["give(2, _)", "(x) => x", "star"],
-            "goal":["star"],
-            "toolbox":""
-        },
-        {
-            "board":["give(_t_single, star)"],
-            "goal":["star", "star", "star", "star"],
-            "toolbox":"",
-            "block_variant": {
-                "board": ["__verbatim; give(_, star);"],
-                "toolbox": ["1", "2", "3", "4", "5", "6"],
-                "typing_hints": []
-            }
-        },
-        {
-            "board":["give(_t_single, star)", "give(_t_single, rect)"],
-            "goal":["star", "star", "rect", "rect", "rect"],
-            "toolbox":"",
-            "block_variant": {
-                "board": ["__verbatim; give(_, star);", "__verbatim; give(_, rect);"],
-                "toolbox": ["1", "2", "3", "4", "5", "6"],
-                "typing_hints": []
-            }
+            "board":["__.map(color => color == 'R' ? _ : _)", "'red'", "'blue'"],
+            "goal":["['red', 'blue', 'red']"],
+            "toolbox":["['B', 'B', 'R']", "['R', 'R', 'B']", "['R', 'B', 'R']", "['B', 'B', 'B']"]
         }
     ],
     "resources":{

@@ -1,56 +1,42 @@
 {
-    "chapterName":"Lambdas",
-    "description":"Anonymous functions and replication",
+    "chapterName":"Conditionals",
+    "description":"Ternaries and strings",
     "language": "JavaScript",
     "levels": [
         {
-            "board":["(x) => x", "star"],
-            "goal":["star"],
-            "toolbox":""
+            "board":["_t_single == 'cold'", "_t_single == 'hot'"],
+            "goal":["true", "true"],
+            "toolbox":"",
+            "typing_hints": ["\"cold\""],
+            "typing_solution": ["\"cold\"", "\"hot\""],
+            "block_variant": {
+                "board": ["__verbatim; _ == 'cold';", "__verbatim; _ == 'hot';"],
+                "toolbox": ["'cold'", "'warm'", "'hot'"],
+                "typing_hints": []
+            },
+            "fade": {
+              "var":7
+            }
         },
         {
-            "board":["(x) => x", "(x) => x", "(x) => x", "star"],
-            "goal":["star"],
-            "toolbox":""
-        },
-        {
-            "board":["give(2, _)"],
-            "goal":["triangle", "triangle"],
-            "toolbox":["star", "triangle", "rect"]
-        },
-        {
-            "board":["give(2, _)", "_ + 1"],
-            "goal":["4", "4"],
-            "toolbox":["1", "2", "3", "4"]
-        },
-        {
-            "board":["give(2, _)", "(x) => x"],
-            "goal":["(x) => x", "(x) => x"],
-            "toolbox":""
-        },
-        {
-            "board":["give(2, _)", "(x) => x", "star"],
-            "goal":["star"],
-            "toolbox":""
-        },
-        {
-            "board":["give(_t_single, star)"],
-            "goal":["star", "star", "star", "star"],
+            "board":["_t_single == 'river'", "_t_single == _t_single"],
+            "goal":["true", "true"],
+            "typing_solution": ["\"river\"", "\"a\"", "\"a\""],
             "toolbox":"",
             "block_variant": {
-                "board": ["__verbatim; give(_, star);"],
-                "toolbox": ["1", "2", "3", "4", "5", "6"],
+                "board": ["__verbatim; _ == 'river';", "__verbatim; _ == _;"],
+                "toolbox": ["'river'", "'zoo'", "'bunny'", "'zoo'", "'rabbit'"],
                 "typing_hints": []
             }
         },
         {
-            "board":["give(_t_single, star)", "give(_t_single, rect)"],
-            "goal":["star", "star", "rect", "rect", "rect"],
-            "toolbox":"",
+            "board":["_b ? _t_single : 'fox'", "_b ? 'linx' : _t_single"],
+            "goal":["'rainbow'", "'sparkles'"],
+            "typing_solution": ["\"rainbow\"", "\"sparkles\""],
+            "toolbox":["true", "false"],
             "block_variant": {
-                "board": ["__verbatim; give(_, star);", "__verbatim; give(_, rect);"],
-                "toolbox": ["1", "2", "3", "4", "5", "6"],
-                "typing_hints": []
+                "board": ["__verbatim; _b ? _ : _;", "__verbatim; _b ? _ : _;"],
+                "toolbox": ["true", "false", "'rainbow'", "'linx'", "'sparkles'", "'fox'"]
             }
         }
     ],
