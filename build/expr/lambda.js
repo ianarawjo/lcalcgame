@@ -484,6 +484,7 @@ var LambdaHoleExpr = function (_MissingExpression) {
                                         var final_pos = void 0;
                                         if (overlap_layout) final_pos = { x: mid_xpos + (len - i - 1) / len * total_width - total_width / 4.0, y: c.pos.y - 40 };else final_pos = { x: c.pos.x, y: c.pos.y - 40 };
                                         stage.add(c);
+                                        c.performReduction();
                                         Animate.tween(c, { scale: { x: 1, y: 1 }, pos: final_pos }, 300, function (e) {
                                             return Math.pow(e, 0.5);
                                         }).after(function () {
@@ -530,6 +531,8 @@ var LambdaHoleExpr = function (_MissingExpression) {
                                 stage.add(node);
                                 stage.update();
                                 return;
+                            } else {
+                                if (result instanceof CompareExpr || result instanceof OperatorExpr) result.performUserReduction();
                             }
                         } else {
                             parent.opacity = 1;

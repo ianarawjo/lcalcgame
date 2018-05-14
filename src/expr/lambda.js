@@ -403,6 +403,7 @@ class LambdaHoleExpr extends MissingExpression {
                                 else
                                     final_pos = { x:c.pos.x, y:c.pos.y - 40 };
                                 stage.add(c);
+                                c.performReduction();
                                 Animate.tween(c, {scale:{x:1, y:1}, pos:final_pos}, 300, (e) => Math.pow(e, 0.5)).after(() => {
                                     c.onmouseleave();
                                 });
@@ -447,6 +448,9 @@ class LambdaHoleExpr extends MissingExpression {
                             stage.add(node);
                             stage.update();
                             return;
+                        } else {
+                            if (result instanceof CompareExpr || result instanceof OperatorExpr)
+                              result.performUserReduction();
                         }
                     } else {
                         parent.opacity = 1;
