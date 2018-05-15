@@ -137,10 +137,12 @@ var CompareExpr = function (_Expression) {
                 if (animated) {
                     return new Promise(function (resolve, _reject) {
                         var shatter = new ShatterExpressionEffect(_this2);
-                        shatter.run(stage, function () {
-                            _this2.ignoreEvents = false;
-                            resolve(_get(CompareExpr.prototype.__proto__ || Object.getPrototypeOf(CompareExpr.prototype), 'performReduction', _this2).call(_this2));
-                        }.bind(_this2));
+                        Animate.wait(500).after(function () {
+                            shatter.run(stage, function () {
+                                _this2.ignoreEvents = false;
+                                resolve(_get(CompareExpr.prototype.__proto__ || Object.getPrototypeOf(CompareExpr.prototype), 'performReduction', _this2).call(_this2));
+                            }.bind(_this2));
+                        });
                         _this2.ignoreEvents = true;
                     });
                 } else _get(CompareExpr.prototype.__proto__ || Object.getPrototypeOf(CompareExpr.prototype), 'performReduction', this).call(this);

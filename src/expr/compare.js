@@ -110,10 +110,12 @@ class CompareExpr extends Expression {
             if (animated) {
                 return new Promise((resolve, _reject) => {
                     var shatter = new ShatterExpressionEffect(this);
-                    shatter.run(stage, (() => {
-                        this.ignoreEvents = false;
-                        resolve(super.performReduction());
-                    }).bind(this));
+                    Animate.wait(500).after(() => {
+                      shatter.run(stage, (() => {
+                          this.ignoreEvents = false;
+                          resolve(super.performReduction());
+                      }).bind(this));
+                    });
                     this.ignoreEvents = true;
                 });
             }
