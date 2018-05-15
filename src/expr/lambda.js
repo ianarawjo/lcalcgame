@@ -437,6 +437,7 @@ class LambdaHoleExpr extends MissingExpression {
                 // attempt recursive substitution on any found LambdaVarExpressions.
                 if (this.parent) {
                     var parent = this.parent;
+                    const body_x = this.parent.body.centerPos().x;
                     let orig_exp_str = this.parent.toString();
                     let dropped_exp_str = node.toString();
 
@@ -449,6 +450,7 @@ class LambdaHoleExpr extends MissingExpression {
                             stage.update();
                             return;
                         } else {
+                            result.pos = { x:body_x, y:result.pos.y };
                             if (result instanceof CompareExpr || result instanceof OperatorExpr)
                               result.performUserReduction();
                         }

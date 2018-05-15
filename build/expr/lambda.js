@@ -520,6 +520,7 @@ var LambdaHoleExpr = function (_MissingExpression) {
                     // attempt recursive substitution on any found LambdaVarExpressions.
                     if (_this7.parent) {
                         var parent = _this7.parent;
+                        var body_x = _this7.parent.body.centerPos().x;
                         var orig_exp_str = _this7.parent.toString();
                         var dropped_exp_str = node.toString();
 
@@ -532,6 +533,7 @@ var LambdaHoleExpr = function (_MissingExpression) {
                                 stage.update();
                                 return;
                             } else {
+                                result.pos = { x: body_x, y: result.pos.y };
                                 if (result instanceof CompareExpr || result instanceof OperatorExpr) result.performUserReduction();
                             }
                         } else {
