@@ -72,17 +72,19 @@ class GiveExpr extends Expression {
                 const stage = this.stage;
 
                 // Layout the reduced exprs horizontally:
-                const pos = this.upperLeftPos();
-                const padding = 4;
+                const pos = this.exprToReplicate.upperLeftPos();
+                const padding = 8;
                 const give_sz = this.absoluteSize;
-                const full_w = reduced_exprs.reduce((acc, e) => e.absoluteSize.w + padding + acc, 0);
-                let x = pos.x; let y = pos.y;
-                reduced_exprs.forEach((e) => {
-                    e.pos = { x:x + (give_sz.w - full_w) / 2.0, y:y + (give_sz.h - e.absoluteSize.h) / 2.0 };
+                const num = reduced_exprs.length;
+                const full_h = reduced_exprs.reduce((acc, e) => e.absoluteSize.h + padding + acc, 0);
+                let x = pos.x;
+                let y = pos.y;
+                reduced_exprs.forEach((e,i) => {
+                    e.pos = { x:x, y:y + ((full_h/num + padding) * (i - num/2.0)) + full_h/num/2.0 };
                     e.anchor = { x:0, y:0 };
                     e.shadowOffset = 4;
                     e.scale = { x:1, y:1 };
-                    x += e.absoluteSize.w + padding;
+                    // y += e.absoluteSize.h + padding;
                 });
 
                 // Before performing the reduction, save the state of the board...

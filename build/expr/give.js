@@ -81,19 +81,21 @@ var GiveExpr = function (_Expression) {
                     var stage = _this2.stage;
 
                     // Layout the reduced exprs horizontally:
-                    var pos = _this2.upperLeftPos();
-                    var padding = 4;
+                    var pos = _this2.exprToReplicate.upperLeftPos();
+                    var padding = 8;
                     var give_sz = _this2.absoluteSize;
-                    var full_w = reduced_exprs.reduce(function (acc, e) {
-                        return e.absoluteSize.w + padding + acc;
+                    var num = reduced_exprs.length;
+                    var full_h = reduced_exprs.reduce(function (acc, e) {
+                        return e.absoluteSize.h + padding + acc;
                     }, 0);
-                    var x = pos.x;var y = pos.y;
-                    reduced_exprs.forEach(function (e) {
-                        e.pos = { x: x + (give_sz.w - full_w) / 2.0, y: y + (give_sz.h - e.absoluteSize.h) / 2.0 };
+                    var x = pos.x;
+                    var y = pos.y;
+                    reduced_exprs.forEach(function (e, i) {
+                        e.pos = { x: x, y: y + (full_h / num + padding) * (i - num / 2.0) + full_h / num / 2.0 };
                         e.anchor = { x: 0, y: 0 };
                         e.shadowOffset = 4;
                         e.scale = { x: 1, y: 1 };
-                        x += e.absoluteSize.w + padding;
+                        // y += e.absoluteSize.h + padding;
                     });
 
                     // Before performing the reduction, save the state of the board...
