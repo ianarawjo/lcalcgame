@@ -1,5 +1,7 @@
 'use strict';
 
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -271,6 +273,13 @@ var ExpressionEffect = function (_mag$RoundedRect) {
         return _possibleConstructorReturn(this, (ExpressionEffect.__proto__ || Object.getPrototypeOf(ExpressionEffect)).apply(this, arguments));
     }
 
+    _createClass(ExpressionEffect, [{
+        key: 'drawBaseShape',
+        value: function drawBaseShape(ctx, pos, boundingSize) {
+            if (this.shape === 'hexa') hexaRect(ctx, pos.x, pos.y, boundingSize.w, boundingSize.h, true, this.stroke ? true : false, this.stroke ? this.stroke.opacity : null);else _get(ExpressionEffect.prototype.__proto__ || Object.getPrototypeOf(ExpressionEffect.prototype), 'drawBaseShape', this).call(this, ctx, pos, boundingSize);
+        }
+    }]);
+
     return ExpressionEffect;
 }(mag.RoundedRect);
 
@@ -287,6 +296,8 @@ var ShatterExpressionEffect = function (_ExpressionEffect) {
         var _this3 = _possibleConstructorReturn(this, (ShatterExpressionEffect.__proto__ || Object.getPrototypeOf(ShatterExpressionEffect)).call(this, pos.x + size.w / 2.0, pos.y + size.h / 2.0, size.w, size.h, roundRectToShatter.radius));
 
         _this3.size = size;
+
+        if (roundRectToShatter instanceof CompareExpr) _this3.shape = 'hexa';
 
         _this3.opacity = 0.0;
         _this3.stroke = { color: 'white', lineWidth: 3 };

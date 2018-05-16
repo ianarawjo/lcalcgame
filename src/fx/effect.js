@@ -187,7 +187,18 @@ class SparkleTrigger {
     }
 }
 
-class ExpressionEffect extends mag.RoundedRect {}
+class ExpressionEffect extends mag.RoundedRect {
+  drawBaseShape(ctx, pos, boundingSize) {
+      if (this.shape === 'hexa')
+        hexaRect( ctx,
+                pos.x, pos.y,
+                boundingSize.w, boundingSize.h,
+                true, this.stroke ? true : false,
+                this.stroke ? this.stroke.opacity : null);
+      else
+        super.drawBaseShape(ctx,pos,boundingSize);
+  }
+}
 class ShatterExpressionEffect extends ExpressionEffect {
     constructor(roundRectToShatter) {
         let size = roundRectToShatter.absoluteSize;
@@ -195,6 +206,9 @@ class ShatterExpressionEffect extends ExpressionEffect {
         //size.w -= 75;
         super(pos.x + size.w/2.0, pos.y + size.h/2.0, size.w, size.h, roundRectToShatter.radius);
         this.size = size;
+
+        if (roundRectToShatter instanceof CompareExpr)
+          this.shape = 'hexa';
 
         this.opacity = 0.0;
         this.stroke = { color:'white', lineWidth:3 };

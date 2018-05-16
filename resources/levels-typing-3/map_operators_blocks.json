@@ -5,9 +5,9 @@
     "levels": [
       {
           "description": "Intro to map, leveraging math knowledge.",
-          "board": "[1, 2, 3].map(x => x + 1)",
+          "board": "__.map(x => x + 1)",
           "goal": "[2, 3, 4]",
-          "toolbox": "",
+          "toolbox": ["[3, 2, 1]", "[4, 4, 4]", "[1, 2, 3]"],
           "fade": {
               "map": 1
           },

@@ -19,26 +19,6 @@
             }
         },
         {
-            "description": "Typing operators I.",
-            "goal": ["true", "'river'"],
-            "board": ["'r' >>> 'r'", "'r' >>> 'iver'"],
-            "toolbox": "",
-            "typing_hints": [ "==", "+" ],
-            "typing_options": {
-                ">>>": ["==", "+", "-", "!=", "*", "/"]
-            },
-            "fade":{
-                "==":2,
-                "true":1,
-                "false":1
-            },
-            "showFade":false,
-            "block_variant": {
-                "board": ["'r' >> 'r'", "'r' >> 'iver'"],
-                "toolbox": ["_op('+')", "_op('==')"]
-            }
-        },
-        {
             "description": "Typing operators II.",
             "goal": "true",
             "board": ["'space' >>> 'time'", "_ >>> 'spacetime'"],
@@ -46,6 +26,12 @@
             "typing_options": {
               ">>>": ["==", "+", "-", "!=", "*", "/"]
             },
+            "fade":{
+                "==":2,
+                "true":1,
+                "false":1
+            },
+            "showFade":false,
             "block_variant": {
                 "board": ["__verbatim; 'space' >> 'time';", "_ >> 'spacetime'"],
                 "toolbox": ["'space'", "'time'", "_op('+')", "_op('+')", "_op('==')", "_op('==')"]
@@ -57,27 +43,9 @@
             }
         },
         {
-            "description": "Typing operators III.",
-            "goal": "true",
-            "board": ["'r' >>> _", "_ >>> 'river'", "_t_fullstring"],
-            "toolbox": "",
-            "typing_hints": [ "+" ],
-            "typing_options": {
-              ">>>": ["==", "+", "-", "!=", "*", "/"]
-            },
-            "block_variant": {
-                "board": ["'r' >> _", "__verbatim; _ >> 'river';"],
-                "toolbox": ["'ver'", "'iver'", "'river'", "_op('+')", "_op('==')"]
-            },
-            "verbatim_variant": {
-                "board": ["'r' >>> _", "_ >>> 'river'"],
-                "toolbox": ["iver", "r", "river"]
-            }
-        },
-        {
             "description": "Typing operators IV.",
             "goal": "true",
-            "board": ["'b' >>> _", "_ >>> _", "'e'", "_t_fullstring"],
+            "board": ["'b' >>> _", "_ >>> _t_single", "'e'"],
             "toolbox": [],
             "typing_options": {
               ">>>": ["==", "+", "-", "!=", "*", "/"]

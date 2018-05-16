@@ -4,16 +4,6 @@
     "language": "JavaScript",
     "levels": [
       {
-          "description": "Parameters can be something other than x.",
-          "board": ["y => y + ' world'", "'hello'"],
-          "goal": "'hello world'",
-          "toolbox": "",
-          "fade": {
-              "var":7
-          },
-          "showFade":false
-      },
-      {
           "description": "Confusion III.",
           "board": ["matter => matter + _t_fullstring", "'quotes '"],
           "goal": ["'quotes matter'"],
@@ -21,7 +11,8 @@
           "toolbox": [],
           "fade": {
               "string": 1,
-              "typing_str": 1
+              "typing_str": 1,
+              "var":7
           },
           "showFade": false,
           "block_variant": {
@@ -37,13 +28,13 @@
       },
       {
           "description": "Confusion I.b.",
-          "board": ["e => e", "b => 'b'", "b => b", "'e'", "'b'", "'k'"],
-          "goal": ["'e'", "'b'", "'b'"],
-          "toolbox": []
+          "board": ["e => e + 'e'", "b => 'b' + b", "k => k + 't'"],
+          "goal": ["'beet'"],
+          "toolbox": ["'e'", "'b'", "'t'"]
       },
       {
           "description": "Confusion II.",
-          "board": ["'o'", "b => 'dr' + b", "a => a + a", "c => c + 'l'"],
+          "board": ["'o'", "mid => 'r' + mid", "a => a + a", "pre => pre + 'l'", "end => 'd' + end"],
           "goal": ["'drool'"],
           "toolbox": []
       }

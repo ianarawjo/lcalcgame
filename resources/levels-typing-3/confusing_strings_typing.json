@@ -4,21 +4,6 @@
     "language": "JavaScript",
     "levels": [
       {
-          "description": "Confusion IV: Typing.",
-          "board": ["a => _t_single + a", "b => _t_single + 'oo'"],
-          "goal": ["'at'", "'zoo'"],
-          "typing_hints": ["\"a\""],
-          "toolbox": ["'z'", "'a'", "'t'", "'b'", "'x'"],
-          "block_variant": {
-              "board": ["a => 'a' + a", "__verbatim; b => _ + 'oo';"],
-              "toolbox": ["'z'", "z", "'a'", "'t'", "'b'", "b"]
-          },
-          "verbatim_variant": {
-              "board": ["a => _t_fullstring + a", "b => _t_single + 'oo'"],
-              "typing_hints": ["\"a\"", "b"]
-          }
-      },
-      {
           "description": "Confusion V: Typing function bodies.",
           "board": ["give(3, b => _t_single)"],
           "goal": ["'bee'", "'see'", "'Lee'"],
@@ -31,7 +16,7 @@
       },
       {
           "description": "Confusion VI: Constructing functions.",
-          "board": ["give(3, s => _t_single)"],
+          "board": ["give(3, end => _t_single)"],
           "goal": ["'knew'", "'knave'", "'know'"],
           "toolbox": ["'ew'", "'ave'", "'ow'"],
           "block_variant": {
