@@ -425,13 +425,25 @@ class ReductStage extends mag.Stage {
             (!this.heldNode && this.keyEventDelegate)) {
             if (this.keyEventDelegate.parent instanceof TypeInTextExpr &&
               this.keyEventDelegate.parent.isComplete()) {
-                this.keyEventDelegate.carriageReturn(false); // don't focus next typebox bc user clicked 
+                this.keyEventDelegate.carriageReturn(false); // don't focus next typebox bc user clicked
                 this.keyEventDelegate = null;
             } else {
               this.keyEventDelegate.blur();
               this.keyEventDelegate = null;
             }
         }
+    }
+    onmousehover(pos) {
+      const prev_hn = this.hoverNode;
+      super.onmousehover(pos);
+      if (this.hoverNode && prev_hn != this.hoverNode) {
+        if ('isRootReducable' in this.hoverNode && this.hoverNode.isRootReducable() && !(this.keyEventDelegate instanceof TypeBox)) {
+          if (this.keyEventDelegate) {
+            this.keyEventDelegate.blur();
+          }
+          this.keyEventDelegate = this.hoverNode;
+        }
+      }
     }
     onmouseclick(pos) {
 

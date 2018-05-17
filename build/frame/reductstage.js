@@ -482,6 +482,20 @@ var ReductStage = function (_mag$Stage) {
             }
         }
     }, {
+        key: 'onmousehover',
+        value: function onmousehover(pos) {
+            var prev_hn = this.hoverNode;
+            _get(ReductStage.prototype.__proto__ || Object.getPrototypeOf(ReductStage.prototype), 'onmousehover', this).call(this, pos);
+            if (this.hoverNode && prev_hn != this.hoverNode) {
+                if ('isRootReducable' in this.hoverNode && this.hoverNode.isRootReducable() && !(this.keyEventDelegate instanceof TypeBox)) {
+                    if (this.keyEventDelegate) {
+                        this.keyEventDelegate.blur();
+                    }
+                    this.keyEventDelegate = this.hoverNode;
+                }
+            }
+        }
+    }, {
         key: 'onmouseclick',
         value: function onmouseclick(pos) {
 
