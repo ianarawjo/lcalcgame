@@ -45,7 +45,7 @@
         {
             "description": "Typing operators IV.",
             "goal": "true",
-            "board": ["'b' >>> _", "_ >>> _t_single", "'e'"],
+            "board": ["_ >>> _", "_ >>> 'be'", "'e'", "'b'"],
             "toolbox": [],
             "typing_options": {
               ">>>": ["==", "+", "-", "!=", "*", "/"]

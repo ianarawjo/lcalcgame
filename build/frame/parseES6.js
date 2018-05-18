@@ -389,6 +389,8 @@ var ES6Parser = function () {
                 'UnaryExpression': function UnaryExpression(node) {
                     if (node.operator === '!') {
                         return new (ExprManager.getClass('not'))(_this2.parseNode(node.argument), 'not');
+                    } else if (node.operator === '-') {
+                        return new (ExprManager.getClass('number'))(-node.argument.value);
                     } else {
                         console.warn('Unknown unary expression ' + node.operator + ' not supported at this time.');
                         return null;

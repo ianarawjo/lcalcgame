@@ -377,6 +377,8 @@ class ES6Parser {
             'UnaryExpression': (node) => {
                 if (node.operator === '!') {
                     return new (ExprManager.getClass('not'))(this.parseNode(node.argument), 'not');
+                } else if (node.operator === '-') {
+                    return new (ExprManager.getClass('number'))(-node.argument.value);
                 } else {
                     console.warn('Unknown unary expression ' + node.operator + ' not supported at this time.');
                     return null;

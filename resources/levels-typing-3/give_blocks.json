@@ -12,11 +12,6 @@
             "board":["give(2, _)", "give(3, _)"],
             "goal":["star", "star", "star", "rect", "rect"],
             "toolbox":["star", "triangle", "rect"]
-        },
-        {
-            "board":["give(2, _)", "give(2, _)", "give(3, _)"],
-            "goal":["triangle", "triangle", "triangle", "triangle", "rect", "rect"],
-            "toolbox":["star", "triangle", "rect"]
         }
     ],
     "resources":{
